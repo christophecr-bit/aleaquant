@@ -152,3 +152,33 @@ simples badges. À envisager une fois le set de métriques A stabilisé et valid
 l'usage, pas avant.
 
 Décision de Christophe : les deux vont dans la todolist, A en priorité plus haute que B.
+
+## Garde lexical ajouté et testé (30/09/2026, ~1h45)
+
+`guard_interpretive_words()` ajouté à `llm_compose_test.py` : vérifie que tout mot de
+rareté employé dans le texte (rare, très rare, notable, exceptionnel, frappant,
+remarquable, peu courant, inhabituel — avec gestion de la négation, "ce n'est pas rare")
+est justifié par AU MOINS un fait fourni atteignant ce niveau de `rarity`. Testé hors
+ligne sur 4 cas synthétiques (mot justifié, inflation, négation, aucun fait rare
+disponible) : comportement correct dans les 4 cas.
+
+Testé en conditions réelles sur EM-26077 et EM-2011053 : garde numérique OK, garde
+lexical OK sur les deux articles — aucun faux positif, aucune inflation manquée.
+
+**Défaut trouvé en lisant le texte (le garde ne l'attrape pas, ce n'est pas son rôle)** :
+le modèle recopie littéralement les noms de code de l'enum anglais dans la prose
+française — "classée VERY_RARE", "ce qui est dans la zone COMMON", "relève du COMMON" —
+au lieu de mots français. Cause : `evidence_block()` transmet `rareté={f['rarity']}`
+avec la valeur brute de l'enum. Le site a pourtant déjà la traduction (`RARITY_FR` dans
+`dist/draws.js` : COMMON→"courante", UNCOMMON→"peu courante", RARE→"rare",
+VERY_RARE→"très rare"). **Correctif prioritaire pour la prochaine session** :
+1. Traduire `rarity` en français dans `evidence_block()` avant de le donner au modèle
+   (réutiliser le mapping `RARITY_FR`, le porter côté Python si besoin).
+2. Interdire explicitement dans le prompt de citer un nom de code d'enum (majuscules,
+   underscore) — n'employer que le mot français correspondant.
+
+Note technique secondaire, non bloquante : les motifs `INTERPRETIVE_TERMS` n'ont pas de
+frontière de mot (`\b`) en fin de motif, donc "rares?" matcherait aussi la sous-chaîne
+"RARE" à l'intérieur d'un token comme "VERY_RARE" ou un mot comme "rareté" employé au
+sens générique (non testé en pratique ce soir, mais à corriger par prudence — ajouter
+`\b` des deux côtés et/ou exclure les tokens tout en majuscules).

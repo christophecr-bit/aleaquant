@@ -2,6 +2,9 @@
 Donne TOUS les faits calculés au LLM, lui demande de choisir, synthétiser, commenter
 la géométrie (concentration/dispersion), et varier la structure d'un article à l'autre.
 Garde numérique appliqué sur le texte entier vs l'ensemble des faits (pas par claim).
+Garde lexical : les mots interprétatifs (rare, notable, exceptionnel...) doivent être
+justifiés par le champ `rarity` réel d'au moins un fait fourni, jamais une impression
+libre du modèle.
 
   python3 agent/llm_compose_test.py EM-26077
   python3 agent/llm_compose_test.py EM-2011053
@@ -36,6 +39,8 @@ def evidence_block(facts):
                 bits.append(f"classe {f['class_size']}/{f['domain_size']} ({pct(f['p_class'])})")
             if "tail" in f and f["tail"] < 1:
                 bits.append(f"queue {pct(f['tail'])}")
+            if "rarity" in f:
+                bits.append(f"rareté={f['rarity']}")
             lines.append(" · ".join(bits))
         elif f.get("statement"):
             lines.append(f"{f['fact_id']} — {f['statement']}")
@@ -82,6 +87,55 @@ def guard_full_text(text, facts):
     return cleaned
 
 
+# --- garde lexical : mots de rareté/notabilité vs champ `rarity` des faits fournis ---
+
+RARITY_ORDER = {"COMMON": 0, "UNCOMMON": 1, "RARE": 2, "VERY_RARE": 3}
+
+# du plus spécifique/fort au plus faible : évite qu'un motif faible ("rare") ne
+# matche à l'intérieur d'un motif fort déjà reconnu ("très rare"). Chaque match
+# retenu est effacé du texte avant d'essayer le motif suivant.
+INTERPRETIVE_TERMS = [
+    (re.compile(r"extrêmement rares?", re.IGNORECASE), "VERY_RARE"),
+    (re.compile(r"très rares?", re.IGNORECASE), "VERY_RARE"),
+    (re.compile(r"exceptionnelles?|exceptionnels?", re.IGNORECASE), "VERY_RARE"),
+    (re.compile(r"rares?", re.IGNORECASE), "RARE"),
+    (re.compile(r"notables?", re.IGNORECASE), "RARE"),
+    (re.compile(r"frappantes?|frappants?", re.IGNORECASE), "RARE"),
+    (re.compile(r"remarquables?", re.IGNORECASE), "RARE"),
+    (re.compile(r"peu courantes?|peu courants?", re.IGNORECASE), "UNCOMMON"),
+    (re.compile(r"inhabituelles?|inhabituels?", re.IGNORECASE), "UNCOMMON"),
+]
+
+NEGATION_RE = re.compile(r"\b(pas|aucun|aucune|sans|ni|jamais)\b", re.IGNORECASE)
+
+
+def guard_interpretive_words(text, facts):
+    """Retourne la liste des mots de rareté employés sans fait assez rare pour les
+    justifier. Coarse-grained : vérifie qu'AU MOINS un fait fourni atteint le niveau
+    requis, ne tente pas d'apparier le mot au fait précis qu'il décrit — mais ça
+    suffit à bloquer une inflation manifeste (ex. "exceptionnel" alors que rien ne
+    dépasse RARE).
+    """
+    max_rarity_available = max(
+        (RARITY_ORDER.get(f.get("rarity"), 0) for f in facts["facts"] if "rarity" in f),
+        default=0,
+    )
+
+    working = text
+    unjustified = []
+    for pattern, level in INTERPRETIVE_TERMS:
+        for m in pattern.finditer(working):
+            start = m.start()
+            window = working[max(0, start - 30):start]
+            if NEGATION_RE.search(window):
+                continue  # "ce n'est pas rare" etc. : pas une affirmation de rareté
+            if RARITY_ORDER[level] > max_rarity_available:
+                unjustified.append((m.group(0), level))
+        # efface les matches (justifiés ou non) pour ne pas les re-matcher plus faible
+        working = pattern.sub(lambda mm: " " * len(mm.group(0)), working)
+    return unjustified
+
+
 def main():
     if len(sys.argv) < 2:
         sys.exit("usage: llm_compose_test.py EM-XXXXX")
@@ -102,7 +156,7 @@ Faits calculés disponibles (utilise ceux qui sont pertinents, pas besoin de tou
 Écris un article de 4 à 6 paragraphes qui :
 1. Situe le tirage (probabilité de la combinaison exacte).
 2. Commente la GÉOMÉTRIE du tirage : les numéros sont-ils plutôt concentrés (proches les uns des autres, dans peu de dizaines) ou dispersés sur l'étendue 1-50 ? Précise les tranches de dizaines que tu utilises (1-10, 11-20, etc.). N'emploie "concentré"/"dispersé"/"notable"/"rare" que si tu peux l'ancrer explicitement à un chiffre fourni (classe, queue, ou comparaison) — jamais comme impression libre.
-3. Relève ce qui est statistiquement notable (classe rare, queue de loi) s'il y en a — sinon dis-le honnêtement, une forme ordinaire est aussi une observation valide. Précise bien QUELLE queue (somme des numéros, des étoiles, etc.) est en jeu, ne généralise pas.
+3. Relève ce qui est statistiquement notable (classe rare, queue de loi) s'il y en a — sinon dis-le honnêtement, une forme ordinaire est aussi une observation valide. Précise bien QUELLE queue (somme des numéros, des étoiles, etc.) est en jeu, ne généralise pas. Chaque fois que tu qualifies un chiffre de "rare", "peu courant", "notable", "frappant" ou "exceptionnel", reprends EXACTEMENT le niveau donné par le champ rareté= du fait correspondant (COMMON→n'emploie aucun de ces mots, UNCOMMON→"peu courant", RARE→"rare"/"notable", VERY_RARE→"très rare"/"exceptionnel") ; n'amplifie jamais un niveau.
 4. Situe l'historique EN UTILISANT le fait de signature (F.signature, qui donne une fréquence sur un nombre de tirages antérieurs précis) et le fait d'historique exact (F.history.exact_main) — c'est la référence avec échelle demandée, ne dis jamais que l'historique manque si ces faits sont fournis.
 5. Termine sur le rappel qu'aucune de ces mesures ne prédit le prochain tirage — une seule fois, dans un dernier paragraphe court, pas répété ailleurs.
 
@@ -117,8 +171,12 @@ IMPORTANT : varie ta structure et tes formulations, n'utilise pas un patron fig�
     print(text)
 
     problems = guard_full_text(text, facts)
-    print("\n=== GARDE (texte entier vs tous les faits) ===")
+    print("\n=== GARDE NUMÉRIQUE (texte entier vs tous les faits) ===")
     print("OK" if not problems else f"NOMBRES NON JUSTIFIÉS : {sorted(problems)}")
+
+    word_problems = guard_interpretive_words(text, facts)
+    print("\n=== GARDE LEXICAL (mots de rareté vs champ rarity des faits) ===")
+    print("OK" if not word_problems else f"MOTS NON JUSTIFIÉS : {word_problems}")
 
     usage = resp.usage
     in_tok = getattr(usage, "input_tokens", 0) or 0
