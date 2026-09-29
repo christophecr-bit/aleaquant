@@ -7,6 +7,46 @@ importées en lecture seule de loto-keno-lab-generic (feature_definitions.py, 29
 
 Aperçu privé sur cette machine uniquement : `python3 -m http.server 4174 --bind 127.0.0.1 --directory dist`, puis ouvrir `http://127.0.0.1:4174/`. Arrêter le serveur avec `Ctrl+C`. Le binding `127.0.0.1` empêche l'accès depuis les autres appareils du réseau.
 
+## Déploiement
+
+Le site est statique (`dist/`), sans étape de build : Cloudflare Pages sert le dossier
+tel quel.
+
+**Dépôt** : `origin` reste le dépôt Sites existant (repli). Le dépôt de référence pour la
+mise en ligne est le nouveau dépôt GitHub privé `aleaquant` (remote `github`) :
+
+```sh
+git remote add github git@github.com:<compte>/aleaquant.git   # ou l'URL https
+git push github main
+```
+
+**Hébergement retenu : Cloudflare Pages** (vérifié le 29/09/2026 — voir DEBT/journal du
+chantier A1). Raisons :
+- GitHub Pages exige un plan payant (Pro/Team/Enterprise) pour publier depuis un dépôt
+  *privé* ; le dépôt `aleaquant` doit rester privé. Cloudflare Pages, lui, se connecte à
+  un dépôt privé via son app GitHub sans condition de plan.
+- Cloudflare Pages free : 500 builds/mois, 100 domaines personnalisés, jusqu'à 20 000
+  fichiers par site, pas de limite de bande passante documentée pour les assets statiques.
+- Prise en charge native des en-têtes personnalisés via `dist/_headers` (CSP,
+  X-Content-Type-Options, etc.) — GitHub Pages ne le permet pas.
+
+**Configuration Cloudflare Pages** (à faire une fois, depuis le tableau de bord
+Cloudflare, avec le compte de Christophe) :
+1. Pages → Create a project → Connect to Git → sélectionner le dépôt `aleaquant`.
+2. Build command : (aucune — site déjà statique). Output directory : `dist`.
+3. Déploiement automatique sur push vers `main` (activé par défaut).
+4. Le sous-domaine `*.pages.dev` fourni par Cloudflare sert de point d'entrée public tant
+   qu'aucun domaine personnalisé n'est configuré (hors périmètre de ce chantier).
+
+**En-têtes et robots** : `dist/_headers` (CSP simple, X-Content-Type-Options, X-Frame-
+Options, Referrer-Policy) et `dist/robots.txt` (autorise l'indexation) sont lus
+automatiquement par Cloudflare Pages au déploiement — rien à configurer côté tableau de
+bord.
+
+**Vérification** : un `git push` sur `main` doit se refléter sur l'URL publique en moins
+de deux minutes (build Cloudflare Pages généralement < 1 min pour un site statique sans
+étape de build).
+
 ## Chaîne éditoriale
 
 Les LLM tournent dans le dépôt indépendant `../aleaquant-editorial-agents`.
