@@ -178,15 +178,36 @@ function setupLab(laws) {
 }
 
 // ------------------------------------------------------------ démarrage
+function selectDraw(row, ctx, sel, dateInput) {
+  renderDraw(row, ctx);
+  sel.value = row[0];
+  dateInput.value = row[1];
+}
+function nearestRow(rows, iso) {
+  // rows triés par date croissante ; renvoie le tirage à cette date ou, sinon, le plus proche avant (ou à défaut après).
+  let before = null, after = null;
+  for (const r of rows) {
+    if (r[1] === iso) return r;
+    if (r[1] < iso) before = r; else { after = r; break; }
+  }
+  return before || after;
+}
 Promise.all([load('draws.json'), load('laws.json'), load('atlas.json'), load('manifest.json')]).then(([draws, laws, atlas, manifest]) => {
   const ctx = { draws, laws, rows: draws.rows };
   const sel = $('#draw-select');
-  const recent = draws.rows.slice().reverse();
-  sel.replaceChildren(...recent.map((r) => el('option', { value: r[0], text: `${dateFr(r[1])} · ${r[3].join(' ')} ★ ${r[4].join(' ')}` })));
-  sel.addEventListener('change', () => renderDraw(draws.rows.find((r) => r[0] === sel.value), ctx));
+  const byYear = new Map();
+  draws.rows.forEach((r) => { const y = r[1].slice(0, 4); if (!byYear.has(y)) byYear.set(y, []); byYear.get(y).push(r); });
+  sel.replaceChildren(...[...byYear.keys()].sort((a, b) => b - a).map((y) => {
+    const group = el('optgroup', { label: y });
+    group.append(...byYear.get(y).slice().reverse().map((r) => el('option', { value: r[0], text: `${dateFr(r[1])} · ${r[3].join(' ')} ★ ${r[4].join(' ')}` })));
+    return group;
+  }));
+  const dateInput = $('#draw-date');
+  dateInput.min = draws.rows[0][1]; dateInput.max = draws.rows[draws.rows.length - 1][1];
+  sel.addEventListener('change', () => selectDraw(draws.rows.find((r) => r[0] === sel.value), ctx, sel, dateInput));
+  dateInput.addEventListener('change', () => { if (!dateInput.value) return; const row = nearestRow(draws.rows, dateInput.value); if (row) selectDraw(row, ctx, sel, dateInput); });
   const hash = location.hash.match(/^#(EM-\d+)$/); const start = hash ? draws.rows.find((r) => r[0] === hash[1]) : null;
-  if (start && !recent.includes(start)) sel.prepend(el('option', { value: start[0], text: `${dateFr(start[1])} · ${start[3].join(' ')} ★ ${start[4].join(' ')}` }));
-  renderDraw(start || draws.rows[draws.rows.length - 1], ctx); sel.value = (start || draws.rows[draws.rows.length - 1])[0];
+  selectDraw(start || draws.rows[draws.rows.length - 1], ctx, sel, dateInput);
   $('#data-provenance').textContent = `Données : ${nb(manifest.draws)} tirages FDJ du ${dateFr(manifest.first)} au ${dateFr(manifest.last)} · moteur ${manifest.engine} · base ${manifest.history_db_sha256.slice(0, 12)}…`;
   renderCooc(atlas); setupGeo(atlas); setupLab(laws);
 }).catch((e) => { console.error(e); ['#draw-metrics', '#cooc-stats', '#geo-stats', '#lab-note'].forEach((s) => { const n = $(s); if (n) n.textContent = 'Les données n’ont pas pu être chargées. Lance engine/build_data.py puis actualise la page.'; }); });
