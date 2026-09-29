@@ -84,3 +84,37 @@ Coûts mesurés cette nuit (gpt-5.4-mini, reasoning effort low) :
 - Composition texte libre (v1/v2) : ~0,005-0,0065 $/article
 - Batch API (submit/collect scripts prêts, testés end-to-end sur 10 items, non encore
   utilisés à l'échelle) : ~50 % moins cher que ces tarifs directs.
+
+
+## Round 4 — après patch du garde (bornes de dizaines en contexte)
+
+Fix appliqué : `decade_range_numbers()` dans `llm_compose_test.py` reconnaît les bornes
+(1,10,11,20,...,41,50) uniquement quand elles apparaissent dans un motif de plage explicite
+("1-10, 11-20, ..."), pas en liste blanche globale — un `20` isolé ailleurs reste signalé.
+Testé sur EM-26077 et EM-2011053 : garde OK sur les deux, plus de faux positif.
+
+**Vrai progrès** : les deux articles ont une structure de lecture complète (géométrie,
+forme, historique, limites). Le second (EM-2011053) distingue spontanément classe et queue
+pour la somme ("c'est donc la queue de la somme qui mérite l'attention ici, pas une autre")
+— exactement la confusion relevée au round précédent, résolue sans qu'on ait dû le forcer
+explicitement dans le prompt cette fois. Historique bien contextualisé à l'échelle des deux
+côtés ("156 fois sur 1983 tirages", "7 fois sur 412 tirages").
+
+Restes à traiter avant de considérer la composition libre fiable à l'échelle :
+- **Métriques dérivées non définies inline** : "écart moyen de 3,75" est cité sans jamais
+  expliquer que c'est la moyenne des écarts entre numéros triés consécutifs — le lecteur
+  doit pouvoir comprendre chaque métrique sans dictionnaire externe.
+- **Ambiguïté de comptage** : "une seule paire consécutive" vs "quatre paires à distance
+  d'au plus 5" — préciser si les paires consécutives (distance 1) sont incluses dans ce
+  second compte ou comptées à part.
+- **Jugements qualitatifs non cadrés** : "le chiffre le plus frappant", "entièrement
+  compatible" — nécessitent une règle éditoriale stable (quel seuil déclenche quel
+  qualificatif) plutôt que laissés à l'appréciation libre du modèle à chaque génération.
+- **Le garde ne valide que les nombres, pas les définitions ni la cohérence des calculs
+  dérivés** ("écart moyen" est-il vraiment la moyenne des écarts cités ?) — il faudrait une
+  vérification déterministe séparée pour les métriques calculées à partir d'autres nombres
+  du texte, pas seulement leur présence dans les facts.
+
+Conclusion de Christophe : garder cette direction (composition libre + garde), en ajoutant
+une validation déterministe renforcée des calculs dérivés et une règle claire d'usage pour
+"rare", "queue", "frappant", "exceptionnel".

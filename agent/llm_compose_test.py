@@ -7,6 +7,7 @@ Garde numérique appliqué sur le texte entier vs l'ensemble des faits (pas par 
   python3 agent/llm_compose_test.py EM-2011053
 """
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -41,6 +42,20 @@ def evidence_block(facts):
     return "\n".join(lines)
 
 
+# bornes de tranches de dizaines (domaine 1-50) : reconnues UNIQUEMENT quand elles
+# apparaissent comme une plage explicite ("1-10", "11–20", ...), jamais en liste blanche
+# globale — sinon un "20" ou "41" isolé ailleurs dans le texte ne serait plus signalé.
+DECADE_RANGE_RE = re.compile(r'\b(1|11|21|31|41)\s*[-–—]\s*(10|20|30|40|50)\b')
+
+
+def decade_range_numbers(text):
+    nums = set()
+    for m in DECADE_RANGE_RE.finditer(text):
+        nums.add(m.group(1))
+        nums.add(m.group(2))
+    return nums
+
+
 def guard_full_text(text, facts):
     allowed = normalize_numbers(', '.join(map(str, facts['main'] + facts['stars'])) + ', ' + facts['date'])
     allowed |= {'2', '3', '5', '10'}
@@ -48,6 +63,7 @@ def guard_full_text(text, facts):
         allowed |= normalize_numbers(json.dumps(f, ensure_ascii=False))
         allowed |= normalize_numbers(f.get('statement', ''))
     extra = normalize_numbers(text) - allowed
+    extra -= decade_range_numbers(text)
     # tolérance pourcentages arrondis (comme guard() existant, version simplifiée)
     cleaned = set()
     for x in extra:
