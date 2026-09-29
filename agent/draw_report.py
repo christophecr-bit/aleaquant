@@ -112,6 +112,7 @@ def write(facts):
                          'F.grid.probability'))
 
     notable, ordinary = select(facts)
+    sum_in_notable = any(f['fact_id'] == 'F.main.sum' for f in notable)
     if notable:
         lines = []
         for f in notable:
@@ -126,11 +127,13 @@ def write(facts):
     else:
         paras.append(w.claim('Aucune des métriques suivies ne place ce tirage dans une queue de sa loi exacte '
                              'ni dans une classe rare : c’est une forme ordinaire.', 'F.main.sum', category='class_metric'))
-    s = w.f('F.main.sum')
-    paras.append(w.claim('La somme des cinq numéros vaut %s : %s des combinaisons ont une somme inférieure '
-                         'ou égale, %s une somme supérieure ou égale. Chaque valeur de somme est une classe '
-                         'de grilles ; les classes centrales sont les plus peuplées.' % (
-                             s['value'], pct(s['p_le']), pct(s['p_ge'])), 'F.main.sum'))
+    if not sum_in_notable:
+        # évite de répéter l'info déjà donnée ci-dessus quand la somme elle-même est le fait notable
+        s = w.f('F.main.sum')
+        paras.append(w.claim('La somme des cinq numéros vaut %s : %s des combinaisons ont une somme inférieure '
+                             'ou égale, %s une somme supérieure ou égale. Chaque valeur de somme est une classe '
+                             'de grilles ; les classes centrales sont les plus peuplées.' % (
+                                 s['value'], pct(s['p_le']), pct(s['p_ge'])), 'F.main.sum'))
     if ordinary:
         o = ordinary[0]
         paras.append(w.claim('À l’inverse, %s vaut %s, la valeur de la classe la plus peuplée : %s des combinaisons.' % (
