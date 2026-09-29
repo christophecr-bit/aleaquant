@@ -14,6 +14,8 @@ Usage : python3 engine/build_data.py [--facts N] [--draw EM-26077]
 import argparse
 import json
 import math
+import os
+import sys
 import time
 from collections import Counter
 from itertools import combinations
@@ -179,11 +181,38 @@ def portfolio_geometry(grids, domain):
         c = Counter(sub for g in grids for sub in combinations(sorted(g[0]), t))
         cov[t] = {'covered': len(c), 'possible': comb(domain, t),
                   'collisions': sum(comb(m, 2) for m in c.values())}
-    return {'grids': len(grids), 'union': len(set().union(*sets)),
-            'overlap_mean': sum(inter) / len(inter), 'overlap_max': max(inter),
-            'overlap_hist': [inter.count(i) for i in range(k + 1)],
-            'occurrence_sd': float(np.std([occ.get(v, 0) for v in range(1, domain + 1)])),
-            'coverage': cov}
+    out = {'grids': len(grids), 'union': len(set().union(*sets)),
+           'overlap_mean': sum(inter) / len(inter), 'overlap_max': max(inter),
+           'overlap_hist': [inter.count(i) for i in range(k + 1)],
+           'occurrence_sd': float(np.std([occ.get(v, 0) for v in range(1, domain + 1)])),
+           'coverage': cov}
+    if len(grids[0]) > 1:  # seconde composante : étoiles (EuroMillions) ou numéro Chance (Loto)
+        second = [frozenset(g[1]) for g in grids]
+        inter2 = [len(a & b) for a, b in combinations(second, 2)]
+        out['second'] = {'union': len(set().union(*second)), 'overlap_mean': sum(inter2) / len(inter2),
+                         'overlap_max': max(inter2),
+                         'distinct_combinations': len({tuple(sorted(x)) for x in second})}
+    return out
+
+
+def lab_catalog(game_module, game_id, catalog_rel):
+    """Catalogue durable du laboratoire via son API (SHA revérifiés à chaque lecture)."""
+    import importlib
+    if str(LAB / 'src') not in sys.path:
+        sys.path.insert(0, str(LAB / 'src'))
+    from lottery_core.catalog import PortfolioCatalog
+    module = importlib.import_module(game_module)
+    game = next(v for v in vars(module).values() if getattr(v, 'game_id', None) == game_id)
+    cwd = os.getcwd()
+    os.chdir(LAB)  # certains adaptateurs historiques résolvent des chemins relatifs au dépôt
+    try:
+        return PortfolioCatalog(LAB, game, catalog_rel)
+    finally:
+        os.chdir(cwd)
+
+
+def selection_grids(catalog, pid):
+    return [[list(values) for _name, values in g.parts] for g in catalog.resolve_grids(pid)]
 
 
 def portfolios():
@@ -215,38 +244,64 @@ def portfolios():
                           'mean_fraction': ex['mean_winning_grids']['fraction'],
                           'variance': ex['variance_winning_grids']['decimal'],
                           'dist': [x['probability']['decimal'] for x in ex['winning_grid_count_distribution']]}})
+        searched = LAB / 'reports' / 'euromillions_portfolio_search' / 'portfolios'
         gens.append({'game': 'euromillions', 'generation': 1, 'status': 'recherche en cours',
                      'label': 'Génération 1 — recherche HPC (Monte-Carlo) puis évaluation exacte',
                      'grids_per_portfolio': 30, 'stake_eur': 2.5, 'domain': 50,
+                     'second_label': 'Étoiles', 'second_domain': 12,
+                     'catalog_total': len(list(searched.glob('*.txt'))),
+                     'catalog_families': dict(Counter(c['family'] for c in sel['candidates'])),
+                     'shown': 'contenus distincts évalués exactement (alias fusionnés)',
                      'outcomes': sel['draw_space'], 'source': str(sel_path.relative_to(LAB)),
                      'source_sha256': sha256_file(sel_path), 'items': items})
-    # Keno : références Phase 3A
-    kdir = LAB / 'reports' / 'phase3a_portfolio_search' / 'portfolios'
-    kitems = []
-    for pid, fam in (('REF_RANDOM', 'RANDOM'), ('REF_BALANCED', 'BALANCED'), ('REF_POOL14', 'POOL14')):
-        path = kdir / (pid + '.txt')
-        if path.exists():
-            grids = [[[int(x) for x in line.split()]] for line in path.read_text().splitlines() if line.strip()]
-            kitems.append({'id': pid, 'family': fam, 'sha256': sha256_file(path), 'grids': grids,
+    # Keno : la sélection commentée du catalogue (joués, références, finalistes exacts, notable)
+    kcat_path = LAB / 'portfolios' / 'keno' / 'catalog.jsonl'
+    curated_path = LAB / 'portfolios' / 'keno' / 'curated.json'
+    if kcat_path.exists() and curated_path.exists():
+        kcat = lab_catalog('lottery_games.keno', 'keno', 'portfolios/keno/catalog.jsonl')
+        curated = read_json(curated_path)
+        roles = {}
+        for role, key_ in (('joué', 'played'), ('référence', 'references'),
+                           ('finaliste exact', 'exact_finalists'), ('remarquable', 'notable')):
+            for pid in curated.get(key_, []):
+                canonical = kcat.get(pid)['id']
+                roles.setdefault(canonical, {'aliases': set(), 'roles': []})
+                if pid != canonical:
+                    roles[canonical]['aliases'].add(pid)
+                if role not in roles[canonical]['roles']:
+                    roles[canonical]['roles'].append(role)
+        all_rows = [json.loads(l) for l in kcat_path.read_text().splitlines() if l.strip()]
+        kitems = []
+        for pid, info in roles.items():
+            e = kcat.get(pid)
+            grids = selection_grids(kcat, pid)
+            kitems.append({'id': pid, 'family': e['family'], 'aliases': sorted(info['aliases']),
+                           'roles': info['roles'], 'played': (e.get('played') or {}).get('status'),
+                           'sha256': e['content_sha256'], 'grids': grids,
+                           'evaluations': len(e.get('evaluations', [])),
                            'geometry': portfolio_geometry(grids, 56)})
-    if kitems:
         gens.append({'game': 'keno', 'generation': 1, 'status': 'recherche en cours',
-                     'label': 'Génération 1 — références Phase 3A (HPC)', 'grids_per_portfolio': 30,
-                     'domain': 56, 'items': kitems})
-    # Loto : catalogue durable
-    lcat = LAB / 'portfolios' / 'loto' / 'catalog.jsonl'
-    if lcat.exists():
+                     'label': 'Génération 1 — recherche HPC Phase 3A (Monte-Carlo 10M à 1B, puis exact)',
+                     'grids_per_portfolio': 30, 'domain': 56, 'second_label': None,
+                     'catalog_total': len(all_rows),
+                     'catalog_families': dict(Counter(r['family'] for r in all_rows)),
+                     'shown': 'sélection commentée (curated.json)', 'items': kitems})
+    # Loto : catalogue de démonstration (6 grilles simples, 5 numéros + Chance)
+    lcat_path = LAB / 'portfolios' / 'loto' / 'catalog.jsonl'
+    if lcat_path.exists():
+        lcat = lab_catalog('lottery_games.loto', 'loto', 'portfolios/loto/catalog.jsonl')
+        rows = [json.loads(l) for l in lcat_path.read_text().splitlines() if l.strip()]
         litems = []
-        for line in lcat.read_text().splitlines():
-            e = json.loads(line)
-            path = LAB / e['source']['path']
-            if path.exists():
-                grids = read_grids(path)
-                litems.append({'id': e['id'], 'family': e['family'], 'sha256': e['content_sha256'],
-                               'grids': grids, 'geometry': portfolio_geometry(grids, 49),
-                               'lab_geometry': e.get('geometry')})
-        gens.append({'game': 'loto', 'generation': 1, 'status': 'recherche en cours',
-                     'label': 'Génération 1 — catalogue de démonstration', 'domain': 49, 'items': litems})
+        for e in rows:
+            grids = selection_grids(lcat, e['id'])
+            litems.append({'id': e['id'], 'family': e['family'], 'sha256': e['content_sha256'],
+                           'objective': e['parameters'].get('objective'), 'grids': grids,
+                           'geometry': portfolio_geometry(grids, 49), 'lab_geometry': e.get('geometry')})
+        gens.append({'game': 'loto', 'generation': 1, 'status': 'démonstration',
+                     'label': 'Génération 1 — catalogue de démonstration, sans évaluation exacte publiée',
+                     'grids_per_portfolio': 6, 'domain': 49, 'second_label': 'Chance', 'second_domain': 10,
+                     'catalog_total': len(rows), 'catalog_families': dict(Counter(r['family'] for r in rows)),
+                     'shown': 'catalogue complet', 'items': litems})
     return gens
 
 

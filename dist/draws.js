@@ -108,7 +108,8 @@ function renderGeo(ctx) {
   cv.onmousemove = (e) => { const r = cv.getBoundingClientRect(); const j = Math.floor((e.clientX - r.left) / r.width * N), i = Math.floor((e.clientY - r.top) / r.height * N); if (i < 0 || j < 0 || i >= N || j >= N) { tip.hidden = true; return; } tip.hidden = false; tip.style.left = (e.clientX - r.left) + 'px'; tip.style.top = (e.clientY - r.top) + 'px'; const a = item.grids[i][0], b = item.grids[j][0]; tip.textContent = i === j ? `Grille ${i + 1} : ${a.join(' ')}` : `Grilles ${i + 1} et ${j + 1} : ${a.filter((x) => b.includes(x)).length} numéros communs · Jaccard ${J[i][j].toFixed(2).replace('.', ',')}`; };
   cv.onmouseleave = () => (tip.hidden = true);
   const geo = item.geometry;
-  const kv = [['Famille', item.family], ['Grilles', geo.grids], ['Union des numéros', `${geo.union} sur ${gen.domain}`], ['Overlap moyen / max', `${geo.overlap_mean.toFixed(2).replace('.', ',')} / ${geo.overlap_max}`], ['Paires couvertes', `${nb(geo.coverage['2'].covered)} sur ${nb(geo.coverage['2'].possible)} · ${nb(geo.coverage['2'].collisions)} collisions`], ['Triplets couverts', `${nb(geo.coverage['3'].covered)} sur ${nb(geo.coverage['3'].possible)}`], ['Dispersion des occurrences', geo.occurrence_sd.toFixed(2).replace('.', ',')], ['SHA-256', item.sha256.slice(0, 16) + '…']];
+  const kv = [['Famille', item.family + (item.roles && item.roles.length ? ' · ' + item.roles.join(', ') : '')], ...(item.aliases && item.aliases.length ? [['Alias', item.aliases.join(', ')]] : []), ...(item.objective ? [['Objectif', item.objective]] : []), ['Grilles', geo.grids], ['Union des numéros', `${geo.union} sur ${gen.domain}`],
+    ...(geo.second ? [[`Union ${gen.second_label}`, `${geo.second.union} sur ${gen.second_domain} · overlap max ${geo.second.overlap_max}`]] : []), ['Overlap moyen / max', `${geo.overlap_mean.toFixed(2).replace('.', ',')} / ${geo.overlap_max}`], ['Paires couvertes', `${nb(geo.coverage['2'].covered)} sur ${nb(geo.coverage['2'].possible)} · ${nb(geo.coverage['2'].collisions)} collisions`], ['Triplets couverts', `${nb(geo.coverage['3'].covered)} sur ${nb(geo.coverage['3'].possible)}`], ['Dispersion des occurrences', geo.occurrence_sd.toFixed(2).replace('.', ',')], ['SHA-256', item.sha256.slice(0, 16) + '…']];
   $('#geo-stats').replaceChildren(...kv.flatMap(([k, v]) => [el('dt', { text: k }), el('dd', { text: String(v) })]));
   // histogramme des overlaps
   const svg = $('#overlap-chart'); svg.replaceChildren(); const hist = geo.overlap_hist, W = 420, H = 180, L = 30, B = 24, T = 44, n = hist.length, bw = (W - L) / n, max = Math.max(...hist);
@@ -141,10 +142,12 @@ function setupGeo(data) {
     ctx.gen = data.portfolios.find((g) => g.game === game);
     document.querySelectorAll('#geo-games button').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.game === game)));
     $('#geo-select').replaceChildren(...ctx.gen.items.map((it) => el('option', { value: it.id, text: `${it.id} · ${it.family}` })));
+    const fam = Object.entries(ctx.gen.catalog_families || {}).map(([k, v]) => `${k} ${v}`).join(' · ');
+    $('#geo-gen').textContent = `${ctx.gen.label}. Affichés : ${ctx.gen.items.length} portefeuilles (${ctx.gen.shown}) de ${ctx.gen.grids_per_portfolio} grilles, sur ${ctx.gen.catalog_total} au catalogue${fam ? ' — familles : ' + fam : ''}.`;
     const def = ctx.gen.items.find((x) => x.id === 'LOW_OVERLAP_003') || ctx.gen.items.find((x) => x.family === 'BALANCED') || ctx.gen.items[0];
     $('#geo-select').value = def.id; renderGeo(ctx);
   };
-  $('#geo-games').replaceChildren(...data.portfolios.map((g) => { const b = el('button', { 'data-game': g.game, 'aria-pressed': 'false' }, names[g.game] || g.game, el('span', { class: 'badge-gen', text: 'GÉN. ' + g.generation })); b.addEventListener('click', () => pick(g.game)); return b; }));
+  $('#geo-games').replaceChildren(...data.portfolios.map((g) => { const b = el('button', { 'data-game': g.game, 'aria-pressed': 'false' }, `${names[g.game] || g.game} · ${g.items.length}`, el('span', { class: 'badge-gen', text: 'GÉN. ' + g.generation })); b.addEventListener('click', () => pick(g.game)); return b; }));
   $('#geo-select').addEventListener('change', () => renderGeo(ctx));
   renderGeoTable(ctx); pick(data.portfolios[0].game);
 }
