@@ -94,3 +94,4 @@ python3 agent/draw_report.py approve runs/EM-26077/draft.json --reviewer "Christ
 
 Sections ajoutées au site : `#tirages`, `#atlas`, `#geometries`, `#lab` (fichiers `draws.js`, `atlas.css`).
 Un tirage précis s'ouvre avec `#EM-26077`.
+# aleaquant
