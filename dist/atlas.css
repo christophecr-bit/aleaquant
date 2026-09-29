@@ -1,0 +1,66 @@
+/* AleaQuant V0 — sections Tirages, Atlas, Géométries, Lab.
+   Reprend les tokens de style.css ; couleurs de données : bleu théorie, orange observé,
+   divergente bleu ↔ rouge autour d'un gris neutre (palette dataviz validée). */
+:root{--th:#2a78d6;--obs:#eb6834;--neg:#2a78d6;--pos:#e34948;--mid:#f0efec;--panel:#ecf0e6;--rare:#b4491f;--grid:#dfe5dc}
+.tabs{display:flex;flex-wrap:wrap;gap:7px;margin:0 0 22px}
+.tabs button{background:transparent;color:var(--muted);border:1px solid var(--line);padding:9px 14px;cursor:pointer;border-radius:3px;font-size:13px}
+.tabs button[aria-pressed=true]{background:var(--ink);color:#fff;border-color:var(--ink)}
+.draw-head{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:30px;align-items:end;margin-bottom:28px}
+.draw-head label{font-size:12px;font-weight:600}
+.balls{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:14px 0 6px}
+.ball{width:52px;height:52px;border-radius:50%;display:grid;place-items:center;font:22px Georgia,serif;background:var(--ink);color:#eef5d8;font-variant-numeric:tabular-nums}
+.ball.star{background:var(--lime);color:var(--ink);border-radius:12px;width:44px;height:44px;font-size:19px}
+.balls .sep{width:1px;height:36px;background:var(--line);margin:0 6px}
+.draw-meta{font-size:13px;color:var(--muted)}
+.metric-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border-top:1px solid var(--line);border-left:1px solid var(--line)}
+.mcard{border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:18px 18px 14px;min-width:0;background:#fff}
+.mcard h4{margin:0;font:600 12px Arial,sans-serif;letter-spacing:1.2px;text-transform:uppercase;color:var(--muted)}
+.mcard .val{font:34px/1.1 Georgia,serif;margin:8px 0 2px;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
+.mcard .sub{font-size:13px;color:var(--muted)}
+.mcard svg{display:block;width:100%;height:46px;margin-top:10px}
+.chip{display:inline-block;font-size:11px;letter-spacing:1px;font-weight:700;padding:2px 7px;border-radius:2px;margin-left:6px;vertical-align:2px}
+.chip.COMMON{background:#e3eadf;color:#3c5a46}.chip.UNCOMMON{background:#dfe9f6;color:#1c5cab}
+.chip.RARE{background:#fbe3d6;color:#9a3a14}.chip.VERY_RARE{background:#b4491f;color:#fff}
+.chip.tail{background:#fff;border:1px solid var(--obs);color:#9a3a14}
+.callout{display:grid;grid-template-columns:auto minmax(0,1fr);gap:28px;align-items:center;background:var(--panel);padding:26px;border-radius:4px;margin:26px 0}
+.callout .big{font:44px Georgia,serif;white-space:nowrap}
+.callout p{margin:6px 0;color:var(--muted);font-size:15px;max-width:720px}
+.two{display:grid;grid-template-columns:minmax(0,1.25fr) minmax(0,1fr);gap:40px;align-items:start}
+.canvas-wrap{position:relative;max-width:640px}
+.canvas-wrap canvas{width:100%;height:auto;display:block;image-rendering:pixelated;border:1px solid var(--line);background:#fff}
+.tip{position:absolute;pointer-events:none;background:var(--ink);color:#fff;font-size:12px;padding:7px 9px;border-radius:3px;white-space:nowrap;transform:translate(-50%,-115%);z-index:3}
+.legend-ramp{display:flex;align-items:center;gap:10px;font-size:12px;color:var(--muted);margin-top:10px}
+.legend-ramp i{display:block;height:10px;flex:1;max-width:260px;border-radius:2px}
+.kv{display:grid;grid-template-columns:auto 1fr;gap:6px 18px;font-size:14px;margin:0}
+.kv dt{color:var(--muted)}.kv dd{margin:0;font-variant-numeric:tabular-nums}
+.chart-svg{width:100%;height:auto;display:block;overflow:visible}
+.chart-svg text{font:11px Arial,sans-serif;fill:var(--muted)}
+.chart-svg .title{font-size:12px;fill:var(--ink);font-weight:600}
+.table-scroll{overflow-x:auto;border-top:1px solid var(--line)}
+table.data{border-collapse:collapse;width:100%;font-size:13px;font-variant-numeric:tabular-nums}
+table.data th,table.data td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:right;white-space:nowrap}
+table.data th:first-child,table.data td:first-child{text-align:left}
+table.data th{font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--muted);font-weight:600}
+table.data tr.sel td{background:#f3f7e4}
+table.data tbody tr{cursor:pointer}
+table.data tbody tr:hover td{background:#f6f8f2}
+.flag{color:#9a3a14;font-weight:700}
+.badge-gen{display:inline-block;font-size:11px;letter-spacing:1px;font-weight:700;padding:3px 8px;border:1px solid #749c40;color:#3c5a46;border-radius:2px;margin-left:8px;vertical-align:4px}
+.ladder{counter-reset:step;display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:0;border-top:1px solid var(--line)}
+.ladder li{list-style:none;padding:20px 18px 20px 0;border-bottom:1px solid var(--line)}
+.ladder li span{font-size:12px;letter-spacing:1.4px;color:#688344;font-weight:700}
+.ladder li h4{font:21px/1.3 Georgia,serif;margin:8px 0}
+.ladder li p{font-size:14px;color:var(--muted);margin:0}
+ol.ladder{padding:0}
+.muted{color:var(--muted)}
+@media(max-width:1000px){.metric-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.two{grid-template-columns:1fr}.ladder{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:680px){.metric-grid{grid-template-columns:1fr}.draw-head{grid-template-columns:1fr}.callout{grid-template-columns:1fr;gap:10px}.ladder{grid-template-columns:1fr}.ball{width:44px;height:44px;font-size:19px}}
+.ladder-wrap{margin:0 0 40px}.ladder-wrap .ladder{margin-top:16px}
+nav{flex-wrap:wrap;row-gap:6px}
+.mcard .val .chip{font-family:Arial,sans-serif}
+#win-caption{font:19px/1.5 Georgia,serif;max-width:860px}
+.lab .two{grid-template-columns:minmax(0,1fr) minmax(0,1fr)}
+.lab table.data th,.lab table.data td{padding:7px 8px}
+#geo-stats{margin-bottom:10px}
+.two>*{min-width:0}.two select{max-width:100%}.kv dd{overflow-wrap:anywhere;min-width:0}
+.tabs button[aria-pressed=true] .badge-gen{border-color:var(--lime);color:var(--lime)}
