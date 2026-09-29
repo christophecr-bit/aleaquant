@@ -182,3 +182,61 @@ frontière de mot (`\b`) en fin de motif, donc "rares?" matcherait aussi la sous
 "RARE" à l'intérieur d'un token comme "VERY_RARE" ou un mot comme "rareté" employé au
 sens générique (non testé en pratique ce soir, mais à corriger par prudence — ajouter
 `\b` des deux côtés et/ou exclure les tokens tout en majuscules).
+
+## Le garde lexical passe, le texte reste imprécis (30/09/2026, ~1h50) — 4 cas vérifiés
+
+Le garde numérique + lexical passe sur EM-26077 et EM-2011053, mais une lecture fine
+révèle que « pas d'incohérence détectée » ne veut pas dire « article correct ». Quatre
+défauts précis relevés par Christophe, vérifiés contre les facts JSON :
+
+1. **Métriques redondantes présentées comme indépendantes.** `main.span` (38,
+   UNCOMMON) et `main.mean_gap` (9,5, UNCOMMON) partagent EXACTEMENT le même
+   `class_size`/`p_class` — mean_gap = span/4 (5 numéros → 4 écarts), c'est la même
+   information sous deux noms. `main.sorted_gaps` (VERY_RARE) est légitimement plus
+   fin (répartition exacte des 4 écarts, pas seulement leur somme). Le texte cite
+   span et mean_gap comme deux preuves distinctes de "resserrement" — en plus de
+   qualifier une étendue de 38 (proche du max possible ~49) de "resserrée" alors
+   qu'elle est UNCOMMON et plutôt du côté dispersé.
+
+2. **Dénombrement incohérent dans le texte.** Sur EM-2011053, une phrase dit "trois
+   écarts simples de 1, 2 et 5" puis, juste après, "écarts ordonnés 1-2-5-7" (4
+   valeurs). Le fait source a bien 4 écarts (35,42,47,48,50 → gaps 7,5,1,2). Le garde
+   numérique ne l'attrape pas : le 7 apparaît ailleurs dans le texte, donc aucun
+   "nombre non autorisé" n'est détecté — c'est une incohérence interne entre deux
+   formulations du même fait, pas un nombre inventé.
+
+3. **Rareté d'un fait appliquée à un autre.** Sur EM-2011053, le texte dit "cette
+   configuration est classée parmi les formes VERY_RARE, avec 2,0 % pour le maximum
+   dans une même dizaine et 7,1 % pour occuper deux dizaines" — or `max_same_decade`
+   (2,0 %) et `occupied_decades` (7,1 %) sont UNCOMMON tous les deux. Le VERY_RARE
+   appartient à un TROISIÈME fait, `decade_counts` (profil complet "0-0-0-1-4",
+   classe 0,10 %), jamais cité avec son propre chiffre — le modèle a emprunté son
+   label et l'a justifié avec les chiffres des deux autres métriques.
+
+4. **Pourcentages sans dénominateur ni nature.** Le texte donne "2,0 %" et "7,1 %"
+   sans dire s'il s'agit de `p_class` ou `tail`, ni la taille de la classe/du domaine
+   — le badge de rareté seul ne remplace pas cette précision, rien dans le prompt ne
+   l'impose actuellement.
+
+### Diagnostic (formulation de Christophe)
+
+Le garde lexical vérifie la cohérence LOCALE entre un mot et les champs de rareté
+disponibles quelque part dans les faits ; il ne garantit pas qu'une phrase associe le
+bon badge à la bonne métrique, ni que les définitions mathématiques des métriques
+citées ensemble sont réellement indépendantes. Le prochain verrou doit vérifier la
+RELATION métrique → valeur → rareté → formulation, phrase par phrase, en particulier
+quand une phrase synthétise plusieurs métriques à la fois — pas seulement la présence
+des nombres et des mots.
+
+### Pistes pour ce verrou (à concevoir la prochaine session, pas codé ce soir)
+
+- Extraction structurée : demander au modèle de citer chaque fait avec un tag explicite
+  (ex. `[F.main.decade_counts]`) à côté de chaque affirmation de rareté, pour permettre
+  un appariement automatique mot ↔ fait_id plutôt qu'un "au moins un fait quelque part".
+- Table de redondance déclarée entre métriques dérivées les unes des autres (span ↔
+  mean_gap, etc.) pour interdire de les citer comme deux preuves indépendantes.
+- Imposer dans le prompt : chaque pourcentage doit être immédiatement suivi de sa base
+  (classe de X/Y, ou queue) et de son fact_id.
+- Vérification de cohérence interne : si le texte énonce une liste de N valeurs pour un
+  fait (ex. écarts ordonnés), vérifier que toute reformulation ultérieure de ce même
+  fait dans l'article cite bien les N mêmes valeurs.
