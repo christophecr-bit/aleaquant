@@ -118,3 +118,37 @@ Restes à traiter avant de considérer la composition libre fiable à l'échelle
 Conclusion de Christophe : garder cette direction (composition libre + garde), en ajoutant
 une validation déterministe renforcée des calculs dérivés et une règle claire d'usage pour
 "rare", "queue", "frappant", "exceptionnel".
+
+## Piste retenue : réutiliser les badges de rareté existants (30/09/2026, ~1h30)
+
+Vérification sur EM-2011053 (somme = 222) : chaque fait métrique porte déjà un champ
+`rarity` calculé (COMMON/UNCOMMON/RARE/VERY_RARE), pas seulement `p_class`/`tail`. Pour
+ce tirage, `F.main.sum.rarity = VERY_RARE` (p_class ≈ 0,0067 %, tail ≈ 0,036 %) — donc
+« très rare », pas « rare ». Rien à inventer : le classement existe déjà fait par fait,
+sur l'échelle même des badges déjà affichés en UI (mini-histogrammes).
+
+Décision : ce champ `rarity` devient **la règle éditoriale stable pour les mots
+interprétatifs** (remplace le point 6 ci-dessus) — un article ne doit jamais qualifier
+un chiffre de « rare »/« notable »/« exceptionnel » sans que ce soit littéralement la
+valeur de `rarity` du fait cité, jamais une impression libre du LLM.
+
+### Deux pistes de restitution visuelle, à mettre en todolist
+
+**A — Puces de signature (priorité haute)**
+Ligne fixe de 5-6 badges par article, toujours les mêmes métriques dans le même ordre :
+Somme · Étendue · Écart moyen · Concentration en décades (max_same_decade) · Paires
+proches (clusteredness_close_pairs_5) · Plus longue suite consécutive. Chaque puce =
+nom + couleur du badge `rarity`, cliquable vers la mini-fiche déjà codée (mini-
+histogramme). Coût de dev faible : réutilise le composant existant, zéro nouvelle
+métrique, résout directement l'ancrage des mots interprétatifs.
+
+**B — Radar sur les mêmes axes (priorité basse, pas écartée)**
+Mêmes métriques, rayon = niveau ordinal (COMMON=0 → VERY_RARE=3). Un tirage ordinaire
+donne un polygone plat, un tirage à traits inhabituels donne une forme en pointes —
+lecture visuelle immédiate de la forme statistique du tirage. Risque à traiter :
+confusion possible entre grande aire du radar et probabilité de gain future (jamais
+un signal prédictif) — nécessiterait un rappel méthodologique plus appuyé que pour de
+simples badges. À envisager une fois le set de métriques A stabilisé et validé par
+l'usage, pas avant.
+
+Décision de Christophe : les deux vont dans la todolist, A en priorité plus haute que B.
