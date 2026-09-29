@@ -35,8 +35,11 @@ RARITY_FR = {
 # note de méthode ajoutée de façon déterministe : le modèle ne la rédige plus, donc
 # elle est identique partout et pourra devenir un encadré commun côté site.
 METHODO_NOTE = (
-    "Note de méthode — ces mesures décrivent la forme d'un tirage déjà réalisé. "
-    "Les tirages sont indépendants : aucune ne permet de prédire le suivant."
+    "Note de méthode — ces mesures décrivent la forme d'un tirage déjà réalisé et ne "
+    "portent que sur lui. Le modèle probabiliste employé ici suppose des tirages "
+    "indépendants et équiprobables : c'est une hypothèse sur le mécanisme de tirage, "
+    "pas un résultat démontré par ces mesures. Sous cette hypothèse, aucune d'entre "
+    "elles n'aide à anticiper un tirage futur."
 )
 
 # métriques mathématiquement dérivées l'une de l'autre : même classe, même p_class,
@@ -240,6 +243,21 @@ def warn_global_qualifiers(text):
     return [m.group(0).strip() for m in GLOBAL_QUALIFIER_RE.finditer(text)]
 
 
+def warn_redundant_closing(text):
+    """Signale un dernier paragraphe qui ne fait que récapituler : tous ses chiffres
+    ont déjà été cités plus haut, il n'apporte donc aucun élément neuf."""
+    paras = [p.strip() for p in text.split("\n\n") if p.strip()]
+    if len(paras) < 3:
+        return []
+    nums_last = normalize_numbers(paras[-1])
+    if not nums_last:
+        return []
+    if not (nums_last - normalize_numbers("\n".join(paras[:-1]))):
+        return ["dernier paragraphe : tous ses chiffres ont déjà été cités plus haut "
+                "(récapitulatif sans élément neuf — à raccourcir ou à fusionner)"]
+    return []
+
+
 def main():
     if len(sys.argv) < 2:
         sys.exit("usage: llm_compose_test.py EM-XXXXX")
@@ -277,7 +295,8 @@ g. Les libellés de rareté te sont donnés sous forme de groupe nominal ("class
 h. Distingue la POSITION sur l'échelle (numéros tous en haut ou en bas de 1-50, lisible dans la répartition par dizaines) de la DISPERSION (étendue, écarts). Ce sont deux notions différentes : des numéros peuvent être tous en haut de grille ET proches les uns des autres. Ne mélange jamais les deux dans un même adjectif.
 i. N'écris jamais un pourcentage nu ni détaché de ce qu'il mesure : indique toujours "fréquence de classe" ou "queue de la loi", avec la mesure concernée. Ne place jamais un pourcentage de classe dans la même phrase que la probabilité de la combinaison complète, pour éviter toute confusion entre les deux.
 j. Ne qualifie JAMAIS globalement le tirage, la grille, la configuration ou "l'ensemble" (pas de "configuration serrée", "grille regroupée", "forme resserrée") : chaque adjectif géométrique doit être attaché à une mesure nommée et à sa valeur ("l'étendue vaut 15", "les numéros occupent 2 dizaines, toutes dans la moitié haute"). Décris position et dispersion comme deux constats séparés, sans les résumer en un jugement d'ensemble.
-k. Varie ta structure et tes formulations d'un article à l'autre, n'utilise pas un patron figé. Style vivant mais rigoureux, pas de sensationnalisme."""
+k. N'écris PAS de paragraphe de synthèse qui récapitule ce que tu viens de dire : chaque paragraphe doit apporter un constat neuf. Si tu n'as plus rien à ajouter, termine sur ton dernier constat.
+l. Varie ta structure et tes formulations d'un article à l'autre, n'utilise pas un patron figé. Style vivant mais rigoureux, pas de sensationnalisme."""
 
     from openai import OpenAI
     client = OpenAI(api_key=load_key())
@@ -329,8 +348,8 @@ TEXTE :
     print("\n=== GARDE EFFECTIFS (classes et queues citées vs faits sources) ===")
     print("OK" if not cite_problems else "ÉCARTS :\n  - " + "\n  - ".join(cite_problems))
 
-    warns = warn_global_qualifiers(text)
-    print("\n=== AVERTISSEMENT (qualificatif global sur le tirage, à relire) ===")
+    warns = warn_global_qualifiers(text) + warn_redundant_closing(text)
+    print("\n=== AVERTISSEMENTS ÉDITORIAUX (à relire, non bloquants) ===")
     print("aucun" if not warns else "\n  - ".join([""] + warns).strip())
 
     in_tok = sum((getattr(r.usage, "input_tokens", 0) or 0) for r in (resp, proof))
