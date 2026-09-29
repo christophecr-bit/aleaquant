@@ -5,7 +5,7 @@ Aucun historique en direct, aucune production LLM simulée. Le petit modèle des
 est calculé exhaustivement dans le navigateur ; le dictionnaire contient 33 définitions
 importées en lecture seule de loto-keno-lab-generic (feature_definitions.py, 29/09/2026).
 
-Aperçu : `python3 -m http.server 4173 --directory dist`.
+Aperçu privé sur cette machine uniquement : `python3 -m http.server 4174 --bind 127.0.0.1 --directory dist`, puis ouvrir `http://127.0.0.1:4174/`. Arrêter le serveur avec `Ctrl+C`. Le binding `127.0.0.1` empêche l'accès depuis les autres appareils du réseau.
 
 ## Chaîne éditoriale
 
