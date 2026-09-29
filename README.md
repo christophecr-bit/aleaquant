@@ -9,43 +9,45 @@ Aperçu privé sur cette machine uniquement : `python3 -m http.server 4174 --bin
 
 ## Déploiement
 
-Le site est statique (`dist/`), sans étape de build : Cloudflare Pages sert le dossier
-tel quel.
+Le site est statique (`dist/`), sans étape de build : Cloudflare Workers (Static Assets)
+sert le dossier tel quel.
 
-**Dépôt** : `origin` reste le dépôt Sites existant (repli). Le dépôt de référence pour la
-mise en ligne est le nouveau dépôt GitHub privé `aleaquant` (remote `github`) :
+**Dépôt** : `origin` est le dépôt GitHub privé `aleaquant`
+(`https://github.com/christophecr-bit/aleaquant`).
 
-```sh
-git remote add github git@github.com:<compte>/aleaquant.git   # ou l'URL https
-git push github main
-```
+**Hébergement retenu : Cloudflare Workers + Static Assets** (revu le 29/09/2026 — décision
+initiale « Cloudflare Pages », changée après lecture de la doc officielle Cloudflare :
+Workers + Static Assets est désormais le choix recommandé pour tout nouveau site, Pages
+étant maintenu pour les projets existants). Raisons inchangées par rapport à Pages :
+- Connexion à un dépôt GitHub *privé* sans condition de plan payant (contrairement à
+  GitHub Pages qui exige Pro/Team/Enterprise pour un dépôt privé).
+- Prise en charge native de `dist/_headers` (CSP, X-Content-Type-Options, etc.), à
+  l'identique de Pages — seule différence : les en-têtes de `_headers` ne s'appliquent
+  pas aux réponses générées par du code Worker (sans objet ici, site 100% statique).
+- Migration vers Pages restée possible plus tard si besoin (guide officiel existe), mais
+  aucune raison identifiée de partir sur Pages pour un projet neuf.
 
-**Hébergement retenu : Cloudflare Pages** (vérifié le 29/09/2026 — voir DEBT/journal du
-chantier A1). Raisons :
-- GitHub Pages exige un plan payant (Pro/Team/Enterprise) pour publier depuis un dépôt
-  *privé* ; le dépôt `aleaquant` doit rester privé. Cloudflare Pages, lui, se connecte à
-  un dépôt privé via son app GitHub sans condition de plan.
-- Cloudflare Pages free : 500 builds/mois, 100 domaines personnalisés, jusqu'à 20 000
-  fichiers par site, pas de limite de bande passante documentée pour les assets statiques.
-- Prise en charge native des en-têtes personnalisés via `dist/_headers` (CSP,
-  X-Content-Type-Options, etc.) — GitHub Pages ne le permet pas.
-
-**Configuration Cloudflare Pages** (à faire une fois, depuis le tableau de bord
-Cloudflare, avec le compte de Christophe) :
-1. Pages → Create a project → Connect to Git → sélectionner le dépôt `aleaquant`.
-2. Build command : (aucune — site déjà statique). Output directory : `dist`.
-3. Déploiement automatique sur push vers `main` (activé par défaut).
-4. Le sous-domaine `*.pages.dev` fourni par Cloudflare sert de point d'entrée public tant
-   qu'aucun domaine personnalisé n'est configuré (hors périmètre de ce chantier).
+**Configuration effectuée le 29/09/2026** :
+1. `wrangler.jsonc` à la racine du dépôt (`name: "aleaquant"`, `assets.directory: "./dist"`).
+2. Authentification : `npx wrangler login` (OAuth, une fois, en local).
+3. Premier déploiement manuel : `npx wrangler deploy` → sous-domaine public enregistré
+   **https://aleaquant.aleaquant.workers.dev**.
+4. Déploiement continu : Workers & Pages → `aleaquant` → Settings → Builds → Connect →
+   dépôt GitHub `aleaquant`, branche de production `main`, aucune build command (site déjà
+   statique). Chaque `git push` sur `main` redéploie automatiquement.
 
 **En-têtes et robots** : `dist/_headers` (CSP simple, X-Content-Type-Options, X-Frame-
 Options, Referrer-Policy) et `dist/robots.txt` (autorise l'indexation) sont lus
-automatiquement par Cloudflare Pages au déploiement — rien à configurer côté tableau de
-bord.
+automatiquement au déploiement — rien à configurer côté tableau de bord.
+
+**Domaine personnalisé** : pas encore configuré. Le sous-domaine `*.workers.dev` sert de
+point d'entrée public en attendant (hors périmètre de ce chantier).
+
+**Redéploiement manuel** (si besoin, hors CI) : `npx wrangler deploy` depuis la racine du
+dépôt, avec une session `wrangler login` valide.
 
 **Vérification** : un `git push` sur `main` doit se refléter sur l'URL publique en moins
-de deux minutes (build Cloudflare Pages généralement < 1 min pour un site statique sans
-étape de build).
+de deux minutes.
 
 ## Chaîne éditoriale
 
