@@ -26,11 +26,18 @@ from draw_report import normalize_numbers, pct, date_fr  # noqa: E402
 
 # même mapping que dist/draws.js (RARITY) — le modèle ne doit voir que le français
 RARITY_FR = {
-    "COMMON": "courante",
-    "UNCOMMON": "peu courante",
-    "RARE": "rare",
-    "VERY_RARE": "très rare",
+    "COMMON": "classe courante",
+    "UNCOMMON": "classe peu courante",
+    "RARE": "classe rare",
+    "VERY_RARE": "classe très rare",
 }
+
+# note de méthode ajoutée de façon déterministe : le modèle ne la rédige plus, donc
+# elle est identique partout et pourra devenir un encadré commun côté site.
+METHODO_NOTE = (
+    "Note de méthode — ces mesures décrivent la forme d'un tirage déjà réalisé. "
+    "Les tirages sont indépendants : aucune ne permet de prédire le suivant."
+)
 
 # métriques mathématiquement dérivées l'une de l'autre : même classe, même p_class,
 # donc jamais à citer comme deux preuves indépendantes.
@@ -202,7 +209,7 @@ Faits calculés disponibles (utilise ceux qui sont pertinents, pas besoin de tou
 2. Commente la GÉOMÉTRIE du tirage : les numéros sont-ils plutôt concentrés (proches les uns des autres, dans peu de dizaines) ou dispersés sur l'étendue 1-50 ? Précise les tranches de dizaines que tu utilises (1-10, 11-20, etc.). Attention au SENS de la mesure : une étendue élevée (proche de 49) signifie dispersé, une étendue faible signifie concentré — ne qualifie jamais une grande étendue de "resserrée" ni l'inverse.
 3. Relève ce qui est statistiquement notable (classe rare, queue de loi) s'il y en a — sinon dis-le honnêtement, une forme ordinaire est aussi une observation valide. Précise bien QUELLE mesure est en jeu, ne généralise pas.
 4. Situe l'historique EN UTILISANT le fait de signature (F.signature, qui donne une fréquence sur un nombre de tirages antérieurs précis) et le fait d'historique exact (F.history.exact_main) — c'est la référence avec échelle demandée, ne dis jamais que l'historique manque si ces faits sont fournis.
-5. Termine sur le rappel qu'aucune de ces mesures ne prédit le prochain tirage — une seule fois, dans un dernier paragraphe court, pas répété ailleurs.
+5. NE TERMINE PAS par un rappel du type "ces mesures ne prédisent pas le prochain tirage" : cette note est ajoutée automatiquement après ton texte, ne l'écris pas toi-même.
 
 RÈGLES DE RIGUEUR — à respecter à la lettre :
 a. N'invente, n'arrondis ni ne déduis AUCUN nombre absent des faits ci-dessus.
@@ -211,15 +218,44 @@ c. N'écris JAMAIS un nom de code technique (COMMON, UNCOMMON, RARE, VERY_RARE) 
 d. Le niveau de rareté d'une métrique ne vaut QUE pour cette métrique. N'écris jamais qu'une "configuration" ou une "forme d'ensemble" est rare en t'appuyant sur le niveau d'une seule mesure : soit tu cites le fait qui classe précisément cet ensemble, soit tu attribues chaque niveau à sa mesure nommée.
 e. Chaque pourcentage cité doit être immédiatement suivi de sa base : "classe de X sur Y" ou "queue de la loi" — jamais un pourcentage nu.
 f. Quand un fait donne une liste de valeurs (par exemple les écarts ordonnés), cite-les TOUTES ou aucune : ne réduis jamais une liste de quatre valeurs à trois.
-g. Varie ta structure et tes formulations d'un article à l'autre, n'utilise pas un patron figé. Style vivant mais rigoureux, pas de sensationnalisme."""
+g. Les libellés de rareté te sont donnés sous forme de groupe nominal ("classe rare") parce qu'ils qualifient une classe de combinaisons. Si tu les emploies avec un autre nom, accorde correctement l'adjectif ("un écart courant", "une mesure courante") ; n'écris jamais "ce qui est courante". Soigne les accords en genre et en nombre dans tout le texte.
+h. Distingue la POSITION sur l'échelle (numéros tous en haut ou en bas de 1-50, lisible dans la répartition par dizaines) de la DISPERSION (étendue, écarts). Ce sont deux notions différentes : des numéros peuvent être tous en haut de grille ET proches les uns des autres. Ne mélange jamais les deux dans un même adjectif.
+i. N'écris jamais un pourcentage nu ni détaché de ce qu'il mesure : indique toujours "fréquence de classe" ou "queue de la loi", avec la mesure concernée. Ne place jamais un pourcentage de classe dans la même phrase que la probabilité de la combinaison complète, pour éviter toute confusion entre les deux.
+j. Varie ta structure et tes formulations d'un article à l'autre, n'utilise pas un patron figé. Style vivant mais rigoureux, pas de sensationnalisme."""
 
     from openai import OpenAI
     client = OpenAI(api_key=load_key())
     resp = client.responses.create(model="gpt-5.4-mini", input=prompt, reasoning={"effort": "low"})
     text = resp.output_text
 
+    # --- passe de relecture : langue seulement, jamais les chiffres ni les raretés ---
+    proof_prompt = f"""Corrige uniquement l'orthographe, la grammaire et les accords du texte ci-dessous (français).
+
+INTERDICTIONS ABSOLUES : ne modifie, n'ajoute ni ne supprime aucun chiffre, aucun pourcentage, aucun identifiant technique, aucun mot de rareté (courant, peu courant, rare, très rare). Ne reformule pas, ne raccourcis pas, ne réorganise pas les paragraphes. Renvoie uniquement le texte corrigé, sans commentaire ni préambule.
+
+TEXTE :
+{text}"""
+    proof = client.responses.create(model="gpt-5.4-mini", input=proof_prompt, reasoning={"effort": "low"})
+    proofed = proof.output_text.strip()
+
+    # contrôle déterministe : la relecture ne doit avoir touché ni les nombres ni les
+    # mots de rareté. Sinon on garde le texte d'origine.
+    same_numbers = normalize_numbers(proofed) == normalize_numbers(text)
+    same_rarity = sorted(w for w, _ in guard_interpretive_words(proofed, {"facts": []})) == \
+        sorted(w for w, _ in guard_interpretive_words(text, {"facts": []}))
+    if same_numbers and same_rarity:
+        final_text = proofed
+        proof_status = "appliquée"
+    else:
+        final_text = text
+        proof_status = f"REJETÉE (nombres identiques={same_numbers}, raretés identiques={same_rarity})"
+
+    text = final_text
+
     print("=== ARTICLE COMPOSÉ ===\n")
     print(text)
+    print(f"\n{METHODO_NOTE}")
+    print(f"\n[relecture : {proof_status}]")
 
     problems = guard_full_text(text, facts)
     print("\n=== GARDE NUMÉRIQUE (texte entier vs tous les faits) ===")
@@ -233,9 +269,8 @@ g. Varie ta structure et tes formulations d'un article à l'autre, n'utilise pas
     print("\n=== GARDE JARGON (noms de code d'enum dans la prose) ===")
     print("OK" if not leaks else f"NOMS DE CODE À TRADUIRE : {leaks}")
 
-    usage = resp.usage
-    in_tok = getattr(usage, "input_tokens", 0) or 0
-    out_tok = getattr(usage, "output_tokens", 0) or 0
+    in_tok = sum((getattr(r.usage, "input_tokens", 0) or 0) for r in (resp, proof))
+    out_tok = sum((getattr(r.usage, "output_tokens", 0) or 0) for r in (resp, proof))
     cost = in_tok / 1e6 * 0.75 + out_tok / 1e6 * 4.50
     print(f"\n=== COÛT === {cost:.5f} $ (in={in_tok} out={out_tok})")
 
