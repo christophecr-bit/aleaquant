@@ -185,6 +185,61 @@ def guard_enum_leak(text):
     return sorted(set(ENUM_LEAK_RE.findall(text)))
 
 
+# --- garde effectifs : chaque "classe de N sur M" et "queue de X %" cités dans le
+# texte doivent correspondre à un fait réel. C'est le contrôle fait par fait demandé :
+# valeur, effectif de classe, domaine, queue — vérifiés automatiquement, plus à la main.
+
+# nombre français : groupes de chiffres séparés par des espaces (normal, insécable,
+# fine insécable), gourmand mais obligé de se terminer sur un chiffre — sinon un
+# "2 118 760" serait tronqué au premier "2".
+_NUM = r"\d[\d\u00a0\u202f ]*\d|\d"
+CLASS_CITATION_RE = re.compile(rf"classe de ({_NUM}) sur ({_NUM})", re.IGNORECASE)
+QUEUE_CITATION_RE = re.compile(r"queue[^.%]{0,40}?(\d+(?:[.,]\d+)?)\s*%", re.IGNORECASE)
+
+
+def _to_int(s):
+    digits = re.sub(r"[^\d]", "", s)
+    return int(digits) if digits else None
+
+
+def guard_class_citations(text, facts):
+    """Vérifie que chaque couple (effectif de classe, domaine) et chaque pourcentage de
+    queue cités existent réellement dans les faits. Retourne la liste des écarts."""
+    pairs = {(f["class_size"], f["domain_size"]) for f in facts["facts"] if "class_size" in f}
+    tails = [f["tail"] for f in facts["facts"] if f.get("tail") is not None]
+    problems = []
+
+    for m in CLASS_CITATION_RE.finditer(text):
+        n, d = _to_int(m.group(1)), _to_int(m.group(2))
+        if n is None or d is None:
+            continue
+        if (n, d) not in pairs:
+            problems.append(f"classe de {n} sur {d} — aucun fait n'a ce couple (effectif, domaine)")
+
+    for m in QUEUE_CITATION_RE.finditer(text):
+        v = float(m.group(1).replace(",", "."))
+        if not any(abs(100 * t - v) < 0.06 for t in tails):
+            problems.append(f"queue de {m.group(1)} % — ne correspond à aucune queue calculée")
+
+    return problems
+
+
+# --- avertissement (non bloquant) : qualificatif global appliqué au tirage entier ---
+# "configuration serrée", "grille regroupée"... : ces jugements portent sur l'ensemble
+# alors que chaque mesure a sa propre classe. À relire humainement, pas à bloquer.
+
+GLOBAL_QUALIFIER_RE = re.compile(
+    r"\b(configuration|forme d'ensemble|grille|ensemble|tirage)\b[^.]{0,40}?"
+    r"\b(serré|serrée|resserré|resserrée|regroupé|regroupée|concentré|concentrée|"
+    r"dispersé|dispersée|étalé|étalée|extrême)\b",
+    re.IGNORECASE,
+)
+
+
+def warn_global_qualifiers(text):
+    return [m.group(0).strip() for m in GLOBAL_QUALIFIER_RE.finditer(text)]
+
+
 def main():
     if len(sys.argv) < 2:
         sys.exit("usage: llm_compose_test.py EM-XXXXX")
@@ -221,7 +276,8 @@ f. Quand un fait donne une liste de valeurs (par exemple les écarts ordonnés),
 g. Les libellés de rareté te sont donnés sous forme de groupe nominal ("classe rare") parce qu'ils qualifient une classe de combinaisons. Si tu les emploies avec un autre nom, accorde correctement l'adjectif ("un écart courant", "une mesure courante") ; n'écris jamais "ce qui est courante". Soigne les accords en genre et en nombre dans tout le texte.
 h. Distingue la POSITION sur l'échelle (numéros tous en haut ou en bas de 1-50, lisible dans la répartition par dizaines) de la DISPERSION (étendue, écarts). Ce sont deux notions différentes : des numéros peuvent être tous en haut de grille ET proches les uns des autres. Ne mélange jamais les deux dans un même adjectif.
 i. N'écris jamais un pourcentage nu ni détaché de ce qu'il mesure : indique toujours "fréquence de classe" ou "queue de la loi", avec la mesure concernée. Ne place jamais un pourcentage de classe dans la même phrase que la probabilité de la combinaison complète, pour éviter toute confusion entre les deux.
-j. Varie ta structure et tes formulations d'un article à l'autre, n'utilise pas un patron figé. Style vivant mais rigoureux, pas de sensationnalisme."""
+j. Ne qualifie JAMAIS globalement le tirage, la grille, la configuration ou "l'ensemble" (pas de "configuration serrée", "grille regroupée", "forme resserrée") : chaque adjectif géométrique doit être attaché à une mesure nommée et à sa valeur ("l'étendue vaut 15", "les numéros occupent 2 dizaines, toutes dans la moitié haute"). Décris position et dispersion comme deux constats séparés, sans les résumer en un jugement d'ensemble.
+k. Varie ta structure et tes formulations d'un article à l'autre, n'utilise pas un patron figé. Style vivant mais rigoureux, pas de sensationnalisme."""
 
     from openai import OpenAI
     client = OpenAI(api_key=load_key())
@@ -268,6 +324,14 @@ TEXTE :
     leaks = guard_enum_leak(text)
     print("\n=== GARDE JARGON (noms de code d'enum dans la prose) ===")
     print("OK" if not leaks else f"NOMS DE CODE À TRADUIRE : {leaks}")
+
+    cite_problems = guard_class_citations(text, facts)
+    print("\n=== GARDE EFFECTIFS (classes et queues citées vs faits sources) ===")
+    print("OK" if not cite_problems else "ÉCARTS :\n  - " + "\n  - ".join(cite_problems))
+
+    warns = warn_global_qualifiers(text)
+    print("\n=== AVERTISSEMENT (qualificatif global sur le tirage, à relire) ===")
+    print("aucun" if not warns else "\n  - ".join([""] + warns).strip())
 
     in_tok = sum((getattr(r.usage, "input_tokens", 0) or 0) for r in (resp, proof))
     out_tok = sum((getattr(r.usage, "output_tokens", 0) or 0) for r in (resp, proof))
