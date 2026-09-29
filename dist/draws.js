@@ -181,7 +181,7 @@ function setupLab(laws) {
 Promise.all([load('draws.json'), load('laws.json'), load('atlas.json'), load('manifest.json')]).then(([draws, laws, atlas, manifest]) => {
   const ctx = { draws, laws, rows: draws.rows };
   const sel = $('#draw-select');
-  const recent = draws.rows.slice(-40).reverse();
+  const recent = draws.rows.slice().reverse();
   sel.replaceChildren(...recent.map((r) => el('option', { value: r[0], text: `${dateFr(r[1])} · ${r[3].join(' ')} ★ ${r[4].join(' ')}` })));
   sel.addEventListener('change', () => renderDraw(draws.rows.find((r) => r[0] === sel.value), ctx));
   const hash = location.hash.match(/^#(EM-\d+)$/); const start = hash ? draws.rows.find((r) => r[0] === hash[1]) : null;
