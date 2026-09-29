@@ -1,10 +1,14 @@
 """Test v2 : composition analytique réelle (pas une reformulation phrase à phrase).
 Donne TOUS les faits calculés au LLM, lui demande de choisir, synthétiser, commenter
 la géométrie (concentration/dispersion), et varier la structure d'un article à l'autre.
-Garde numérique appliqué sur le texte entier vs l'ensemble des faits (pas par claim).
-Garde lexical : les mots interprétatifs (rare, notable, exceptionnel...) doivent être
-justifiés par le champ `rarity` réel d'au moins un fait fourni, jamais une impression
-libre du modèle.
+
+Trois gardes, tous déterministes :
+  1. numérique — chaque nombre du texte doit venir des faits (tolérance % arrondis,
+     bornes de dizaines reconnues seulement en contexte de plage explicite) ;
+  2. lexical — les mots de rareté (rare, notable, exceptionnel...) doivent être
+     justifiés par le champ `rarity` d'au moins un fait fourni ;
+  3. jargon — aucun nom de code d'enum (COMMON, VERY_RARE...) ne doit apparaître dans
+     la prose française.
 
   python3 agent/llm_compose_test.py EM-26077
   python3 agent/llm_compose_test.py EM-2011053
@@ -19,6 +23,20 @@ ENV_PATH = ROOT.parent / "aleaquant-editorial-agents" / ".env"
 
 sys.path.insert(0, str(ROOT / "agent"))
 from draw_report import normalize_numbers, pct, date_fr  # noqa: E402
+
+# même mapping que dist/draws.js (RARITY) — le modèle ne doit voir que le français
+RARITY_FR = {
+    "COMMON": "courante",
+    "UNCOMMON": "peu courante",
+    "RARE": "rare",
+    "VERY_RARE": "très rare",
+}
+
+# métriques mathématiquement dérivées l'une de l'autre : même classe, même p_class,
+# donc jamais à citer comme deux preuves indépendantes.
+DERIVED_EQUIVALENTS = [
+    ("main.span", "main.mean_gap", "écart moyen = étendue / 4 (5 numéros → 4 écarts)"),
+]
 
 
 def load_key():
@@ -36,15 +54,28 @@ def evidence_block(facts):
         if f.get("metric") is not None:
             bits = [f"{f['fact_id']} — {f.get('label', f['metric'])} : {f['value']}"]
             if "p_class" in f:
-                bits.append(f"classe {f['class_size']}/{f['domain_size']} ({pct(f['p_class'])})")
+                bits.append(
+                    f"classe de {f['class_size']} sur {f['domain_size']} ({pct(f['p_class'])})"
+                )
             if "tail" in f and f["tail"] < 1:
                 bits.append(f"queue {pct(f['tail'])}")
             if "rarity" in f:
-                bits.append(f"rareté={f['rarity']}")
+                bits.append(f"rareté={RARITY_FR.get(f['rarity'], f['rarity'])}")
             lines.append(" · ".join(bits))
         elif f.get("statement"):
             lines.append(f"{f['fact_id']} — {f['statement']}")
     return "\n".join(lines)
+
+
+def redundancy_note(facts):
+    """Signale au modèle les paires de métriques présentes ET redondantes entre elles."""
+    present = {f.get("metric") for f in facts["facts"]}
+    notes = []
+    for a, b, why in DERIVED_EQUIVALENTS:
+        if a in present and b in present:
+            notes.append(f"- {a} et {b} portent la MÊME information ({why}) : même classe, "
+                         f"même probabilité. Ne les cite jamais comme deux constats distincts.")
+    return "\n".join(notes)
 
 
 # bornes de tranches de dizaines (domaine 1-50) : reconnues UNIQUEMENT quand elles
@@ -94,16 +125,18 @@ RARITY_ORDER = {"COMMON": 0, "UNCOMMON": 1, "RARE": 2, "VERY_RARE": 3}
 # du plus spécifique/fort au plus faible : évite qu'un motif faible ("rare") ne
 # matche à l'intérieur d'un motif fort déjà reconnu ("très rare"). Chaque match
 # retenu est effacé du texte avant d'essayer le motif suivant.
+# Frontières de mot des deux côtés : "rare" ne doit pas matcher dans "rareté" ni
+# dans un nom de code comme "VERY_RARE" (l'underscore est un caractère de mot).
 INTERPRETIVE_TERMS = [
-    (re.compile(r"extrêmement rares?", re.IGNORECASE), "VERY_RARE"),
-    (re.compile(r"très rares?", re.IGNORECASE), "VERY_RARE"),
-    (re.compile(r"exceptionnelles?|exceptionnels?", re.IGNORECASE), "VERY_RARE"),
-    (re.compile(r"rares?", re.IGNORECASE), "RARE"),
-    (re.compile(r"notables?", re.IGNORECASE), "RARE"),
-    (re.compile(r"frappantes?|frappants?", re.IGNORECASE), "RARE"),
-    (re.compile(r"remarquables?", re.IGNORECASE), "RARE"),
-    (re.compile(r"peu courantes?|peu courants?", re.IGNORECASE), "UNCOMMON"),
-    (re.compile(r"inhabituelles?|inhabituels?", re.IGNORECASE), "UNCOMMON"),
+    (re.compile(r"\bextrêmement rares?\b", re.IGNORECASE), "VERY_RARE"),
+    (re.compile(r"\btrès rares?\b", re.IGNORECASE), "VERY_RARE"),
+    (re.compile(r"\bexceptionnelles?\b|\bexceptionnels?\b", re.IGNORECASE), "VERY_RARE"),
+    (re.compile(r"\brares?\b", re.IGNORECASE), "RARE"),
+    (re.compile(r"\bnotables?\b", re.IGNORECASE), "RARE"),
+    (re.compile(r"\bfrappantes?\b|\bfrappants?\b", re.IGNORECASE), "RARE"),
+    (re.compile(r"\bremarquables?\b", re.IGNORECASE), "RARE"),
+    (re.compile(r"\bpeu courantes?\b|\bpeu courants?\b", re.IGNORECASE), "UNCOMMON"),
+    (re.compile(r"\binhabituelles?\b|\binhabituels?\b", re.IGNORECASE), "UNCOMMON"),
 ]
 
 NEGATION_RE = re.compile(r"\b(pas|aucun|aucune|sans|ni|jamais)\b", re.IGNORECASE)
@@ -136,6 +169,15 @@ def guard_interpretive_words(text, facts):
     return unjustified
 
 
+# --- garde jargon : aucun nom de code d'enum ne doit fuiter dans la prose ---
+
+ENUM_LEAK_RE = re.compile(r"\b(VERY_RARE|UNCOMMON|COMMON|RARE)\b")
+
+
+def guard_enum_leak(text):
+    return sorted(set(ENUM_LEAK_RE.findall(text)))
+
+
 def main():
     if len(sys.argv) < 2:
         sys.exit("usage: llm_compose_test.py EM-XXXXX")
@@ -145,6 +187,8 @@ def main():
 
     main_nums = ' · '.join('%02d' % n for n in facts['main'])
     stars = ' · '.join('%02d' % n for n in facts['stars'])
+    redundancy = redundancy_note(facts)
+    redundancy_section = f"\nMétriques redondantes à ne pas double-compter :\n{redundancy}\n" if redundancy else ""
 
     prompt = f"""Tu es rédacteur scientifique pour AleaQuant, un site français de vulgarisation sur les probabilités et la combinatoire appliquées à EuroMillions. Ta ligne éditoriale : rigueur, jamais de prédiction, jamais de promesse de gain, chaque nombre cité doit venir des faits fournis ci-dessous.
 
@@ -152,15 +196,22 @@ Tirage du {date_fr(facts['date'])} : {main_nums} ★ {stars}
 
 Faits calculés disponibles (utilise ceux qui sont pertinents, pas besoin de tous les citer) :
 {evidence_block(facts)}
-
+{redundancy_section}
 Écris un article de 4 à 6 paragraphes qui :
 1. Situe le tirage (probabilité de la combinaison exacte).
-2. Commente la GÉOMÉTRIE du tirage : les numéros sont-ils plutôt concentrés (proches les uns des autres, dans peu de dizaines) ou dispersés sur l'étendue 1-50 ? Précise les tranches de dizaines que tu utilises (1-10, 11-20, etc.). N'emploie "concentré"/"dispersé"/"notable"/"rare" que si tu peux l'ancrer explicitement à un chiffre fourni (classe, queue, ou comparaison) — jamais comme impression libre.
-3. Relève ce qui est statistiquement notable (classe rare, queue de loi) s'il y en a — sinon dis-le honnêtement, une forme ordinaire est aussi une observation valide. Précise bien QUELLE queue (somme des numéros, des étoiles, etc.) est en jeu, ne généralise pas. Chaque fois que tu qualifies un chiffre de "rare", "peu courant", "notable", "frappant" ou "exceptionnel", reprends EXACTEMENT le niveau donné par le champ rareté= du fait correspondant (COMMON→n'emploie aucun de ces mots, UNCOMMON→"peu courant", RARE→"rare"/"notable", VERY_RARE→"très rare"/"exceptionnel") ; n'amplifie jamais un niveau.
+2. Commente la GÉOMÉTRIE du tirage : les numéros sont-ils plutôt concentrés (proches les uns des autres, dans peu de dizaines) ou dispersés sur l'étendue 1-50 ? Précise les tranches de dizaines que tu utilises (1-10, 11-20, etc.). Attention au SENS de la mesure : une étendue élevée (proche de 49) signifie dispersé, une étendue faible signifie concentré — ne qualifie jamais une grande étendue de "resserrée" ni l'inverse.
+3. Relève ce qui est statistiquement notable (classe rare, queue de loi) s'il y en a — sinon dis-le honnêtement, une forme ordinaire est aussi une observation valide. Précise bien QUELLE mesure est en jeu, ne généralise pas.
 4. Situe l'historique EN UTILISANT le fait de signature (F.signature, qui donne une fréquence sur un nombre de tirages antérieurs précis) et le fait d'historique exact (F.history.exact_main) — c'est la référence avec échelle demandée, ne dis jamais que l'historique manque si ces faits sont fournis.
 5. Termine sur le rappel qu'aucune de ces mesures ne prédit le prochain tirage — une seule fois, dans un dernier paragraphe court, pas répété ailleurs.
 
-IMPORTANT : varie ta structure et tes formulations, n'utilise pas un patron figé. N'invente, n'arrondis ni ne déduis AUCUN nombre qui n'est pas explicitement dans les faits ci-dessus. Style vivant mais rigoureux, pas de sensationnalisme."""
+RÈGLES DE RIGUEUR — à respecter à la lettre :
+a. N'invente, n'arrondis ni ne déduis AUCUN nombre absent des faits ci-dessus.
+b. Les mots de rareté ("rare", "peu courant", "notable", "exceptionnel", "très rare") reprennent EXACTEMENT le niveau du champ rareté= du fait concerné. Un niveau "courante" interdit tout mot de rareté. N'amplifie jamais.
+c. N'écris JAMAIS un nom de code technique (COMMON, UNCOMMON, RARE, VERY_RARE) dans le texte : emploie uniquement les mots français ("courante", "peu courante", "rare", "très rare").
+d. Le niveau de rareté d'une métrique ne vaut QUE pour cette métrique. N'écris jamais qu'une "configuration" ou une "forme d'ensemble" est rare en t'appuyant sur le niveau d'une seule mesure : soit tu cites le fait qui classe précisément cet ensemble, soit tu attribues chaque niveau à sa mesure nommée.
+e. Chaque pourcentage cité doit être immédiatement suivi de sa base : "classe de X sur Y" ou "queue de la loi" — jamais un pourcentage nu.
+f. Quand un fait donne une liste de valeurs (par exemple les écarts ordonnés), cite-les TOUTES ou aucune : ne réduis jamais une liste de quatre valeurs à trois.
+g. Varie ta structure et tes formulations d'un article à l'autre, n'utilise pas un patron figé. Style vivant mais rigoureux, pas de sensationnalisme."""
 
     from openai import OpenAI
     client = OpenAI(api_key=load_key())
@@ -177,6 +228,10 @@ IMPORTANT : varie ta structure et tes formulations, n'utilise pas un patron fig�
     word_problems = guard_interpretive_words(text, facts)
     print("\n=== GARDE LEXICAL (mots de rareté vs champ rarity des faits) ===")
     print("OK" if not word_problems else f"MOTS NON JUSTIFIÉS : {word_problems}")
+
+    leaks = guard_enum_leak(text)
+    print("\n=== GARDE JARGON (noms de code d'enum dans la prose) ===")
+    print("OK" if not leaks else f"NOMS DE CODE À TRADUIRE : {leaks}")
 
     usage = resp.usage
     in_tok = getattr(usage, "input_tokens", 0) or 0
