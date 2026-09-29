@@ -1,0 +1,86 @@
+# Agent éditorial — notes de session (29-30/09/2026)
+
+Trois itérations testées dans la nuit sur `agent/llm_compose_test.py` (et son prédécesseur
+claim-par-claim `agent/llm_rewrite_batch.py`), sur des tirages réels. Objectif : passer du
+brouillon déterministe (`agent/draw_report.py`, mode `template`) à un article réellement
+rédigé, sans rien inventer.
+
+## Ce qui a été essayé, et pourquoi ce n'est pas suffisant tel quel
+
+1. **Reformulation phrase à phrase** (`llm_rewrite_batch.py`) : le LLM ne voit que les
+   ~7 claims déjà sélectionnées par `select()` dans `draw_report.py`. Résultat testé sur
+   100 tirages réels (100/100 OK, 0 bloqué, 0,21 $) : texte fidèle mais **cosmétique**,
+   même squelette d'un article à l'autre, aucune analyse nouvelle.
+
+2. **Composition avec tous les faits, sans garde-fou éditorial** (`llm_compose_test.py`,
+   v1) : le LLM reçoit les ~31 faits calculés (dont géométrie : étendue, écarts, dizaines,
+   paires proches) et compose librement. Résultat : **inventaire de métriques**, pas un
+   article — empile les chiffres sans hiérarchie, répète le rappel "pas de prédiction" à
+   plusieurs endroits, et contient une **incohérence analytique** relevée : qualifie un
+   tirage d'"étendue 38" (quasi tout le domaine 1-50) de "concentré" en ne regardant que
+   les 2-3 premiers écarts sans les situer par rapport à l'ensemble.
+
+   Bug technique trouvé en même temps : `evidence_block()` filtrait tout fait avec
+   `metric is None`, excluant sans le vouloir `F.history.exact_main` ET `F.signature` —
+   qui contient pourtant exactement la référence historique avec échelle demandée
+   ("signature déjà observée 156 fois sur 1983 tirages antérieurs"). Corrigé.
+
+3. **Composition avec consignes plus strictes** (v2, après correction du filtre) :
+   net progrès — le texte exploite maintenant la signature historique, précise les
+   tranches de dizaines, construit un vrai angle (géométrie + queues de distribution).
+   Coût mesuré : 0,00645 $/article. Mais :
+   - **Faux positif du garde** : les bornes de tranches (10, 20, 30, 40, 50, ou plus
+     précisément 20/31/40/41 tels qu'écrits) ne sont pas dans les facts, donc rejetées —
+     alors que ce sont des conventions d'affichage légitimes, pas des chiffres mesurés.
+     Le garde doit les accepter explicitement (comme il le fait déjà pour {2,3,5,10} en
+     dur dans `draw_report.guard()`).
+   - **Confusion classe / queue** : le texte dit "quelques mesures se placent dans des
+     queues basses" en mélangeant `p_class` (taille de la classe, ex. somme à 1,2 %) et
+     `tail` (probabilité de queue cumulée). Ce sont deux notions diférentes ; le prompt
+     doit forcer la distinction.
+   - **Synthèses non ancrées** : "sans accumulation exceptionnelle sur tous les plans"
+     est une conclusion du modèle non strictement dérivée des chiffres cités — à
+     interdire ou à exiger justifiée fait par fait.
+   - **Signature peu expliquée** : "déjà rencontrée 156 fois" sans que le lecteur sache
+     ce que la signature résume (run, decade_max, decades) — nécessite une phrase de
+     définition.
+   - **Nuance à ajouter** : distinguer clairement "les cinq numéros principaux" de "la
+     combinaison complète (numéros + étoiles)" dans toute affirmation d'historique —
+     `F.history.exact_main` ne couvre que les numéros principaux, jamais la combinaison
+     complète avec étoiles ; ne jamais laisser le texte suggérer le contraire.
+
+## Le vrai manque (diagnostic validé sur les 3 essais)
+
+Ce n'est pas une question de volume de faits donnés au modèle. C'est l'absence d'une
+**couche d'analyse et de contrôle** entre les facts et la rédaction :
+
+1. **Une question éditoriale par article**, puis sélection des seules mesures qui y
+   répondent — pas un balayage de toutes les métriques disponibles.
+2. **Position dans la distribution**, pas la valeur brute : dispersion, décades etc.
+   affichées avec leur rang / comparaison à une référence, jamais isolées.
+3. **Historique contextualisé à l'échelle** : fréquence attendue, nombre de tirages
+   couverts — jamais un compteur brut sans repère (déjà en grande partie disponible via
+   `F.signature`, à condition de ne pas la filtrer).
+4. **Filtrer le banal, signaler le rare avec prudence** en précisant qu'on a examiné
+   plusieurs métriques (limiter le biais de sélection après coup).
+5. **Le rappel "pas de prédiction" en encadré méthodologique commun ** (une fois pour le
+   site), pas répété à chaque paragraphe d'article.
+6. **Contrôle post-génération des mots interprétatifs** ("rare", "concentré", "notable",
+   "exceptionnel") : chacun doit pointer vers un fait précis et sa définition/distribution
+   de référence, jamais laissé comme impression libre du modèle.
+7. **Garde numérique élargi** pour accepter les bornes de catégories légitimes (tranches
+   de dizaines, etc.) sans pour autant relâcher le contrôle sur les vrais chiffres mesurés.
+   Précision : ne pas les ajouter à un ensemble de nombres globalement autorisés (trop permissif, ils pourraient alors justifier n'importe quelle autre affirmation) — les reconnaître uniquement dans le contexte précis d'une description de tranches (ex. motif « 1–10, 11–20, …, 41–50 »), pour continuer à signaler un 20/31/40/41 injustifié ailleurs dans le texte.
+
+## Prochaine étape concrète proposée
+
+Prendre 2-3 tirages de référence (un ordinaire, un avec queue de somme, un avec
+signature très répétée), calculer à la main leurs mesures de dispersion/décades/
+historique, et comparer à ce que le modèle peut en dire une fois les points 1-7
+ci-dessus adressés — avant de relancer un lot à l'échelle.
+
+Coûts mesurés cette nuit (gpt-5.4-mini, reasoning effort low) :
+- Reformulation claim-par-claim : ~0,0022 $/article
+- Composition texte libre (v1/v2) : ~0,005-0,0065 $/article
+- Batch API (submit/collect scripts prêts, testés end-to-end sur 10 items, non encore
+  utilisés à l'échelle) : ~50 % moins cher que ces tarifs directs.
