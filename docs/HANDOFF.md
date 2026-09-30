@@ -11,6 +11,10 @@
 > d'implémentation sont dans `docs/TECHNICAL-DEBT.md`. Pour une cellule absente,
 > le parcours envisagé est une réponse différée avec statut, calcul local
 > reprenable et courriel facultatif ; Cloudflare Containers reste à mesurer.
+> Nouveau sujet de recherche : les garanties conditionnelles `x if y of p`
+> et leur éventuelle traduction en rang sont cadrées dans
+> `docs/research/garanties-conditionnelles-portefeuilles.md`. Aucun certificat
+> AleaQuant n'est encore produit ni affiché.
 
 > Mise à jour du 30/09/2026 : la collecte des trois jeux enchaîne maintenant avec
 > les calculs locaux. `bash tools/refresh_draws.sh --check` inspecte sans réseau ;

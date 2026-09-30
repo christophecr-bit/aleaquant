@@ -1,5 +1,11 @@
 # Journal de développement
 
+## 2026-10-01 — garanties conditionnelles de portefeuilles
+
+| Fichier | Changement | Vérification |
+|---|---|---|
+| `docs/research/garanties-conditionnelles-portefeuilles.md`, `docs/ATLAS-GEOMETRIES-ARCHITECTURE.md`, `docs/TECHNICAL-DEBT.md`, `docs/HANDOFF.md` | Formalisation de `x if y of p`, preuve exhaustive et contre-exemple, distinction nombre de correspondances/rang, exemple Loto pool 10 / 25 grilles et études à mener. | Convention vérifiée sur Lottery Post ; borne `4 if 4 of 10` calculée ; pas de moteur ni garantie publiés. |
+
 ## 2026-10-01 — contribution éventuelle aux calculs personnalisés
 
 | Fichier | Changement | Vérification |

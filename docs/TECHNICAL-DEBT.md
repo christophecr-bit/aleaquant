@@ -154,6 +154,13 @@ deux documents pertinents avant le commit.
   légère peut seulement **mesurer** la géométrie de grilles apportées. Ne pas
   présenter les cinq démonstrations Loto comme une comparaison de performances,
   ni afficher rareté ou gain sans référence et évaluation adaptées.
+- Étudier les garanties conditionnelles de roues `x if y of p` selon
+  `docs/research/garanties-conditionnelles-portefeuilles.md` : vérificateur
+  exhaustif indépendant du générateur, matrice des pires cas, contre-exemples,
+  multiplicité garantie et comparaison `RANDOM` à budget égal. Le cas Loto
+  pool 10 / 25 grilles doit séparer garantie sur les numéros principaux et
+  rang qui dépend aussi du Chance ; EuroMillions et Keno exigent leurs propres
+  barèmes/régimes. Ne pas qualifier un seuil de rang sans preuve complète.
 - Étudier la réponse différée aux demandes d'optimisation absentes du catalogue :
   identifiant et statut persistants, déduplication des paramètres, quotas et
   exécution hors ligne reprenable sur la machine AleaQuant. Une notification

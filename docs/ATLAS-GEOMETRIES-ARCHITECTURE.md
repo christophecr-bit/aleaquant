@@ -89,6 +89,17 @@ paires, des triplets, d'équilibrage des occurrences et de faible recouvrement
 peuvent être incompatibles : garder plusieurs solutions ou un front de
 compromis, sans classement universel.
 
+Une autre famille d'objectifs est la **garantie conditionnelle** de type
+`x if y of p` : si `y` numéros tirés appartiennent au pool de `p`, au moins
+une grille en recoupe `x`. Elle doit être certifiée sur tous les scénarios
+admissibles, et pas déduite d'un taux moyen de couverture. Sous budget fixé,
+chercher la meilleure garantie ou le nombre minimal de grilles pour une
+garantie cible sont deux problèmes distincts. Une garantie portant sur un
+**rang de gain** nécessite en plus les composantes Chance/étoiles et le barème
+de la règle ; le certificat sur les seuls numéros principaux ne suffit pas.
+Définitions, exemple Loto pool 10 / 25 grilles et plan de vérification dans
+[`garanties-conditionnelles-portefeuilles.md`](research/garanties-conditionnelles-portefeuilles.md).
+
 Les numéros concrets d'un pool n'obligent généralement pas à refaire la
 recherche **géométrique** : sous une règle symétrique, un modèle optimisé sur
 `{1,…,p}` peut être renommé bijectivement avec les `p` numéros choisis. Sa
@@ -212,6 +223,8 @@ d'une grille et celle d'un événement concernant **plusieurs** grilles.
    (équilibrée, faible recouvrement, couverture, concentration). Conserver
    `CHANCE_SPREAD` comme expérience sur la composante Chance. Archiver grilles,
    empreintes, graines, score, bornes disponibles et durée de recherche.
+   Ajouter au registre d'objectifs `x if y of p`, puis sa traduction prudente
+   en rang seulement après vérification du numéro Chance et du barème.
 3. Ajouter les cohortes pédagogiques à 6 grilles EuroMillions et Keno 10-numéros,
    en gardant leurs 30-grilles archivées. Comparer géométries uniquement à
    l'intérieur d'une cohorte tant que les protocoles d'évaluation divergent.
