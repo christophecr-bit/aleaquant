@@ -1,5 +1,11 @@
 # Journal de développement
 
+## 2026-10-01 — correction de la politique de précalcul de l'Atlas
+
+| Fichier | Changement | Vérification |
+|---|---|---|
+| `docs/ATLAS-GEOMETRIES-ARCHITECTURE.md`, `docs/SITE-EDITORIAL-ARCHITECTURE.md`, `docs/TECHNICAL-DEBT.md`, `docs/HANDOFF.md`, `README.md` | Distinction entre mesure rapide d'un portefeuille fourni et recherche combinatoire hors ligne ; matrice de paramètres à précalculer, dont Loto pool 10 / 25 grilles ; 6 et 30 ne sont que les tailles déjà montrées. | Confrontation aux générateurs Keno et au calcul de géométrie Loto existants ; aucune implémentation ou publication. |
+
 ## 2026-10-01 — demande Atlas d'une taille libre
 
 | Fichier | Changement | Vérification |

@@ -62,67 +62,88 @@ incertitude pour ces derniers.
 
 ## Politique de tailles et de calcul
 
-**Ne pas précalculer le produit de toutes les tailles, familles, règles et
-options.** Pour le premier Atlas, retenir deux tailles repères : **6 et 30
-grilles**. Elles correspondent aux deux formats déjà présents : 6 pour la
-démonstration Loto ; 30 pour les études EuroMillions et Keno. Compléter ensuite
-les cohortes manquantes (6 EuroMillions/Keno, 30 Loto) avec un protocole et une
-référence `RANDOM` identiques à l'intérieur de chaque cohorte. Ce sont des
-repères éditoriaux, pas des tailles optimales. Une grille seule peut servir
-d'exemple pédagogique, mais ses intersections entre grilles sont indéfinies.
+**Deux opérations différentes** doivent être séparées : mesurer la couverture
+d'un portefeuille déjà choisi est rapide ; *chercher les grilles* qui couvrent
+au mieux des sous-ensembles sous un budget et des contraintes est une
+optimisation combinatoire. La précédente formulation « géométrie à la demande »
+ne décrivait que la première opération. Elle ne suffit pas pour fabriquer un
+portefeuille qualifié à une nouvelle taille.
 
-Pour Keno v1, figer **10 numéros par grille, tirage 16/56** à ces deux tailles.
-Les formats de 4 à 9 numéros sont des cohortes distinctes à ouvrir lorsqu'une
-question éditoriale et son barème justifient le calcul ; ne pas les multiplier
-automatiquement par les deux tailles repères. Les anciens régimes Keno restent
-séparés. Les nouvelles tailles peuvent être demandées ponctuellement, sans
-supposer que les seuils ou conclusions du 10-numéros se transportent.
+Le catalogue doit donc **précalculer hors ligne des solutions pour une matrice
+de paramètres utiles**, et non seulement pour 6 et 30 grilles. Une cellule de
+recherche fixe : jeu/règle, taille du pool `p`, taille des grilles `k`, nombre
+de grilles `m` (ou budget et mise unitaire), composante secondaire, ordre de
+couverture `t`, objectif, contraintes et version du protocole. Les tailles 6
+et 30 sont les deux tailles *déjà montrées*, pas les seules prises en charge.
+Le premier plan de qualification Loto doit comprendre notamment **m = 25** ;
+les autres tailles prioritaires seront choisies avec une grille explicite de
+coût et d'intérêt éditorial, plutôt qu'un produit cartésien aveugle.
 
-Le catalogue curaté et sa **géométrie déterministe** sont précalculés pour les
-cohortes publiées. Pour une taille libre, la géométrie peut être calculée à la
-demande à partir de grilles validées, puis mise en cache par empreinte du
-portefeuille + règle + version du calcul, avec une limite de ressources. Les
-distributions exactes, Monte-Carlo et évaluations économiques restent des
-travaux hors ligne sur un sous-ensemble justifié ; elles ne sont pas lancées par
-une visite de page. Un calcul non fait s'affiche « non évalué », pas comme zéro.
+Pour chaque cellule retenue : construire plusieurs candidats avec graines
+fixes, conserver une référence `RANDOM` au même budget, mesurer la géométrie,
+éventuellement chercher un meilleur candidat par recherche locale ou solveur,
+puis archiver les grilles, le score, le temps de recherche, la provenance et
+les bornes de qualité disponibles. « Optimisé » signifie *pour l'objectif
+annoncé* ; « optimum » exige une preuve. Les objectifs de couverture des
+paires, des triplets, d'équilibrage des occurrences et de faible recouvrement
+peuvent être incompatibles : garder plusieurs solutions ou un front de
+compromis, sans classement universel.
 
-### Exemple concret : demander 20 grilles
+Les numéros concrets d'un pool n'obligent généralement pas à refaire la
+recherche **géométrique** : sous une règle symétrique, un modèle optimisé sur
+`{1,…,p}` peut être renommé bijectivement avec les `p` numéros choisis. Sa
+couverture et ses intersections sont identiques. Ce raccourci ne vaut pas pour
+des contraintes liées à la valeur ou à l'histoire des numéros (décades,
+distance numérique, observations passées) ; ces objectifs exigent une cellule
+et une validation distinctes. La sélection du pool et l'optimisation des
+grilles dans ce pool restent deux étapes explicites.
 
-L'utilisateur choisit **jeu et règle**, format de grille (pour Keno, par exemple
-10 numéros), `20` grilles, famille et éventuellement graine ; il peut aussi
-fournir ses 20 grilles. Le moteur génère ou lit **les 20 grilles elles-mêmes** :
-il ne coupe pas un portefeuille de 30, car cette coupe changerait sa géométrie
-et le sens de sa méthode de construction. Il valide valeurs, composantes,
-nombre de grilles et options, puis calcule union, occurrences, intersections
-des 190 couples de grilles, couverture des paires et triplets, et les mesures
-propres à la composante secondaire. Un portefeuille de référence `RANDOM` de
-20 grilles peut être construit sous les mêmes contraintes et au même budget.
+Pour Keno v1, partir du tirage **16/56** avec des grilles de **10 numéros**.
+Les autres tailles de grilles et les anciens régimes sont des cohortes
+distinctes, à ajouter selon demande et barème. Un pool de 10 numéros avec des
+grilles Keno de 10 numéros ne produit qu'une grille distincte : l'exemple
+« pool de 10, budget de 25 grilles » concerne donc plutôt des grilles plus
+petites, comme les 5 numéros principaux du Loto.
 
-La réponse immédiate est une **fiche de géométrie descriptive** avec règles,
-grilles, graine, version et empreinte. Elle ne reçoit ni badge « rare » sans
-distribution de référence à 20 grilles, ni probabilité de gain, ni classement
-économique improvisé. Une évaluation de résultats peut être demandée comme
-travail séparé, avec son événement, son barème, sa méthode et son statut.
+La géométrie d'un portefeuille **fourni** peut toujours être recalculée à la
+demande et mise en cache. Elle ne certifie pas que le portefeuille est bien
+construit. Si une cellule d'optimisation manque, l'Atlas affiche « solution non
+calculée » et peut l'inscrire dans une file de recherche hors ligne ; il ne
+prend pas les 25 premières grilles d'un portefeuille de 30 en les qualifiant
+d'optimales. Une famille *emboîtée* optimisée pour ses préfixes serait une
+méthode explicite distincte. Les distributions exactes, Monte-Carlo et
+évaluations économiques restent également hors ligne et ciblées.
 
-Le site actuel publie des fichiers statiques : cette demande publique
-interactive **n'existe pas encore**. Première réalisation possible : une
-commande locale dans le moteur Python, produisant la fiche reproductible ;
-ensuite une interface et un petit service de calcul pour la géométrie seule.
-Le service devra être vérifié contre les mêmes cas de référence que le moteur
-Python. Son cache pourra indexer le contenu canonique, le jeu, la règle et la
-version du calcul ; l'identité de la famille et la graine restent dans la
-provenance. Ni le Worker ni le navigateur ne déclencheront d'énumération
-exhaustive pour répondre à cette demande.
+### Exemple concret : pool Loto de 10 numéros, 25 grilles
+
+Le pool contient 10 numéros ; chaque grille principale en choisit 5. Il existe
+`C(10,5) = 252` grilles principales candidates. L'objectif pourrait être de
+couvrir autant que possible les `C(10,3) = 120` triplets du pool avec 25
+grilles, sous des contraintes de recouvrement et avec une politique explicite
+pour le numéro Chance. **Mesurer** les 25 grilles est simple ; sélectionner
+les 25 parmi 252 pour cet objectif est la recherche à précalculer. Il faut
+archiver aussi une solution `RANDOM` de 25 grilles et, si possible, une borne
+ou un certificat pour évaluer la qualité de la solution trouvée. Aucune
+couverture géométrique n'implique à elle seule un gain supérieur.
+
+Le site actuel publie des fichiers statiques et n'exécute pas cette recherche.
+L'interface devra d'abord chercher une cellule qualifiée dans le catalogue ;
+si elle existe, elle renomme le modèle canonique selon le pool demandé et
+affiche les grilles et leur provenance. Si elle manque, elle indique son statut
+ou propose seulement l'analyse descriptive de grilles apportées par le lecteur.
+Ni le Worker ni le navigateur ne lancent une optimisation lourde ou une
+énumération exhaustive lors de la consultation.
 
 ## Données et parcours de publication
 
 ```mermaid
 flowchart LR
-  A[Catalogues du laboratoire\ngrilles et provenance] --> B[Validation du format\net de la cohorte]
-  B --> C[Géométrie déterministe\npar composante]
-  B --> D[Évaluation hors ligne\nexacte ou Monte-Carlo]
-  C --> E[Index Atlas léger\ncohortes et fiches curatées]
-  D --> E
+  A[Cellules retenues\nrègle, pool, grille, budget, objectif] --> B[Recherche hors ligne\ncandidats et RANDOM]
+  B --> C[Grilles qualifiées\net provenance]
+  C --> D[Géométrie déterministe\npar composante]
+  C --> H[Évaluation hors ligne\nexacte ou Monte-Carlo]
+  D --> E[Index Atlas léger\ncohortes et fiches curatées]
+  H --> E
   E --> F[Page Atlas\nfamilles et limites]
   F --> G[Fiche portefeuille\ngrilles, mesures, preuves]
 ```
@@ -139,10 +160,12 @@ d'une grille et celle d'un événement concernant **plusieurs** grilles.
 
 1. Versionner le schéma de cohorte et l'adaptateur d'affichage des familles ;
    montrer jeu, règle, format, taille, budget connu et niveau de preuve partout.
-2. Qualifier un générateur Loto à 6 **et** 30 grilles avec variantes `RANDOM`,
-   équilibrée, faible recouvrement, couverture et concentration ; conserver
-   `CHANCE_SPREAD` comme expérience sur la composante Chance. Valider grilles,
-   empreintes, graines, métriques et absence de doublons avant publication.
+2. Définir la première matrice Loto `(pool p, grille k=5, budget m, objectif t)` ;
+   inclure le cas **p=10, m=25** et les tailles 6 et 30 déjà visibles. Qualifier
+   pour chaque cellule retenue une référence `RANDOM` et plusieurs familles
+   (équilibrée, faible recouvrement, couverture, concentration). Conserver
+   `CHANCE_SPREAD` comme expérience sur la composante Chance. Archiver grilles,
+   empreintes, graines, score, bornes disponibles et durée de recherche.
 3. Ajouter les cohortes pédagogiques à 6 grilles EuroMillions et Keno 10-numéros,
    en gardant leurs 30-grilles archivées. Comparer géométries uniquement à
    l'intérieur d'une cohorte tant que les protocoles d'évaluation divergent.
@@ -150,7 +173,8 @@ d'une grille et celle d'un événement concernant **plusieurs** grilles.
    et contre `RANDOM`, avant de publier un classement de résultats. Les cinq
    démonstrations actuelles ne constituent pas ce classement.
 5. Produire une fiche et un article d'introduction, tester la compréhension des
-   libellés et mesurer le poids de l'index avant toute extension des tailles.
+   libellés et mesurer le poids de l'index avant d'étendre la matrice des
+   tailles, pools et objectifs.
 
 Critère de sortie : chaque nombre affiché renvoie à sa définition, à sa cohorte
 et à sa provenance ; aucune comparaison de gains ne traverse deux cohortes ;

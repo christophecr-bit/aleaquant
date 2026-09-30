@@ -141,18 +141,19 @@ deux documents pertinents avant le commit.
   fonctionne localement et passe les tests, mais le Worker sert encore l'ancienne
   version tant qu'un déploiement n'a pas été décidé.
 - Construire l'Atlas de portefeuilles selon `docs/ATLAS-GEOMETRIES-ARCHITECTURE.md`.
-  Le contrat, les familles et la politique de calcul sont définis ; restent à faire :
-  schéma de cohorte et affichage du niveau de preuve, Loto qualifié à 6 et 30
-  grilles avec `RANDOM` à budget égal, petites cohortes EuroMillions/Keno à 6,
-  séparation index/fiches, puis articles de fond sur couverture, recouvrement et
-  limites. Garder Keno 10-numéros pour cette première étape ; les grilles de 4 à 9
-  numéros et les autres régimes requièrent des cohortes et barèmes distincts.
-  Ne pas lancer l'évaluation exhaustive de toutes les tailles ni présenter les
-  cinq démonstrations Loto comme une comparaison de performances. Pour une
-  demande de 20 grilles, ajouter d'abord une commande locale reproductible qui
-  génère ou valide les grilles et calcule leur seule géométrie, puis une interface
-  publique avec service léger et tests de concordance avec le moteur Python.
-  Ne donner aucune rareté ni métrique de gain sans référence adaptée à 20 grilles.
+  Le contrat est défini ; restent à faire : schéma de cohorte et niveaux de
+  preuve, matrice de recherche Loto `(pool, taille de grille, budget, ordre de
+  couverture, objectif)` incluant **pool 10 / 25 grilles**, solution et
+  `RANDOM` au même budget, puis tailles 6 et 30 et autres cellules prioritaires.
+  Conserver provenance, score et bornes de qualité ; ne parler d'optimum qu'avec
+  preuve. Ajouter ensuite les cohortes EuroMillions/Keno pertinentes, la
+  séparation index/fiches et les articles de fond. Garder Keno 10-numéros pour
+  la première étape ; autres formats et régimes sont des cohortes distinctes.
+  L'interface doit retrouver une solution précalculée ; si la cellule manque,
+  signaler le calcul absent ou planifier une recherche hors ligne. Une commande
+  légère peut seulement **mesurer** la géométrie de grilles apportées. Ne pas
+  présenter les cinq démonstrations Loto comme une comparaison de performances,
+  ni afficher rareté ou gain sans référence et évaluation adaptées.
 - Vérifier le lien de déploiement GitHub–Cloudflare : le flux documenté actuellement
   reste `wrangler deploy` manuel, puis `git push`. Ne pas annoncer de CI non vérifiée.
 - Surveiller la disponibilité des archives FDJ et renouveler les URL dans
