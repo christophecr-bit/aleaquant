@@ -16,6 +16,7 @@ Trois gardes, tous déterministes :
 import json
 import re
 import sys
+import unicodedata
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -25,6 +26,9 @@ sys.path.insert(0, str(ROOT / "agent"))
 from draw_report import normalize_numbers, pct, date_fr  # noqa: E402
 
 # même mapping que dist/draws.js (RARITY) — le modèle ne doit voir que le français
+MODEL = "gpt-5.4-mini"
+COMPOSE_WRITER = "aleaquant-draw-report-compose-v1-gpt-5.4-mini"
+
 RARITY_ORDER = {"COMMON": 0, "UNCOMMON": 1, "RARE": 2, "VERY_RARE": 3}
 
 RARITY_FR = {
@@ -356,10 +360,86 @@ def warn_redundant_closing(text):
     return []
 
 
+def _sans_accent(s):
+    return unicodedata.normalize("NFD", s.lower()).encode("ascii", "ignore").decode()
+
+
+def paragraph_evidence(paragraph, facts):
+    """Faits effectivement cités dans ce paragraphe, par appariement déterministe.
+
+    Deux voies seulement, pour éviter une attribution qui désigne tout et donc rien :
+      - l'effectif de classe du fait apparaît (un nombre distinctif, ex. 141) ;
+      - la valeur du fait ET le nom de la mesure apparaissent (ex. « étendue » + 15).
+    Le domaine (2 118 760) est exclu : commun à tous les faits, il ne distingue rien.
+    Une valeur seule ne suffit pas non plus : « 2 » ou « 4 » se retrouve partout.
+    """
+    nums = normalize_numbers(paragraph)
+    texte = _sans_accent(paragraph)
+    used = []
+    for f in facts["facts"]:
+        if f.get("metric") is None:
+            continue
+        effectif = "class_size" in f and normalize_numbers(str(f["class_size"])) & nums
+        valeur = "value" in f and not isinstance(f["value"], dict) and \
+            bool(normalize_numbers(str(f["value"])) & nums)
+        noms = [f.get("label", ""), METRIC_DICT.get(f["metric"], ("", ""))[0]]
+        nom = any(len(n) > 3 and _sans_accent(n) in texte for n in noms if n)
+        if effectif or (valeur and nom):
+            used.append(f["fact_id"])
+    return used
+
+
+def build_compose_article(facts_path, facts, text, guards):
+    """Brouillon au schéma aleaquant-article-v1, identique à celui du mode template,
+    pour que show / approve / reject et scripts/import_article.py fonctionnent sans
+    modification. Le garde enregistré est celui du mode compose (quatre contrôles sur
+    le texte entier), pas le garde par claim du mode template."""
+    from hashlib import sha256
+    import datetime as dt
+    from draw_report import digest
+
+    facts_bytes = facts_path.read_bytes()
+    paragraphs = [q.strip() for q in text.split("\n\n") if q.strip()]
+    claims = [{"claim_id": "C%d" % (i + 1), "text": q, "evidence_ids": paragraph_evidence(q, facts)}
+              for i, q in enumerate(paragraphs)]
+    used = sorted({i for c in claims for i in c["evidence_ids"]})
+    research_pack = {
+        "question": "Que dit la forme du tirage %s, sans prétendre prédire le suivant ?" % facts["draw_id"],
+        "draw_id": facts["draw_id"], "facts_schema": facts["schema"],
+        "facts_sha256": sha256(facts_bytes).hexdigest(), "engine": facts["engine"],
+        # le modèle a reçu TOUS les faits : l'evidence du pack les liste tous, et
+        # claims[].evidence_ids précise ceux réellement cités par paragraphe.
+        "evidence": [{"evidence_id": f["fact_id"], "claim": f.get("statement", ""),
+                      "method": f.get("method", ""), "category": f.get("category", ""),
+                      "cited": f["fact_id"] in used} for f in facts["facts"]],
+    }
+    problems = []
+    for nom, liste in guards.items():
+        problems += [f"{nom}: {x}" for x in liste]
+    body = text.strip() + "\n\n" + METHODO_NOTE
+    d = {"title": "EuroMillions — tirage du %s" % date_fr(facts["date"]), "body": body,
+         "claims": claims, "writer": COMPOSE_WRITER,
+         "research_pack_sha256": digest(research_pack)}
+    return {"schema": "aleaquant-article-v1", "article_id": "tirage-" + facts["draw_id"],
+            "kind": "draw_report", "status": "PENDING_HUMAN" if not problems else "BLOCKED",
+            "guard": {"problems": problems, "mode": "compose", "checks": guards},
+            "draft_sha256": digest(d), "draft": d, "research_pack": research_pack,
+            "human_decision": None,
+            "provenance": {"writer": COMPOSE_WRITER, "model": MODEL,
+                           "created_at": dt.datetime.now().astimezone().isoformat(timespec="seconds"),
+                           "facts_path": str(facts_path)}}
+
+
 def main():
-    if len(sys.argv) < 2:
-        sys.exit("usage: llm_compose_test.py EM-XXXXX")
-    draw_id = sys.argv[1]
+    import argparse
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("draw_id")
+    ap.add_argument("--write", action="store_true",
+                    help="écrit le brouillon dans runs-llm-compose/<id>/draft.json")
+    ap.add_argument("--text-file", type=Path,
+                    help="construit le brouillon depuis un texte existant, sans appel API")
+    args = ap.parse_args()
+    draw_id = args.draw_id
     facts_path = ROOT / "dist" / "data" / "facts" / f"{draw_id}.json"
     facts = json.loads(facts_path.read_text(encoding="utf-8"))
 
@@ -402,10 +482,13 @@ n. N'emploie un mot de rareté QUE pour une mesure marquée « AU-DESSUS de sa r
 o. Pour expliquer ce que mesure une grandeur, reprends la définition officielle fournie plutôt qu'une paraphrase de ton cru (l'étendue est « l'écart entre le plus petit et le plus grand numéro », pas « le sommet de 35 à 50 »).
 p. Varie ta structure et tes formulations d'un article à l'autre, n'utilise pas un patron figé. Style vivant mais rigoureux, pas de sensationnalisme."""
 
-    from openai import OpenAI
-    client = OpenAI(api_key=load_key())
-    resp = client.responses.create(model="gpt-5.4-mini", input=prompt, reasoning={"effort": "low"})
-    text = resp.output_text
+    if args.text_file:
+        text, resp, proof = args.text_file.read_text(encoding="utf-8").strip(), None, None
+    else:
+        from openai import OpenAI
+        client = OpenAI(api_key=load_key())
+        resp = client.responses.create(model=MODEL, input=prompt, reasoning={"effort": "low"})
+        text = resp.output_text
 
     # --- passe de relecture : langue seulement, jamais les chiffres ni les raretés ---
     proof_prompt = f"""Corrige uniquement l'orthographe, la grammaire et les accords du texte ci-dessous (français).
@@ -414,15 +497,21 @@ INTERDICTIONS ABSOLUES : ne modifie, n'ajoute ni ne supprime aucun chiffre, aucu
 
 TEXTE :
 {text}"""
-    proof = client.responses.create(model="gpt-5.4-mini", input=proof_prompt, reasoning={"effort": "low"})
-    proofed = proof.output_text.strip()
+    if args.text_file:
+        proofed, proof_status = text, "non lancée (texte fourni)"
+        proof = None
+    else:
+        proof = client.responses.create(model=MODEL, input=proof_prompt, reasoning={"effort": "low"})
+        proofed = proof.output_text.strip()
 
     # contrôle déterministe : la relecture ne doit avoir touché ni les nombres ni les
     # mots de rareté. Sinon on garde le texte d'origine.
     same_numbers = normalize_numbers(proofed) == normalize_numbers(text)
     same_rarity = sorted(w for w, _ in guard_interpretive_words(proofed, {"facts": []})) == \
         sorted(w for w, _ in guard_interpretive_words(text, {"facts": []}))
-    if same_numbers and same_rarity:
+    if args.text_file:
+        final_text = text
+    elif same_numbers and same_rarity:
         final_text = proofed
         proof_status = "appliquée"
     else:
@@ -456,10 +545,23 @@ TEXTE :
     print("\n=== AVERTISSEMENTS ÉDITORIAUX (à relire, non bloquants) ===")
     print("aucun" if not warns else "\n  - ".join([""] + warns).strip())
 
-    in_tok = sum((getattr(r.usage, "input_tokens", 0) or 0) for r in (resp, proof))
-    out_tok = sum((getattr(r.usage, "output_tokens", 0) or 0) for r in (resp, proof))
+    appels = [r for r in (resp, proof) if r is not None]
+    in_tok = sum((getattr(r.usage, "input_tokens", 0) or 0) for r in appels)
+    out_tok = sum((getattr(r.usage, "output_tokens", 0) or 0) for r in appels)
     cost = in_tok / 1e6 * 0.75 + out_tok / 1e6 * 4.50
     print(f"\n=== COÛT === {cost:.5f} $ (in={in_tok} out={out_tok})")
+
+    if args.write:
+        guards = {"nombres": sorted(problems), "mots_de_rarete": [w for w, _ in word_problems],
+                  "noms_de_code": leaks, "effectifs": cite_problems}
+        article = build_compose_article(facts_path, facts, text, guards)
+        out = ROOT / "runs-llm-compose" / draw_id / "draft.json"
+        out.parent.mkdir(parents=True, exist_ok=True)
+        out.write_text(json.dumps(article, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        print(f"\n=== BROUILLON ÉCRIT === {out}")
+        print(f"statut : {article['status']} · {len(article['draft']['claims'])} paragraphes · "
+              f"{len([c for c in article['draft']['claims'] if c['evidence_ids']])} avec faits cités")
+        print(f"relecture humaine : python3 agent/draw_report.py show {out}")
 
 
 if __name__ == "__main__":

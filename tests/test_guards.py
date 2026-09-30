@@ -17,7 +17,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'agent'))
 from llm_compose_test import (  # noqa: E402
     RARITY_PROFILES, guard_class_citations, guard_enum_leak,
-    guard_interpretive_words, notable_level,
+    guard_interpretive_words, notable_level, paragraph_evidence,
 )
 
 
@@ -66,6 +66,33 @@ class LexicalGuardTests(unittest.TestCase):
         f = facts('EM-2004010')
         self.assertEqual(guard_interpretive_words('Sa rareté se discute.', f), [])
         self.assertEqual(guard_interpretive_words('Profil VERY_RARE.', f), [])
+
+
+class AttributionTests(unittest.TestCase):
+    """L'appariement paragraphe -> fait doit rester précis. Une première version
+    attribuait 20 faits à un paragraphe parce qu'une valeur comme « 2 » ou « 4 »
+    apparaît dans presque toutes les mesures : une attribution qui désigne tout ne
+    désigne rien."""
+
+    def test_attribution_precise(self):
+        f = facts('EM-2011053')
+        para = ("la somme vaut 222, ce qui la place dans une classe de 141 sur "
+                "2 118 760, avec une queue de 0,04 %")
+        self.assertEqual(paragraph_evidence(para, f), ['F.main.sum'])
+
+    def test_valeur_seule_ne_suffit_pas(self):
+        """« 2 » sans nom de mesure ne doit attribuer aucun fait."""
+        f = facts('EM-2011053')
+        self.assertEqual(paragraph_evidence('Il y a 2 choses à noter ici.', f), [])
+
+    def test_nom_et_valeur_attribuent(self):
+        f = facts('EM-2011053')
+        self.assertIn('F.main.span', paragraph_evidence("l'étendue vaut 15", f))
+
+    def test_domaine_non_distinctif(self):
+        """2 118 760 est commun à tous les faits : il ne doit rien attribuer seul."""
+        f = facts('EM-2011053')
+        self.assertEqual(paragraph_evidence('sur 2 118 760 combinaisons possibles', f), [])
 
 
 class OtherGuardTests(unittest.TestCase):

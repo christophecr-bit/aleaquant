@@ -333,3 +333,34 @@ Le bloc de faits transmis au modèle porte désormais la mention explicite « AU
 sa référence / dans sa normale / NON INFORMATIVE » par mesure : c'est la couche de
 sélection réclamée depuis le début de la session, sous forme de donnée et non de
 consigne de style.
+
+## Chaîne de publication raccordée (30/09/2026, ~2h30)
+
+Constat de fin de session : la chaîne de validation existait déjà et était testée
+(`draw_report.py show/approve/reject`, `scripts/import_article.py` avec vérification des
+empreintes et refus d'un brouillon non approuvé), mais le mode compose n'écrivait rien
+sur disque — il n'y avait donc jamais eu de brouillon à approuver, et « Le journal » du
+site est resté vide pour cette raison, pas par choix de publication.
+
+Ajouté à `agent/llm_compose_test.py` :
+- `--write` : écrit `runs-llm-compose/<draw_id>/draft.json` au schéma
+  `aleaquant-article-v1`, identique à celui du mode template, pour que
+  `show` / `approve` / `reject` et l'import fonctionnent sans modification. Le garde
+  enregistré est celui du mode compose (quatre contrôles sur le texte entier).
+- `--text-file` : construit le brouillon depuis un texte existant, SANS appel API.
+  Permet de valider toute la chaîne hors ligne (fait ce soir : brouillon écrit,
+  `show` correct, empreintes cohérentes, import refusé tant que non approuvé).
+- `paragraph_evidence()` : appariement déterministe paragraphe → faits. Deux voies
+  seulement — l'effectif de classe apparaît (distinctif), ou la valeur ET le nom de la
+  mesure apparaissent. Une première version attribuait 20 faits à un paragraphe parce
+  qu'une valeur comme « 2 » se retrouve dans presque toutes les mesures ; le domaine
+  (2 118 760) est exclu puisqu'il est commun à tous. C'est la base de l'appariement
+  mot ↔ fait identifié comme la vraie solution du garde lexical.
+
+Résultat sur un article réel : C1 → F.main.sum, C2 → max_same_decade +
+occupied_decades + decade_counts, C3 → F.main.span. 22 tests au vert.
+
+Reste à faire pour publier : générer avec `--write`, relire, approuver (décision
+humaine, jamais automatisée), puis `wrangler deploy`. Le mode compose n'a pas encore
+de version batch : `llm_batch_submit.py` / `llm_batch_collect.py` portent encore
+l'approche par reformulation.
