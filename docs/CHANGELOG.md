@@ -27,3 +27,15 @@ reste à vérifier ; ce déploiement-ci a été lancé manuellement par Wrangler
 | `engine/build_pages.py`, `dist/index.html`, `dist/atlas.css` | Choix explicite EuroMillions/Loto depuis l'accueil et toutes les pages de tirage ; index commun `/tirages/`. | `tests/test_loto_pages.py` et suite web |
 | `docs/SCALING.md` | Décision de ne pas créer 19 452 pages Keno ; conception de groupes mensuels et rendu Worker à la demande, avec critères SEO et de validation. | Limites Cloudflare et comptage local |
 | `README.md`, `docs/TECHNICAL-DEBT.md`, `docs/CHANGELOG.md` | Parcours utilisateur et dette de migration mis à jour. | Relecture |
+
+Sélecteur publié le 30/09/2026 : Worker version
+`27128adb-e8e6-4ec5-95a3-63d98370b445`, 9 687 assets actifs et URL
+`/tirages/` vérifiée en ligne. Suite web complète : 60 tests réussis.
+
+## 2026-09-30 — calendrier Loto et périmètre EuroMillions
+
+| Fichier | Changement | Vérification |
+|---|---|---|
+| `dist/index.html`, `dist/atlas.css` | Le calendrier de l'accueil est nommé explicitement EuroMillions ; lien direct vers la recherche Loto. | Relecture de la page générée |
+| `engine/build_pages.py`, `dist/loto-index.js` | Recherche par date dans l'archive Loto ; deux tirages d'une même date restent deux résultats. | `tests/test_loto_pages.py` |
+| `tests/test_loto_pages.py` | Vérifie le champ date et les deux séances du 28/03/1992. | Suite web |

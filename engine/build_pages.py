@@ -256,8 +256,10 @@ def loto_page_html(facts, prev_id, next_id):
 
 
 def loto_index_html(facts_list):
+    date_min = facts_list[0]['date'] if facts_list else ''
+    date_max = facts_list[-1]['date'] if facts_list else ''
     items = ''.join(
-        f'<li><a href="{esc(f["draw_id"])}/">{esc(loto_draw_label(f))}'
+        f'<li data-date="{esc(f["date"])}"><a href="{esc(f["draw_id"])}/">{esc(loto_draw_label(f))}'
         f' — {esc(f["draw_id"])}</a></li>' for f in reversed(facts_list))
     title = 'Tous les tirages Loto | AleaQuant'
     desc = ('Index des tirages Loto analysés par AleaQuant. Les anciens premier et second '
@@ -267,11 +269,15 @@ def loto_index_html(facts_list):
 <html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{esc(title)}</title><meta name="description" content="{esc(desc)}">
 <link rel="canonical" href="{SITE_URL}/tirages/loto/">
-<link rel="stylesheet" href="../../style.css"><link rel="stylesheet" href="../../atlas.css"></head>
+<link rel="stylesheet" href="../../style.css"><link rel="stylesheet" href="../../atlas.css">
+<script src="../../loto-index.js" defer></script></head>
 <body><a class="skip" href="#main">Aller au contenu</a><header>{nav}<span class="edition">ÉDITION EXPÉRIMENTALE · V0</span></header>
 <main id="main"><section class="section"><div class="section-head"><div><span class="eyebrow">DRAW / LOTO</span>
 <h1>Tous les tirages Loto</h1></div><p>{fmt_num(len(facts_list))} tirages. Les métriques et l’historique de chaque page respectent la formule en vigueur à sa date. <a href="/tirages/euromillions/">Voir aussi EuroMillions</a>.</p></div>
-<ul class="draw-index">{items}</ul></section></main>{FOOTER}</body></html>'''
+<div class="loto-date-search"><label for="loto-date">Aller à une date Loto</label>
+<input id="loto-date" type="date" min="{esc(date_min)}" max="{esc(date_max)}">
+<p id="loto-date-status" class="small" aria-live="polite">Choisir une date filtre la liste ; certaines dates ont deux tirages distincts.</p></div>
+<ul class="draw-index" id="loto-index">{items}</ul></section></main>{FOOTER}</body></html>'''
 
 
 def games_index_html(em_count, loto_count):

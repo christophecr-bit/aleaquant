@@ -14,6 +14,8 @@ issus du pilote publié, sans bascule de ses étoiles vers le moteur générique
 interactif de la page d'accueil est encore consacré à EuroMillions ; deux cartes
 explicites donnent accès aux archives EuroMillions et Loto. Le plan de migration vers
 un rendu par tirage à la demande, nécessaire avant Keno, est dans `docs/SCALING.md`.
+Le calendrier de l'accueil reste EuroMillions ; l'archive Loto dispose de son propre
+filtre par date, qui affiche les deux séances si elles ont eu lieu le même jour.
 
 Les pages Loto utilisent `/tirages/loto/<draw_id>/` : 1 886 dates historiques ont un
 premier et un second tirage, donc la date seule écraserait une page. Les pages nomment
