@@ -105,6 +105,34 @@ la version approuvée. Les brouillons ne sont jamais copiés automatiquement dan
 markdown ni de HTML dans le corps, et toute mise en forme doit passer par un champ
 structuré calculé côté Python.
 
+## Rafraîchissement des tirages (chantier B3)
+
+```sh
+bash tools/refresh_draws.sh --check      # dit seulement où on en est
+bash tools/refresh_draws.sh              # ingère, recalcule faits, profils et pages
+```
+
+Chaîne : ingestion de l'archive officielle FDJ dans le SQLite du laboratoire (append-only,
+idempotente) → `engine/build_data.py` → `engine/rarity_profiles.py` →
+`engine/build_pages.py`. Sans nouveau tirage, le script ne touche à rien et sort en 0.
+
+**Il ne publie rien** : ni commit, ni `wrangler deploy`, ni approbation d'article. La mise
+en ligne reste une décision humaine explicite.
+
+Automatisation via launchd (mercredi et samedi, EuroMillions tirant le mardi et le
+vendredi) :
+
+```sh
+cp tools/com.aleaquant.refresh.plist ~/Library/LaunchAgents/
+launchctl load -w ~/Library/LaunchAgents/com.aleaquant.refresh.plist
+tail -f ~/Library/Logs/aleaquant-refresh.log
+```
+
+Deux dépendances à connaître : `engine/build_data.py` exige **numpy** (simulations
+Monte-Carlo de la section Lab, générateur à graine fixe), et l'URL de l'archive FDJ est
+dans `tools/refresh.conf` — elle change quand FDJ ouvre une nouvelle période d'archive, et
+l'ingestion refuse toute URL hors du domaine officiel, volontairement.
+
 ## Suite
 
 État au 30/09/2026 :
