@@ -5,6 +5,39 @@ Aucun historique en direct, aucune production LLM simulée. Le petit modèle des
 est calculé exhaustivement dans le navigateur ; le dictionnaire contient 33 définitions
 importées en lecture seule de loto-keno-lab-generic (feature_definitions.py, 29/09/2026).
 
+## État des pages de tirage — 30 septembre 2026
+
+`engine/build_pages.py` produit 1 985 pages EuroMillions et 7 672 pages Loto, plus un
+index par jeu et un sitemap commun. Les faits Loto viennent du dépôt frère
+`../aleaquant-data` et de `engine/facts_generic.py` ; les faits EuroMillions restent
+issus du pilote publié, sans bascule de ses étoiles vers le moteur générique. L'outil
+interactif de la page d'accueil est encore consacré à EuroMillions ; un lien donne accès
+à l'index statique Loto.
+
+Les pages Loto utilisent `/tirages/loto/<draw_id>/` : 1 886 dates historiques ont un
+premier et un second tirage, donc la date seule écraserait une page. Les pages nomment
+la règle et la composante secondaire : la complémentaire ancienne était tirée mais ne
+figurait pas sur la grille ; le numéro Chance actuel y figure. Les comparaisons
+historiques des faits portent seulement sur le régime `k parmi n` comparable.
+
+Pour régénérer les pages après mise à jour des faits :
+
+```sh
+python3 engine/build_pages.py
+python3 -m unittest discover -s tests
+```
+
+Ce build ne déploie rien sur Cloudflare. Le Journal et les pages sont à valider avant
+`npx wrangler deploy`. Les détails de chaque fichier modifié et les dettes ouvertes sont
+dans `docs/CHANGELOG.md` et `docs/TECHNICAL-DEBT.md`.
+
+Le dépôt contient aussi les lois Keno 16/56 et 20/70 calculées par récurrence :
+16 mesures sur 20 sont disponibles, et les quatre absentes sont indiquées dans
+`missing_fields`. Aucun fait ou page Keno n'est encore publié. Les JSON de faits
+utilisés pour construire les pages restent versionnés, mais `dist/.assetsignore` les
+exclut des assets envoyés à Cloudflare. Après génération : 19 346 fichiers dans
+`dist/`, dont 9 658 faits intermédiaires, soit environ 9 688 assets publiables.
+
 Aperçu privé sur cette machine uniquement : `python3 -m http.server 4174 --bind 127.0.0.1 --directory dist`, puis ouvrir `http://127.0.0.1:4174/`. Arrêter le serveur avec `Ctrl+C`. Le binding `127.0.0.1` empêche l'accès depuis les autres appareils du réseau.
 
 ## Déploiement
@@ -32,9 +65,8 @@ Workers + Static Assets est désormais le choix recommandé pour tout nouveau si
 2. Authentification : `npx wrangler login` (OAuth, une fois, en local).
 3. Premier déploiement manuel : `npx wrangler deploy` → sous-domaine public enregistré
    **https://aleaquant.aleaquant.workers.dev**.
-4. Déploiement continu : Workers & Pages → `aleaquant` → Settings → Builds → Connect →
-   dépôt GitHub `aleaquant`, branche de production `main`, aucune build command (site déjà
-   statique). Chaque `git push` sur `main` redéploie automatiquement.
+4. Aucun déploiement continu n'a été vérifié. La liaison GitHub → Cloudflare reste
+   une tâche ouverte ; seul le déploiement Wrangler manuel est attesté.
 
 **En-têtes et robots** : `dist/_headers` (CSP simple, X-Content-Type-Options, X-Frame-
 Options, Referrer-Policy) et `dist/robots.txt` (autorise l'indexation) sont lus

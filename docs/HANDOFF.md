@@ -1,5 +1,11 @@
 # AleaQuant — document de reprise (handoff)
 
+> Mise à jour du 30/09/2026 : les pages Loto et les premières lois Keno ont avancé.
+> Le détail actuel et la dette active sont dans `docs/TECHNICAL-DEBT.md`, et les
+> fichiers modifiés dans `docs/CHANGELOG.md`. Les sections historiques ci-dessous
+> décrivent l'état antérieur de l'agent éditorial ; leurs comptes de tirages et
+> indications de déploiement ne remplacent pas ces deux documents récents.
+
 Écrit le 30/09/2026 au matin, après une session de nuit intense sur l'agent éditorial.
 **À lire en entier avant de toucher au code si vous reprenez le projet sans son
 historique de conversation.** Les notes détaillées de la nuit sont dans

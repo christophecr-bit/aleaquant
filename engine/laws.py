@@ -84,12 +84,20 @@ def construire(k, domain, dossier, *, force=False, progression=None):
     chemin = chemin_loi(k, domain, dossier)
     if chemin.exists() and not force:
         return json.loads(chemin.read_text(encoding="utf-8")), False
-    lois, total = lois_par_enumeration(k, domain, progression=progression)
+    if enumerable(k, domain):
+        lois, total = lois_par_enumeration(k, domain, progression=progression)
+        method = "énumération exhaustive, aucun échantillonnage"
+        missing = ()
+    else:
+        from laws_recurrence import lois_par_recurrence
+        lois, total, missing = lois_par_recurrence(k, domain)
+        method = "récurrences exactes, aucun échantillonnage"
     corps = {
         "schema": "aleaquant-regime-laws-v1",
         "picks": k, "domain": domain, "total": total,
-        "method": "énumération exhaustive, aucun échantillonnage",
+        "method": method,
         "fields": sorted(lois),
+        "missing_fields": list(missing),
         "laws": lois,
     }
     chemin.parent.mkdir(parents=True, exist_ok=True)

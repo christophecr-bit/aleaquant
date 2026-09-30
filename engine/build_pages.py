@@ -1,9 +1,10 @@
-"""Pages statiques par tirage EuroMillions, une par tirage, lisibles sans JavaScript.
+"""Pages statiques EuroMillions et Loto, lisibles sans JavaScript.
 
 Entrées (lecture seule) : dist/data/facts/<draw>.json (un fichier par tirage, voir
 build_data.py --facts), dist/data/draws.json (ordre chronologique, règle).
-Sorties : dist/tirages/euromillions/<date>/index.html (une par tirage),
-          dist/tirages/euromillions/index.html (index chronologique),
+Sorties : dist/tirages/euromillions/<date>/index.html,
+          dist/tirages/loto/<draw_id>/index.html (la date seule n'est pas unique),
+          un index chronologique pour chaque jeu,
           dist/sitemap.xml, dist/rss.xml
 
 Usage : python3 engine/build_pages.py
@@ -167,6 +168,112 @@ def index_html(rows):
 <ul class="draw-index">{items}</ul></section></main>{FOOTER}</body></html>'''
 
 
+def loto_draw_label(facts):
+    label = date_fr(facts['date'])
+    session = facts.get('session')
+    if session:
+        label += ' — ' + {'1': '1er tirage', '2': '2e tirage'}.get(str(session),
+                                                            f'tirage {session}')
+    return label
+
+
+def loto_balls_html(components):
+    """Distingue Chance et complémentaire, qui n'avaient pas le même rôle."""
+    main = ''.join(f'<span class="ball">{n:02d}</span>' for n in components['main'])
+    if 'chance' in components:
+        secondary, label = components['chance'], 'Numéro Chance'
+    elif 'complementaire' in components:
+        secondary = components['complementaire']
+        label = 'Numéro complémentaire — tiré, mais non coché sur la grille'
+    else:
+        raise ValueError('composante secondaire Loto absente')
+    other = ''.join(f'<span class="ball loto-secondary">{n:02d}</span>' for n in secondary)
+    return (f'<div class="balls">{main}<span class="sep"></span>{other}'
+            f'<span class="draw-component-label">{esc(label)}</span></div>')
+
+
+def loto_page_html(facts, prev_id, next_id):
+    """Page Loto fondée uniquement sur les faits du régime du tirage."""
+    by_id = {f['fact_id']: f for f in facts['facts']}
+    draw_id, date, rule = facts['draw_id'], facts['date'], facts['rule_id']
+    label = loto_draw_label(facts)
+    title = f'Tirage Loto du {label} — {draw_id} | AleaQuant'
+    desc = (f'Analyse du tirage Loto {draw_id} du {label} : loi exacte des '
+            'métriques et historique de la même formule, sans prédiction.')
+    canonical = f'{SITE_URL}/tirages/loto/{draw_id}/'
+    grid = by_id['F.grid.probability']['value']['grid']
+    k, domain = grid['main']['picks'], grid['main']['domain']
+    metrics = [f for f in facts['facts'] if f.get('category') == 'class_metric']
+    cards = ''.join(mcard(f) for f in metrics)
+    history = by_id.get('F.history.exact_main')
+    signature = by_id.get('F.signature')
+    expectation = by_id.get('F.editorial.expectation')
+    callouts = []
+    if history:
+        callouts.append('<div class="callout"><span class="big">'
+                        + esc(history['value']['count'])
+                        + '</span><div><strong>Déjà-vu des numéros principaux</strong><p>'
+                        + esc(history['statement']) + '</p></div></div>')
+    if signature:
+        callouts.append(f'<p class="small">{esc(signature["statement"])}</p>')
+    pager = ('<nav class="draw-pager" aria-label="Tirages voisins">'
+             + (f'<a href="../{esc(prev_id)}/">← Tirage précédent</a>' if prev_id else '<span></span>')
+             + '<a href="../">Tous les tirages Loto</a>'
+             + (f'<a href="../{esc(next_id)}/">Tirage suivant →</a>' if next_id else '<span></span>')
+             + '</nav>')
+    ld = {
+        '@context': 'https://schema.org', '@type': 'Article',
+        'headline': f'Tirage Loto du {label}',
+        'datePublished': date, 'description': desc,
+        'author': {'@type': 'Organization', 'name': 'AleaQuant'},
+        'publisher': {'@type': 'Organization', 'name': 'AleaQuant'},
+    }
+    nav = NAV.replace('href="/tirages/euromillions/"', 'href="/tirages/loto/"')
+    complement_note = ('La complémentaire historique n’entre pas dans la probabilité de '
+                       'la grille.' if 'complementaire' in facts['components'] else '')
+    return f'''<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{esc(title)}</title><meta name="description" content="{esc(desc)}">
+<link rel="canonical" href="{canonical}">
+<meta property="og:type" content="article"><meta property="og:title" content="{esc(title)}">
+<meta property="og:description" content="{esc(desc)}"><meta property="og:url" content="{canonical}">
+<link rel="stylesheet" href="../../../style.css"><link rel="stylesheet" href="../../../atlas.css">
+<script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script></head>
+<body><a class="skip" href="#main">Aller au contenu</a><header>{nav}<span class="edition">ÉDITION EXPÉRIMENTALE · V0</span></header>
+<main id="main"><section class="section" aria-labelledby="draw-title">
+<div class="section-head"><div><span class="eyebrow">DRAW / LOTO · {esc(draw_id)}</span>
+<h1 id="draw-title">Tirage du {esc(label)}</h1></div>
+<p>{esc(by_id['F.grid.probability']['statement'])}</p></div>
+<div class="draw-head"><div>{loto_balls_html(facts['components'])}
+<p class="draw-meta">{esc(label)} · {esc(draw_id)} · {fmt_num(facts['prior_draws'])} tirages antérieurs comparables · règle {esc(rule)}</p></div></div>
+{''.join(callouts)}
+<div class="metric-grid">{cards}</div>
+<p class="small">Loi exacte des {k} numéros parmi {domain} : énumération complète, sans simulation. L’historique compare seulement les tirages antérieurs de la même formule {k}/{domain}. {complement_note}</p>
+{f'<p class="callout"><em>{esc(expectation["statement"])}</em></p>' if expectation else ''}
+<p><a class="text-link" href="/tirages/euromillions/">Explorer aussi les tirages EuroMillions →</a></p>
+{pager}
+</section></main>{FOOTER}</body></html>'''
+
+
+def loto_index_html(facts_list):
+    items = ''.join(
+        f'<li><a href="{esc(f["draw_id"])}/">{esc(loto_draw_label(f))}'
+        f' — {esc(f["draw_id"])}</a></li>' for f in reversed(facts_list))
+    title = 'Tous les tirages Loto | AleaQuant'
+    desc = ('Index des tirages Loto analysés par AleaQuant. Les anciens premier et second '
+            'tirages d’une même journée ont chacun leur page.')
+    nav = NAV.replace('href="/tirages/euromillions/"', 'href="/tirages/loto/"')
+    return f'''<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{esc(title)}</title><meta name="description" content="{esc(desc)}">
+<link rel="canonical" href="{SITE_URL}/tirages/loto/">
+<link rel="stylesheet" href="../../style.css"><link rel="stylesheet" href="../../atlas.css"></head>
+<body><a class="skip" href="#main">Aller au contenu</a><header>{nav}<span class="edition">ÉDITION EXPÉRIMENTALE · V0</span></header>
+<main id="main"><section class="section"><div class="section-head"><div><span class="eyebrow">DRAW / LOTO</span>
+<h1>Tous les tirages Loto</h1></div><p>{fmt_num(len(facts_list))} tirages. Les métriques et l’historique de chaque page respectent la formule en vigueur à sa date. <a href="/tirages/euromillions/">Voir aussi EuroMillions</a>.</p></div>
+<ul class="draw-index">{items}</ul></section></main>{FOOTER}</body></html>'''
+
+
 def build():
     draws_data = read_json(DATA / 'draws.json')
     rows = draws_data['rows']  # [id, date, rule, main, stars, mvals, svals]
@@ -188,9 +295,27 @@ def build():
         written += 1
     (out_dir / 'index.html').write_text(index_html(rows), encoding='utf-8')
 
+    # La date seule n'identifie pas les anciens tirages Loto : le premier et le
+    # second tirage partagent une date sur 1 886 journées. L'URL utilise draw_id.
+    loto_facts = [read_json(p) for p in (DATA / 'facts').glob('LO-*.json')]
+    loto_facts.sort(key=lambda f: (f['date'], str(f.get('session') or ''), f['draw_id']))
+    loto_dir = DIST / 'tirages' / 'loto'
+    loto_dir.mkdir(parents=True, exist_ok=True)
+    for i, facts in enumerate(loto_facts):
+        draw_id = facts['draw_id']
+        prev_id = loto_facts[i - 1]['draw_id'] if i else None
+        next_id = loto_facts[i + 1]['draw_id'] if i + 1 < len(loto_facts) else None
+        page_dir = loto_dir / draw_id
+        page_dir.mkdir(parents=True, exist_ok=True)
+        (page_dir / 'index.html').write_text(
+            loto_page_html(facts, prev_id, next_id), encoding='utf-8')
+    (loto_dir / 'index.html').write_text(loto_index_html(loto_facts), encoding='utf-8')
+
     # sitemap.xml
-    urls = [f'{SITE_URL}/', f'{SITE_URL}/tirages/euromillions/']
+    urls = [f'{SITE_URL}/', f'{SITE_URL}/tirages/euromillions/',
+            f'{SITE_URL}/tirages/loto/']
     urls += [f'{SITE_URL}/tirages/euromillions/{r[1]}/' for r in rows]
+    urls += [f'{SITE_URL}/tirages/loto/{f["draw_id"]}/' for f in loto_facts]
     sitemap = ('<?xml version="1.0" encoding="UTF-8"?>\n'
                '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
                ''.join(f'<url><loc>{esc(u)}</loc></url>\n' for u in urls) +
@@ -213,7 +338,8 @@ def build():
            + ''.join(items) + '</channel></rss>\n')
     (DIST / 'rss.xml').write_text(rss, encoding='utf-8')
 
-    print(json.dumps({'pages_written': written, 'total_draws': len(rows),
+    print(json.dumps({'euromillions_pages_written': written, 'loto_pages_written': len(loto_facts),
+                       'total_draws': len(rows) + len(loto_facts),
                        'sitemap_urls': len(urls)}, indent=1))
 
 

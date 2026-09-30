@@ -93,7 +93,7 @@ def index_regime(k, n):
         _cache_index[(k, n)] = (
             {champ: LawIndex(loi, corps["total"], champ not in CATEGORIELS)
              for champ, loi in corps["laws"].items()},
-            corps["total"])
+            corps["total"], corps.get("method", ""))
     return _cache_index[(k, n)]
 
 
@@ -150,7 +150,7 @@ def construire_faits(game_id, store=STORE, *, seulement=None):
             k, n = regle.picks[comp], regle.domains[comp]
             if k == 1:
                 continue   # un numéro seul est uniforme : aucune information de forme
-            idx, _ = index_regime(k, n)
+            idx, _, method = index_regime(k, n)
             m = metriques(nums, n)
             cle_regime = (comp, k, n)
             anterieurs = vus_valeurs.setdefault(cle_regime, {})
@@ -162,8 +162,11 @@ def construire_faits(game_id, store=STORE, *, seulement=None):
                 label = LABELS.get(champ, champ)
                 if comp != "main":
                     label = f"{label} ({_libelle_composante(comp, k)})"
-                faits.append(metric_fact(f"{comp}.{champ}", label, v, index,
-                                         anterieurs.get(champ, Counter()), n_prior))
+                fact = metric_fact(f"{comp}.{champ}", label, v, index,
+                                   anterieurs.get(champ, Counter()), n_prior)
+                if method.startswith("récurrences"):
+                    fact["method"] = method
+                faits.append(fact)
 
         # 3. historique de la composante principale, au sein du régime
         principal = valeurs["main"]
@@ -220,7 +223,7 @@ def construire_faits(game_id, store=STORE, *, seulement=None):
                 continue
             m = metriques(nums, n)
             anterieurs = vus_valeurs.setdefault((comp, k, n), {})
-            idx, _ = index_regime(k, n)
+            idx, _, _ = index_regime(k, n)
             for champ in idx:
                 if champ in m:
                     anterieurs.setdefault(champ, Counter())[key(_valeur(champ, m[champ]))] += 1
