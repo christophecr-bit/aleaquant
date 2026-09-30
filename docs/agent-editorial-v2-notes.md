@@ -285,3 +285,51 @@ exactement le travers que la ligne éditoriale veut éviter.
 4. Ne pas faire confiance à un garde qui n'a jamais été vu échouer sur données réelles :
    tout nouveau garde doit être testé sur un échantillon de l'historique complet, pas
    seulement sur des cas synthétiques.
+
+## Correctif du garde inopérant + profil de rareté par mesure (30/09/2026, ~2h20)
+
+Audit a priori sur l'historique complet, au lieu d'attendre le défaut suivant.
+
+### Bug source trouvé et corrigé : probabilité de la combinaison complète
+
+`F.grid.probability` utilisait `laws['stars_total']` = C(12,2) pour TOUS les tirages,
+alors que les étoiles ont changé deux fois. 940 tirages sur 1984 annonçaient une
+probabilité fausse (dont tous ceux de 2004-2016). Corrigé par `rule_star_total()` dans
+`engine/common.py`, qui dérive le dénominateur de l'identifiant de règle du tirage et
+LÈVE UNE EXCEPTION sur une règle inconnue plutôt que de retomber silencieusement sur la
+règle courante. Tests dans `tests/test_rules.py`. Faits régénérés (940 fichiers).
+À retenir : les gardes vérifient la fidélité du texte aux faits, jamais l'exactitude
+des faits. Celle-ci ne peut venir que de tests sur `engine/`.
+
+### Profil de rareté par mesure (dist/data/rarity_profiles.json)
+
+`engine/rarity_profiles.py` calcule, pour chaque mesure, la distribution de ses niveaux
+de rareté sur les 1984 tirages, et en déduit un NIVEAU DE RÉFÉRENCE (le plus fréquent).
+Résultat : 6 mesures sur 26 ont une rareté constante, donc un badge sans information —
+`main.sorted_gaps` (toujours TRÈS RARE), `main.is_arithmetic_progression`,
+`stars.consecutive`, `stars.odd_count`, `stars.low_count` (toujours COURANTE),
+`stars.sum` (toujours PEU COURANTE). Cinq autres ne sont jamais COURANTES
+(`main.sum`, `span`, `mean_gap`, `max_gap`, `decade_counts`) : « peu courante » y est la
+normale, pas une information.
+
+**Règle qui en découle, et qui vaut pour l'article comme pour les puces A et le radar B :
+une mesure n'est notable que si son niveau DÉPASSE sa propre référence.** Part des
+tirages au-dessus de leur référence, par mesure : de 0,5 % (finales répétées) à 46,9 %
+(somme). Et 486 tirages sur 1984 (24,5 %) n'ont AUCUNE mesure au-dessus de sa
+référence — un quart des tirages n'a objectivement rien de remarquable, ce que la ligne
+éditoriale doit pouvoir dire sans chercher un angle.
+
+### Le garde lexical réparé (il ne pouvait pas se déclencher)
+
+`notable_level()` ne retient un fait que s'il dépasse la référence de sa mesure, et
+`guard_interpretive_words()` s'appuie dessus. Vérifié : sur EM-2004010 (aucune mesure
+au-dessus de sa référence), « exceptionnelle » et « rare » sont maintenant signalés ;
+sur EM-2011053 (somme très rare, au-dessus de sa référence), le mot passe légitimement.
+`tests/test_guards.py` verrouille les deux comportements — c'est le test qui manquait,
+et la leçon vaut pour tout garde à venir : le valider sur l'historique réel, jamais sur
+des faits synthétiques fabriqués pour l'occasion.
+
+Le bloc de faits transmis au modèle porte désormais la mention explicite « AU-DESSUS de
+sa référence / dans sa normale / NON INFORMATIVE » par mesure : c'est la couche de
+sélection réclamée depuis le début de la session, sous forme de donnée et non de
+consigne de style.

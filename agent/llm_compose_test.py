@@ -25,6 +25,8 @@ sys.path.insert(0, str(ROOT / "agent"))
 from draw_report import normalize_numbers, pct, date_fr  # noqa: E402
 
 # même mapping que dist/draws.js (RARITY) — le modèle ne doit voir que le français
+RARITY_ORDER = {"COMMON": 0, "UNCOMMON": 1, "RARE": 2, "VERY_RARE": 3}
+
 RARITY_FR = {
     "COMMON": "classe courante",
     "UNCOMMON": "classe peu courante",
@@ -57,6 +59,34 @@ def load_metric_dict():
 
 
 METRIC_DICT = load_metric_dict()
+
+
+def load_rarity_profiles():
+    """Profil de rareté par mesure (engine/rarity_profiles.py).
+
+    Sert à distinguer une mesure réellement notable d'une mesure dont le niveau est
+    sa normale : main.sorted_gaps est TRÈS RARE pour tout tirage, main.sum n'est
+    jamais COURANTE. Sans ce profil, le garde lexical compare les mots au maximum de
+    rareté de l'ensemble des faits — maximum qui vaut toujours VERY_RARE à cause de
+    sorted_gaps, ce qui le rendait incapable de se déclencher.
+    """
+    path = ROOT / "dist" / "data" / "rarity_profiles.json"
+    if not path.exists():
+        return {}
+    return json.loads(path.read_text(encoding="utf-8"))["metrics"]
+
+
+RARITY_PROFILES = load_rarity_profiles()
+
+
+def notable_level(fact):
+    """Niveau de rareté d'un fait S'IL dépasse la référence de sa propre mesure,
+    sinon None (le fait est dans sa normale, il n'est pas notable)."""
+    prof = RARITY_PROFILES.get(fact.get("metric"))
+    if not prof or "rarity" not in fact or prof["constant"]:
+        return None
+    lvl, base = RARITY_ORDER[fact["rarity"]], RARITY_ORDER[prof["baseline"]]
+    return lvl if lvl > base else None
 
 # familles de mesures emboîtées : la mesure fine est un raffinement des mesures
 # agrégées de sa famille, donc légitimement plus rare — ce n'est pas une
@@ -97,6 +127,21 @@ def evidence_block(facts):
                 bits.append(f"queue {pct(f['tail'])}")
             if "rarity" in f:
                 bits.append(f"rareté={RARITY_FR.get(f['rarity'], f['rarity'])}")
+                prof = RARITY_PROFILES.get(f["metric"])
+                if prof and prof["constant"]:
+                    bits.append(f"ATTENTION rareté NON INFORMATIVE : cette mesure vaut "
+                                f"« {RARITY_FR.get(prof['baseline'], prof['baseline'])} » "
+                                f"pour TOUT tirage possible — ne la présente jamais comme "
+                                f"remarquable")
+                elif prof and notable_level(f) is None:
+                    bits.append(f"dans sa normale (niveau de référence de cette mesure : "
+                                f"« {RARITY_FR.get(prof['baseline'], prof['baseline'])} ») "
+                                f"— PAS notable")
+                elif prof:
+                    bits.append(f"AU-DESSUS de sa référence "
+                                f"« {RARITY_FR.get(prof['baseline'], prof['baseline'])} » : "
+                                f"seuls {100 * prof['share_above_baseline']:.1f} % des tirages "
+                                f"y parviennent — c'est ici que se trouve l'information")
             name, definition = METRIC_DICT.get(f["metric"], ("", ""))
             if name:
                 bits.append(f'nom officiel="{name}"')
@@ -181,8 +226,6 @@ def guard_full_text(text, facts):
 
 # --- garde lexical : mots de rareté/notabilité vs champ `rarity` des faits fournis ---
 
-RARITY_ORDER = {"COMMON": 0, "UNCOMMON": 1, "RARE": 2, "VERY_RARE": 3}
-
 # du plus spécifique/fort au plus faible : évite qu'un motif faible ("rare") ne
 # matche à l'intérieur d'un motif fort déjà reconnu ("très rare"). Chaque match
 # retenu est effacé du texte avant d'essayer le motif suivant.
@@ -210,8 +253,12 @@ def guard_interpretive_words(text, facts):
     suffit à bloquer une inflation manifeste (ex. "exceptionnel" alors que rien ne
     dépasse RARE).
     """
+    # Ne comptent que les faits DÉPASSANT la référence de leur propre mesure. Prendre
+    # le maximum brut sur tous les faits rendait ce garde inopérant : sorted_gaps est
+    # VERY_RARE pour tout tirage, donc le maximum valait toujours 3 et aucune
+    # inflation ne pouvait être signalée.
     max_rarity_available = max(
-        (RARITY_ORDER.get(f.get("rarity"), 0) for f in facts["facts"] if "rarity" in f),
+        (lvl for lvl in (notable_level(f) for f in facts["facts"]) if lvl is not None),
         default=0,
     )
 
@@ -351,7 +398,9 @@ j. Ne qualifie JAMAIS globalement le tirage, la grille, la configuration ou "l'e
 k. N'écris PAS de paragraphe de synthèse qui récapitule ce que tu viens de dire : chaque paragraphe doit apporter un constat neuf. Si tu n'as plus rien à ajouter, termine sur ton dernier constat.
 l. Emploie le nom officiel fourni pour chaque mesure (champ nom officiel=) plutôt qu'une formulation de ton invention, et donne en quelques mots la définition fournie la première fois qu'un terme n'est pas évident pour un lecteur non initié (par exemple "paires de mêmes unités : deux numéros se terminant par le même chiffre").
 m. Ne balaie pas toutes les mesures disponibles : choisis-en au plus sept, celles qui servent ton angle. Écarte les mesures secondaires de niveau courant qui n'apportent rien au propos plutôt que de les énumérer.
-n. Varie ta structure et tes formulations d'un article à l'autre, n'utilise pas un patron figé. Style vivant mais rigoureux, pas de sensationnalisme."""
+n. N'emploie un mot de rareté QUE pour une mesure marquée « AU-DESSUS de sa référence ». Une mesure « dans sa normale » ou « NON INFORMATIVE » se cite sans aucun qualificatif de rareté : son niveau est celui de presque tous les tirages, le signaler comme remarquable serait trompeur.
+o. Pour expliquer ce que mesure une grandeur, reprends la définition officielle fournie plutôt qu'une paraphrase de ton cru (l'étendue est « l'écart entre le plus petit et le plus grand numéro », pas « le sommet de 35 à 50 »).
+p. Varie ta structure et tes formulations d'un article à l'autre, n'utilise pas un patron figé. Style vivant mais rigoureux, pas de sensationnalisme."""
 
     from openai import OpenAI
     client = OpenAI(api_key=load_key())
