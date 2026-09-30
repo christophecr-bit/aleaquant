@@ -10,6 +10,9 @@ deux documents pertinents avant le commit.
   pour les régimes AleaQuant ; chaque cellule vérifiée sur de petits univers et la
   variance de l'étendue recoupée avec la loi exacte existante. Note de recherche
   dans `docs/research/covariance-positions-ordonnees.md`. Aucun indicateur public.
+- Matrices **historiques exploratoires** estimées séparément sur sept groupes
+  jeu/règle, avec effectifs, périodes et empreintes des révisions. Elles restent
+  hors dictionnaire et hors site ; voir `docs/research/covariance-historique-par-jeu.md`.
 - Les récits de tirage approuvés sont reliés aux pages par `research_pack.draw_id` :
   l'import vérifie l'identifiant et le SHA des faits, puis régénère uniquement la page
   concernée. L'article du 6 septembre 2011 (`EM-2011053`) est désormais présent sur
@@ -41,8 +44,9 @@ deux documents pertinents avant le commit.
   k/N-type games » (2008, https://arxiv.org/abs/0806.4595), comme piste d'audit
   AleaQuant et d'article de fond. La partie théorique et son lien avec `span` sont
   vérifiés dans `docs/research/covariance-positions-ordonnees.md` ; restent
-  **l'estimation historique et la qualification d'un audit** pour **chaque jeu et
-  régime**. Leur covariance porte sur les **positions ordonnées d'un même tirage** ;
+  **la qualification d'un audit** pour **chaque jeu et régime**. Une première
+  estimation historique descriptive est disponible, sans test statistique.
+  Leur covariance porte sur les **positions ordonnées d'un même tirage** ;
   elle n'est pas une autocovariance entre tirages. Comparer prudemment la matrice
   théorique aux estimations historiques par période homogène (taille,
   changement de règle, données manquantes, multiplicité des tests, Monte-Carlo).
@@ -64,7 +68,8 @@ deux documents pertinents avant le commit.
   `euromillions.history.main.order_position_covariance@v1`, et conserver
   `rule_id` ou `k/N` dans chaque résultat ; Loto et Keno ont plusieurs régimes.
   Ne pas mêler étoiles EuroMillions ou Chance Loto aux numéros principaux.
-  Aucun calcul historique ni article n'est encore réalisé.
+  Contrôler la fraîcheur Keno : le dernier tirage local de la base source est
+  daté du 17/09/2026. Aucun article ni test d'audit calibré n'est encore réalisé.
 - Produire puis relire les articles manquants, par lots quotidiens, pour arriver à
   un récit approuvé par tirage. Aujourd'hui l'association est possible mais le fonds
   d'articles est incomplet ; ne jamais afficher un brouillon comme article.

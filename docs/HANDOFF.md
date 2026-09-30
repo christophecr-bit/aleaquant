@@ -31,6 +31,10 @@
 > ordonnées d'un tirage k/N. Ce n'est pas une autocovariance temporelle. Étudier son
 > lien avec l'étendue et un audit historique par régime avant d'en faire un indicateur
 > ou un article ; tâche détaillée dans `docs/TECHNICAL-DEBT.md`.
+> Mise à jour : le calcul théorique et l'identité avec l'étendue sont vérifiés ;
+> sept matrices historiques exploratoires sont enregistrées par jeu/règle dans
+> `docs/research/order-position-history-2026-09-30.json`. Aucun test d'audit ni
+> article n'en découle encore. La source Keno locale s'arrête au 17/09/2026.
 
 Écrit le 30/09/2026 au matin, après une session de nuit intense sur l'agent éditorial.
 **À lire en entier avant de toucher au code si vous reprenez le projet sans son

@@ -1,5 +1,12 @@
 # Journal de développement
 
+## 2026-09-30 — covariance historique par jeu et régime
+
+| Fichier | Changement | Vérification |
+|---|---|---|
+| `engine/order_position_history.py`, `tests/test_order_position_history.py` | Lecture seule des dernières révisions ; matrices observées avec diviseur `m−1`, groupes séparés par jeu/règle, fenêtre rétrospective et empreinte de cohorte. | Tests de séparation, de révision corrigée, de fenêtre et de l'identité de variance de l'étendue. |
+| `docs/research/covariance-historique-par-jeu.md`, `docs/research/order-position-history-2026-09-30.json`, `docs/TECHNICAL-DEBT.md`, `docs/HANDOFF.md`, `docs/CHANGELOG.md` | Sept groupes locaux documentés, Keno à rafraîchir, aucune inférence statistique ni publication. | Rapport régénéré depuis la base source et suite web complète. |
+
 ## 2026-09-30 — covariance théorique des positions ordonnées
 
 | Fichier | Changement | Vérification |
