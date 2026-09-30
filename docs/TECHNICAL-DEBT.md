@@ -154,6 +154,13 @@ deux documents pertinents avant le commit.
   légère peut seulement **mesurer** la géométrie de grilles apportées. Ne pas
   présenter les cinq démonstrations Loto comme une comparaison de performances,
   ni afficher rareté ou gain sans référence et évaluation adaptées.
+- Étudier la réponse différée aux demandes d'optimisation absentes du catalogue :
+  identifiant et statut persistants, déduplication des paramètres, quotas et
+  exécution hors ligne reprenable sur la machine AleaQuant. Une notification
+  courriel facultative attend un domaine et un service d'envoi configurés.
+  Comparer ensuite sur de vrais lots coût et débit de ce moteur local avec
+  Cloudflare Containers ; les Workers HTTP ne portent pas le calcul lourd.
+  Détails et liens de prix datés dans `docs/ATLAS-GEOMETRIES-ARCHITECTURE.md`.
 - Vérifier le lien de déploiement GitHub–Cloudflare : le flux documenté actuellement
   reste `wrangler deploy` manuel, puis `git push`. Ne pas annoncer de CI non vérifiée.
 - Surveiller la disponibilité des archives FDJ et renouveler les URL dans

@@ -1,5 +1,11 @@
 # Journal de développement
 
+## 2026-10-01 — optimisation différée et hébergement
+
+| Fichier | Changement | Vérification |
+|---|---|---|
+| `docs/ATLAS-GEOMETRIES-ARCHITECTURE.md`, `docs/TECHNICAL-DEBT.md`, `docs/HANDOFF.md` | Parcours de demande différée : statut durable, calcul local reprenable, revue du résultat et courriel facultatif ; Cloudflare Containers à mesurer avant adoption. | Tarifs et limites vérifiés dans la documentation officielle Cloudflare ; aucune ressource ni envoi créé. |
+
 ## 2026-10-01 — correction de la politique de précalcul de l'Atlas
 
 | Fichier | Changement | Vérification |

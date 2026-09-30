@@ -134,6 +134,36 @@ ou propose seulement l'analyse descriptive de grilles apportées par le lecteur.
 Ni le Worker ni le navigateur ne lancent une optimisation lourde ou une
 énumération exhaustive lors de la consultation.
 
+### Exécution et réponse différée
+
+Pour une cellule absente du catalogue, l'interface pourra enregistrer une
+demande normalisée `(jeu, règle, p, k, m, objectif, contraintes, protocole)` et
+renvoyer un identifiant et une page de statut. Les demandes identiques sont
+fusionnées ; une limite par demandeur et un budget de calcul protègent le
+service. Un moteur **hors ligne**, d'abord sur la machine AleaQuant existante,
+prend la tâche lorsqu'il est disponible, écrit des checkpoints, produit les
+grilles, les mesures et la provenance, puis marque le résultat à relire avant
+son entrée au catalogue public. La page de statut reste le canal de réponse
+principal. Un courriel **facultatif et consenti** peut annoncer que le résultat
+est prêt avec un lien ; il ne transporte pas le résultat comme seule copie.
+Si la machine est arrêtée ou en veille, la demande reste en attente et aucune
+heure d'achèvement n'est promise.
+
+Le Worker actuel ne possède ni route de demande ni file de tâches. Une petite
+base de statut côté site, par exemple D1, et un moteur local qui récupère les
+tâches via un accès authentifié sont une piste de v0, pas une intégration déjà
+livrée. Le calcul hébergé peut être testé ensuite sur quelques cellules
+chronométrées. En octobre 2026, [Workers Free](https://developers.cloudflare.com/workers/platform/limits/)
+est limité à 10 ms de CPU par requête ; le plan Paid autorise jusqu'à 5 minutes
+et 128 Mo par invocation. Les [Containers](https://developers.cloudflare.com/containers/platform/pricing/)
+peuvent s'arrêter entre les tâches et facturent les ressources actives, avec un
+minimum de 5 USD/mois pour Workers Paid ; cela mérite un benchmark réel avant
+de remplacer le moteur local. [D1](https://developers.cloudflare.com/d1/platform/pricing/)
+dispose d'un palier gratuit pour le registre des demandes. L'[envoi à des
+destinataires arbitraires](https://developers.cloudflare.com/email-service/platform/pricing/)
+par le service courriel Cloudflare requiert Workers Paid ; ne pas promettre le
+courriel tant qu'un domaine, un expéditeur et ce service ne sont pas configurés.
+
 ## Données et parcours de publication
 
 ```mermaid

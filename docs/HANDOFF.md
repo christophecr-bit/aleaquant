@@ -8,7 +8,9 @@
 > Keno v1 reste à 10 numéros par grille en 16/56. Le Loto affiché est encore
 > composé de cinq démonstrations à 6 grilles, sans évaluation exacte publiée.
 > Aucun calcul massif ni changement de l'Atlas en ligne n'a été lancé. Les tâches
-> d'implémentation sont dans `docs/TECHNICAL-DEBT.md`.
+> d'implémentation sont dans `docs/TECHNICAL-DEBT.md`. Pour une cellule absente,
+> le parcours envisagé est une réponse différée avec statut, calcul local
+> reprenable et courriel facultatif ; Cloudflare Containers reste à mesurer.
 
 > Mise à jour du 30/09/2026 : la collecte des trois jeux enchaîne maintenant avec
 > les calculs locaux. `bash tools/refresh_draws.sh --check` inspecte sans réseau ;
