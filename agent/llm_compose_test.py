@@ -494,6 +494,45 @@ def paragraph_evidence(paragraph, facts):
     return used
 
 
+def notable_badges(facts):
+    """Puces de rareté à afficher, calculées DÉTERMINISTEMENT — jamais rédigées par le
+    modèle. Une puce uniquement pour une mesure au-dessus de sa propre référence : un
+    badge sur une mesure dans sa normale serait décoratif et trompeur (les écarts
+    ordonnés sont « très rares » pour tout tirage possible, la répartition par dizaines
+    pour 98 % d'entre eux). Sur les 486 tirages ordinaires, la liste est vide, et c'est
+    le comportement attendu.
+    """
+    badges = []
+    for f in facts["facts"]:
+        if notable_level(f) is None:
+            continue
+        prof = RARITY_PROFILES[f["metric"]]
+        nom = METRIC_DICT.get(f["metric"], (f.get("label", f["metric"]), ""))[0] \
+            or f.get("label", f["metric"])
+        badges.append({
+            "fact_id": f["fact_id"], "metric": f["metric"], "nom": nom,
+            "valeur": f["value"],
+            "niveau": f["rarity"],                        # classe CSS .chip.<niveau>
+            "libelle": RARITY_FR.get(f["rarity"], f["rarity"]),
+            "reference": prof["baseline"],
+            "part_au_dessus": prof["share_above_baseline"],
+        })
+    # la mesure la plus rare d'abord, puis la plus discriminante
+    badges.sort(key=lambda b: (-RARITY_ORDER[b["niveau"]], b["part_au_dessus"]))
+    # pas deux puces pour la même information : span et mean_gap ont la même classe,
+    # on garde la première rencontrée (donc la mieux classée par le tri ci-dessus).
+    vus, uniques = set(), []
+    for b in badges:
+        doublon = any(b["metric"] == autre and a in vus or b["metric"] == a and autre in vus
+                      for a, autre, _ in DERIVED_EQUIVALENTS)
+        if doublon:
+            continue
+        vus.add(b["metric"])
+        uniques.append(b)
+    # au-delà de cinq, la ligne de puces cesse d'être lisible et redevient un inventaire
+    return uniques[:5]
+
+
 def build_compose_article(facts_path, facts, text, guards):
     """Brouillon au schéma aleaquant-article-v1, identique à celui du mode template,
     pour que show / approve / reject et scripts/import_article.py fonctionnent sans
@@ -523,7 +562,7 @@ def build_compose_article(facts_path, facts, text, guards):
         problems += [f"{nom}: {x}" for x in liste]
     body = text.strip() + "\n\n" + METHODO_NOTE
     d = {"title": "EuroMillions — tirage du %s" % date_fr(facts["date"]), "body": body,
-         "claims": claims, "writer": COMPOSE_WRITER,
+         "claims": claims, "badges": notable_badges(facts), "writer": COMPOSE_WRITER,
          "research_pack_sha256": digest(research_pack)}
     return {"schema": "aleaquant-article-v1", "article_id": "tirage-" + facts["draw_id"],
             "kind": "draw_report", "status": "PENDING_HUMAN" if not problems else "BLOCKED",
@@ -592,6 +631,10 @@ q. Varie ta structure et tes formulations d'un article à l'autre, n'utilise pas
 
     if args.text_file:
         text = strip_markdown(args.text_file.read_text(encoding="utf-8")).strip()
+        # un corps d'article déjà produit contient la note de méthode en dernier
+        # paragraphe : on la retire pour ne pas la dupliquer à la reconstruction.
+        if text.endswith(METHODO_NOTE):
+            text = text[: -len(METHODO_NOTE)].strip()
         resp, proof = None, None
     else:
         from openai import OpenAI
@@ -697,6 +740,9 @@ TEXTE :
         print(f"\n=== BROUILLON ÉCRIT === {out}")
         print(f"statut : {article['status']} · {len(article['draft']['claims'])} paragraphes · "
               f"{len([c for c in article['draft']['claims'] if c['evidence_ids']])} avec faits cités")
+        b = article["draft"]["badges"]
+        print("puces : " + (", ".join(f"{x['nom']} = {x['valeur']} ({x['libelle']})" for x in b)
+                            if b else "aucune (aucune mesure au-dessus de sa référence)"))
         print(f"relecture humaine : python3 agent/draw_report.py show {out}")
 
 

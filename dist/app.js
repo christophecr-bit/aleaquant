@@ -37,10 +37,26 @@ function readArticle(article){
  const title=document.createElement("h2");title.textContent=article.draft.title;title.tabIndex=-1;
  const status=document.createElement("p");status.className="small";status.textContent="Relu et approuvé · "+article.human_decision.reviewer;
  const prose=document.createElement("div");prose.className="prose";prose.textContent=article.draft.body;
+ // Puces de rareté : calculées côté moteur (draft.badges), une seule par mesure au-dessus
+ // de sa propre référence. Rendu en textContent exclusivement : le corps de l'article
+ // vient d'un LLM, aucune insertion de HTML n'est faite ici, ni ailleurs.
+ const badges=Array.isArray(article.draft.badges)?article.draft.badges:[];
+ let chips=null;
+ if(badges.length){
+  chips=document.createElement("p");chips.className="article-badges";
+  const intro=document.createElement("span");intro.className="small";intro.textContent="Mesures au-dessus de leur niveau habituel :";chips.append(intro);
+  badges.forEach(b=>{
+   const niveau=["COMMON","UNCOMMON","RARE","VERY_RARE"].includes(b.niveau)?b.niveau:"COMMON";
+   const chip=document.createElement("span");chip.className="chip "+niveau;
+   chip.textContent=String(b.nom)+" "+String(b.valeur)+" · "+String(b.libelle);
+   chip.title=String(b.libelle)+" — seuls "+(100*Number(b.part_au_dessus)).toFixed(1)+" % des tirages dépassent le niveau habituel de cette mesure";
+   chips.append(chip);
+  });
+ }
  const proof=document.createElement("details");const summary=document.createElement("summary");summary.textContent="Voir les preuves et la traçabilité";proof.append(summary);
  const list=document.createElement("ol");article.research_pack.evidence.forEach(e=>{const li=document.createElement("li");li.textContent="["+e.evidence_id+"] "+e.claim+" — "+e.method;list.append(li);});proof.append(list);
  const hash=document.createElement("code");hash.textContent="Version approuvée : "+article.draft_sha256;proof.append(hash);
- reader.append(status,title,prose,proof);title.focus();reader.scrollIntoView({block:"start"});
+ reader.append(status,title);if(chips)reader.append(chips);reader.append(prose,proof);title.focus();reader.scrollIntoView({block:"start"});
 }
 fetch("articles.json").then(r=>{if(!r.ok)throw Error();return r.json();}).then(data=>{
  const articles=data.articles.filter(a=>a.status==="HUMAN_APPROVED"&&a.human_decision?.approved&&a.human_decision.draft_sha256===a.draft_sha256);

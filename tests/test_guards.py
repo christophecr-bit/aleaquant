@@ -17,8 +17,8 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'agent'))
 from llm_compose_test import (  # noqa: E402
     RARITY_PROFILES, guard_class_citations, guard_enum_leak,
-    guard_interpretive_words, guard_markdown, notable_level, paragraph_evidence,
-    strip_markdown,
+    guard_interpretive_words, guard_markdown, notable_badges, notable_level,
+    paragraph_evidence, strip_markdown,
 )
 
 
@@ -67,6 +67,40 @@ class LexicalGuardTests(unittest.TestCase):
         f = facts('EM-2004010')
         self.assertEqual(guard_interpretive_words('Sa rareté se discute.', f), [])
         self.assertEqual(guard_interpretive_words('Profil VERY_RARE.', f), [])
+
+
+class BadgeTests(unittest.TestCase):
+    """Les puces de rareté sont calculées côté Python, jamais rédigées par le modèle,
+    et n'apparaissent que pour une mesure au-dessus de sa propre référence."""
+
+    def test_aucune_puce_sur_un_tirage_ordinaire(self):
+        """EM-26077 et EM-2004010 n'ont aucune mesure au-dessus de sa référence."""
+        for draw in ('EM-26077', 'EM-2004010'):
+            self.assertEqual(notable_badges(facts(draw)), [], draw)
+
+    def test_puces_sur_un_tirage_remarquable(self):
+        b = notable_badges(facts('EM-2011053'))
+        self.assertTrue(b)
+        self.assertIn('F.main.sum', [x['fact_id'] for x in b])
+
+    def test_jamais_de_mesure_a_rarete_constante(self):
+        """sorted_gaps est très rare pour tout tirage : jamais de puce dessus."""
+        for draw in ('EM-2011053', 'EM-26077'):
+            metriques = [x['metric'] for x in notable_badges(facts(draw))]
+            self.assertNotIn('main.sorted_gaps', metriques)
+            self.assertNotIn('stars.sum', metriques)
+
+    def test_pas_de_doublon_redondant(self):
+        """span et mean_gap portent la même information : une seule puce."""
+        metriques = [x['metric'] for x in notable_badges(facts('EM-2011053'))]
+        self.assertFalse('main.span' in metriques and 'main.mean_gap' in metriques)
+
+    def test_plafonnees_a_cinq(self):
+        self.assertLessEqual(len(notable_badges(facts('EM-2011053'))), 5)
+
+    def test_niveau_est_une_classe_css_valide(self):
+        for x in notable_badges(facts('EM-2011053')):
+            self.assertIn(x['niveau'], ('COMMON', 'UNCOMMON', 'RARE', 'VERY_RARE'))
 
 
 class MarkdownTests(unittest.TestCase):
