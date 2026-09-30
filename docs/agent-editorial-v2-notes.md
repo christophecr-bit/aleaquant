@@ -240,3 +240,48 @@ des nombres et des mots.
 - Vérification de cohérence interne : si le texte énonce une liste de N valeurs pour un
   fait (ex. écarts ordonnés), vérifier que toute reformulation ultérieure de ce même
   fait dans l'article cite bien les N mêmes valeurs.
+
+## DÉFAUT MAJEUR — le garde lexical ne peut pas se déclencher (30/09/2026, ~2h05)
+
+Trouvé en analysant les 1 984 fichiers de faits à l'échelle, pas article par article.
+
+**Constat brut** : 100 % des 1 984 tirages ont au moins une mesure classée VERY_RARE.
+Aucune exception. En moyenne 1,04 mesure très rare par tirage.
+
+**Cause** : `main.sorted_gaps` est VERY_RARE pour TOUT tirage possible, par construction.
+1 725 profils d'écarts distincts se partagent les 2 118 760 combinaisons ; la plus grande
+classe observée compte 888 combinaisons, alors que le seuil VERY_RARE est à 2 119
+(0,1 %). Aucune valeur de cette mesure ne peut donc être autre chose que « très rare ».
+Répartition des mesures toujours/souvent très rares :
+  - main.sorted_gaps   : 100,0 % des tirages (structurel, non informatif)
+  - main.decade_counts :   2,0 % des tirages (informatif)
+  - main.sum           :   1,4 % des tirages (informatif)
+
+**Conséquence sur le code** : `guard_interpretive_words()` calcule
+`max_rarity_available` comme le maximum du champ `rarity` sur TOUS les faits. Comme
+`sorted_gaps` vaut toujours VERY_RARE, ce maximum vaut toujours 3, donc la condition
+`RARITY_ORDER[level] > max_rarity_available` est toujours fausse : **le garde retourne
+OK quelle que soit l'inflation du texte**. Les « GARDE LEXICAL : OK » de toute la
+session ne prouvent donc rien. Le garde ne s'est déclenché que dans les tests
+synthétiques, où les faits étaient fabriqués à la main avec un maximum à RARE.
+
+**Conséquence éditoriale, plus importante encore** : un badge de rareté n'a de valeur
+informative que si la mesure peut aussi ne PAS être rare. Avant d'afficher une mesure
+avec son badge (puces A, radar B), il faut connaître sa distribution de rareté sur
+l'historique et écarter — ou signaler comme structurelle — toute mesure dont la rareté
+est constante. Sinon le site annoncera « très rare » sur chaque tirage, ce qui est
+exactement le travers que la ligne éditoriale veut éviter.
+
+**Correctifs à faire (prochaine session, par ordre)** :
+1. Calculer une fois pour toutes, par mesure, la part des tirages où elle est
+   VERY_RARE / RARE / etc. Stocker ce profil (ex. `dist/data/rarity_profiles.json`).
+2. Marquer les mesures à rareté constante comme non informatives : jamais de badge,
+   jamais de qualificatif de rareté dans un article, ou alors avec la mention
+   explicite que c'est structurel ("toute combinaison a un profil d'écarts rare").
+3. Remplacer le garde lexical global par l'appariement mot ↔ fact_id (déjà identifié
+   comme la vraie solution) : le modèle tague chaque affirmation de rareté avec le
+   fact_id concerné, et le garde compare au `rarity` de CE fait — plus de "au moins un
+   fait quelque part".
+4. Ne pas faire confiance à un garde qui n'a jamais été vu échouer sur données réelles :
+   tout nouveau garde doit être testé sur un échantillon de l'historique complet, pas
+   seulement sur des cas synthétiques.
