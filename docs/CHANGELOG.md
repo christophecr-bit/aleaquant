@@ -1,5 +1,14 @@
 # Journal de développement
 
+## 2026-09-30 — gabarit de rubriques et retour des graphes de tirage
+
+| Fichier | Changement | Vérification |
+|---|---|---|
+| `engine/build_pages.py`, `dist/tirages/{euromillions,loto}/**/index.html` | Lois exactes du régime rendues en mini-histogrammes SVG pour six mesures pertinentes au plus ; trait orange sur la valeur observée, légende de regroupement visuel ; 9 657 pages régénérées localement, sans déploiement. | Échantillons EuroMillions et Loto, actuels et historiques ; comptage de toutes les pages. |
+| `tests/test_loto_pages.py` | Régression des graphes et refus d'une loi d'un autre régime. | Suite web complète. |
+| `prototypes/editorial-home/index.html`, `docs/SITE-EDITORIAL-ARCHITECTURE.md` | Quatre rubriques, huit cartes de contenus clairement typées, sujets non publiés sans lien ; gabarit et prochain chantier documentés. | Inspection desktop/mobile de la maquette locale. |
+| `README.md`, `docs/TECHNICAL-DEBT.md`, `docs/HANDOFF.md`, `docs/CHANGELOG.md` | État, dette et reprise alignés sur la maquette et le correctif local. | Relecture des statuts et des liens. |
+
 ## 2026-09-30 — covariance historique par jeu et régime
 
 | Fichier | Changement | Vérification |

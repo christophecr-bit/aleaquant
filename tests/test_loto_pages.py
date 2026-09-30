@@ -20,6 +20,23 @@ SOURCE_FACTS = ROOT / 'dist' / 'data' / 'facts'
 
 
 class LotoPagesTests(unittest.TestCase):
+    def test_mini_histogrammes_par_tirage_et_par_regime(self):
+        """Chaque formule conserve ses lois exactes et le repère du tirage."""
+        for draw_id in ('EM-26078', 'EM-2011053', 'LO-20260928', 'LO-19920328-1'):
+            with self.subTest(draw_id=draw_id):
+                facts = json.loads((SOURCE_FACTS / f'{draw_id}.json').read_text())
+                render = build_pages.page_html if draw_id.startswith('EM-') else build_pages.loto_page_html
+                page = render(facts, None, None)
+                self.assertGreaterEqual(page.count('class="metric-spark"'), 5)
+                self.assertIn('Trait orange : valeur du tirage', page)
+                self.assertIn('La rareté indiquée au-dessus porte sur la classe exacte', page)
+                self.assertIn('stroke="#eb6834"', page)
+
+        em = json.loads((SOURCE_FACTS / 'EM-26078.json').read_text())
+        sum_fact = next(f for f in em['facts'] if f.get('metric') == 'main.sum')
+        wrong = build_pages.read_regime_law(str(ROOT / 'dist/data/laws/regime-5-49.json'))
+        self.assertEqual(build_pages.metric_spark(sum_fact, {'main': wrong}), '')
+
     def test_article_approuve_associe_uniquement_au_bon_tirage(self):
         with tempfile.TemporaryDirectory() as dossier:
             dist = Path(dossier) / 'dist'

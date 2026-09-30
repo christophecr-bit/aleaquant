@@ -10,8 +10,10 @@ Sorties : dist/tirages/euromillions/<date>/index.html,
 Usage : python3 engine/build_pages.py
 """
 import html
+from functools import lru_cache
 from hashlib import sha256
 import json
+from math import ceil
 import sys
 from pathlib import Path
 
@@ -20,6 +22,13 @@ from common import DATA, read_json  # noqa: E402
 DIST = DATA.parent
 
 RARITY_FR = {'COMMON': 'courante', 'UNCOMMON': 'peu courante', 'RARE': 'rare', 'VERY_RARE': 'très rare'}
+# Les mini-histogrammes portent sur quelques mesures numériques lisibles. Les
+# signatures catégorielles et les métriques sans loi restent des cartes textuelles.
+GRAPH_METRICS = frozenset({
+    'main.sum', 'main.span', 'main.max_same_decade',
+    'main.clusteredness_close_pairs_5', 'main.longest_consecutive_run',
+    'stars.sum',
+})
 SITE_URL = 'https://aleaquant.aleaquant.workers.dev'
 NAV = ('<a class="brand" href="/">Alea<span>Quant</span><i>∴</i></a>'
        '<nav aria-label="Navigation principale">'
@@ -60,7 +69,67 @@ def pct(p):
     return 'moins de 0,01 %'
 
 
-def mcard(fact):
+@lru_cache(maxsize=12)
+def read_regime_law(path):
+    return read_json(Path(path))
+
+
+def card_laws(facts):
+    """Charge les lois du jeu et de la formule du tirage, jamais une loi voisine."""
+    if facts['game_id'] == 'euromillions':
+        domains = {'main': (5, 50), 'stars': (2, int(facts['rule_id'].split('-')[2]))}
+    elif facts['game_id'] == 'loto':
+        grid = next(f for f in facts['facts'] if f['fact_id'] == 'F.grid.probability')['value']['grid']
+        domains = {name: (component['picks'], component['domain'])
+                   for name, component in grid.items()}
+    else:
+        return {}
+    return {name: read_regime_law(str(DATA / 'laws' / f'regime-{picks}-{domain}.json'))
+            for name, (picks, domain) in domains.items()
+            if (DATA / 'laws' / f'regime-{picks}-{domain}.json').is_file()}
+
+
+def metric_spark(fact, laws):
+    """SVG compact d'une loi exacte ; l'orange repère la valeur observée."""
+    metric = fact.get('metric', '')
+    if metric not in GRAPH_METRICS:
+        return ''
+    component, field = metric.split('.', 1)
+    regime = laws.get(component)
+    if not regime or field not in regime['laws']:
+        return ''
+    law = regime['laws'][field]
+    try:
+        values = sorted(((float(key), count) for key, count in law.items()))
+        observed = float(fact['value'])
+    except (TypeError, ValueError):
+        return ''
+    positions = [i for i, (value, _) in enumerate(values) if value == observed]
+    if len(positions) != 1 or not values or regime['total'] <= 0:
+        return ''
+    # Évite d'afficher la loi d'un autre régime sous un fait juste par hasard.
+    if abs(values[positions[0]][1] / regime['total'] - fact['p_class']) > 1e-10:
+        return ''
+    group_size = ceil(len(values) / 48)
+    bins = [sum(count for _, count in values[i:i + group_size])
+            for i in range(0, len(values), group_size)]
+    maximum = max(bins)
+    width = 300 / len(bins)
+    bars = ' '.join(f'M{(i + .5) * width:.1f} 45V{45 - 41 * count / maximum:.1f}'
+                    for i, count in enumerate(bins))
+    marker = (positions[0] // group_size + .5) * width
+    grouped = ' regroupées pour l’affichage' if group_size > 1 else ''
+    title = esc(f'Loi exacte — {fact["label"]} ; valeur observée {fact["value"]}')
+    description = esc(f'Distribution des classes{grouped}. Trait orange : valeur du tirage. '
+                      'La rareté indiquée au-dessus porte sur la classe exacte.')
+    return (f'<svg class="metric-spark" viewBox="0 0 300 46" role="img" aria-label="{title}">'
+            f'<title>{title}</title><desc>{description}</desc>'
+            f'<path d="{bars}" fill="none" stroke="#b7d3f6" stroke-width="{max(1, width - 1):.1f}"/>'
+            f'<line x1="{marker:.1f}" y1="1" x2="{marker:.1f}" y2="46" '
+            'stroke="#eb6834" stroke-width="2"/></svg>')
+
+
+def mcard(fact, laws=None):
     label = esc(fact['label'])
     rarity = fact.get('rarity')
     chip = f'<span class="chip {rarity}">{RARITY_FR.get(rarity, rarity)}</span>' if rarity else ''
@@ -76,7 +145,8 @@ def mcard(fact):
                 f'tirages antérieurs (attendu {hp["expected"]}).</p>')
     return (f'<div class="mcard"><h4>{label}{chip}</h4>'
             f'<div class="val">{esc(shown)}</div>'
-            f'<div class="sub">{esc(" · ".join(sub_bits))}</div>{hist}</div>')
+            f'<div class="sub">{esc(" · ".join(sub_bits))}</div>'
+            f'{metric_spark(fact, laws or {})}{hist}</div>')
 
 
 def balls_html(main, stars):
@@ -133,7 +203,8 @@ def page_html(facts, prev_id, next_id, article=None):
     main, stars = facts['main'], facts['stars']
     is_current_rule = 'F.stars.rule' not in f_by_id
     metric_facts = [f for f in facts['facts'] if f.get('category') == 'class_metric']
-    cards = ''.join(mcard(f) for f in metric_facts)
+    laws = card_laws(facts)
+    cards = ''.join(mcard(f, laws) for f in metric_facts)
 
     pascal = f_by_id.get('F.pascal.subsets')
     history = f_by_id.get('F.history.exact_main')
@@ -191,6 +262,7 @@ def page_html(facts, prev_id, next_id, article=None):
 {article_html(article)}
 {"".join(callouts)}
 <div class="metric-grid">{cards}</div>
+<p class="small">Mini-histogrammes : distribution exacte de chaque métrique affichée ; le trait orange marque la valeur de ce tirage. Certaines classes voisines sont regroupées pour le dessin, sans changer leur fréquence ni leur rareté.</p>
 <p class="small">Loi exacte : énumération complète, sans simulation. Comparaisons historiques calculées uniquement sur les tirages antérieurs à ce tirage (aucun regard en avant).</p>
 {f'<p class="callout"><em>{esc(expectation["statement"])}</em></p>' if expectation else ""}
 <p><a class="text-link" href="/#{esc(draw_id)}">Explorer ce tirage dans l’outil interactif →</a></p>
@@ -253,7 +325,8 @@ def loto_page_html(facts, prev_id, next_id, article=None):
     grid = by_id['F.grid.probability']['value']['grid']
     k, domain = grid['main']['picks'], grid['main']['domain']
     metrics = [f for f in facts['facts'] if f.get('category') == 'class_metric']
-    cards = ''.join(mcard(f) for f in metrics)
+    laws = card_laws(facts)
+    cards = ''.join(mcard(f, laws) for f in metrics)
     history = by_id.get('F.history.exact_main')
     signature = by_id.get('F.signature')
     expectation = by_id.get('F.editorial.expectation')
@@ -298,6 +371,7 @@ def loto_page_html(facts, prev_id, next_id, article=None):
 {article_html(article)}
 {''.join(callouts)}
 <div class="metric-grid">{cards}</div>
+<p class="small">Mini-histogrammes : distribution exacte de chaque métrique affichée ; le trait orange marque la valeur de ce tirage. Certaines classes voisines sont regroupées pour le dessin, sans changer leur fréquence ni leur rareté.</p>
 <p class="small">Loi exacte des {k} numéros parmi {domain} : énumération complète, sans simulation. L’historique compare seulement les tirages antérieurs de la même formule {k}/{domain}. {complement_note}</p>
 {f'<p class="callout"><em>{esc(expectation["statement"])}</em></p>' if expectation else ''}
 <p><a class="text-link" href="/tirages/euromillions/">Explorer aussi les tirages EuroMillions →</a></p>

@@ -6,6 +6,15 @@ deux documents pertinents avant le commit.
 
 ## Réalisé dans cette livraison
 
+- La régression des mini-histogrammes sur les pages de tirage est corrigée dans
+  le générateur. Les 9 657 fiches EuroMillions/Loto ont été régénérées localement :
+  toutes comportent cinq ou six graphes de mesures choisies, chacun lié à la loi
+  de son régime. La légende distingue regroupement graphique et rareté de la
+  classe exacte. Rien de cela n'a encore été déployé sur le Worker.
+- Le gabarit de l'accueil éditorial est défini dans
+  `docs/SITE-EDITORIAL-ARCHITECTURE.md` et illustré par la maquette locale : quatre
+  rubriques avec cartes d'article, d'analyse, d'expérience, de référence ou de
+  sujet à préparer. Les sujets non publiés sont signalés et sans lien.
 - Covariance **théorique** des positions ordonnées k/N calculée en fractions exactes
   pour les régimes AleaQuant ; chaque cellule vérifiée sur de petits univers et la
   variance de l'étendue recoupée avec la loi exacte existante. Note de recherche
@@ -108,22 +117,18 @@ deux documents pertinents avant le commit.
   le texte publiable sans relecture. Généraliser le choix d'angle aux autres jeux
   seulement après cette évaluation, et prévoir des métadonnées de jeu/date séparées
   du titre sur les cartes de journal.
-- Repenser l'éditorial de la page d'accueil : clarifier la promesse pour un nouveau
-  lecteur, découper les longs textes en sous-parties, hiérarchiser les outils et
-  choisir quelques blocs visuels/interactifs sobres. L'accueil mélange aujourd'hui
-  introduction, mini-expérience, explorateur EuroMillions, Atlas, dictionnaire,
-  journal et méthode; décider ce qui doit rester sur l'accueil et ce qui doit vivre
-  sur une page dédiée, notamment le calendrier propre à chaque jeu. Prototyper une
-  structure avant de retoucher les styles ou d'ajouter des animations. Une première
-  maquette HTML autonome existe dans `prototypes/editorial-home/index.html` : cadre
-  général, mini-expérience et rubriques actuelles sous forme de cartes, hiérarchie
-  asymétrique, illustration abstraite et fil éditorial des derniers tirages avec des
-  commentaires descriptifs plus fluides. Elle reste une piste non publiée et le fil
-  utilise un snapshot local : il faut le relier aux données actualisées de chaque jeu.
-  La tester avec de vrais textes et sur mobile, puis décider si elle doit être portée
-  dans un prototype Astro ou adaptée directement au site actuel. Examiner Hostinger
-  et Semnal comme références visuelles seulement; garder le code final transférable
-  dans le dépôt actuel.
+- Intégrer la maquette éditoriale au site après validation des quatre rubriques et
+  des cartes de `docs/SITE-EDITORIAL-ARCHITECTURE.md`. Le fil des derniers tirages
+  utilise encore un snapshot : le raccorder aux dernières révisions de chaque jeu.
+  Générer les cartes depuis un manifeste de publications approuvées et de ressources
+  curatées, sans exposer les brouillons. Tester de vrais textes sur mobile, puis
+  choisir entre un portage Astro et une adaptation du site actuel. Le calendrier
+  doit rester propre à chaque jeu ; le Journal est un fil transversal. Examiner
+  Hostinger et Semnal comme références visuelles seulement.
+- Publier la régénération des pages de tirage avec mini-histogrammes après revue
+  des changements produits et contrôle du budget d'assets Wrangler. Le correctif
+  fonctionne localement et passe les tests, mais le Worker sert encore l'ancienne
+  version tant qu'un déploiement n'a pas été décidé.
 - Remettre l'Atlas dans la feuille de route produit : définir une première version de
   portefeuilles, ses familles et leurs limites, puis écrire des articles de fond AleaQuant
   qui introduisent la géométrie des grilles avant de présenter les outils. Les articles

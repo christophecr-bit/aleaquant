@@ -5,6 +5,11 @@
 > fichiers modifiés dans `docs/CHANGELOG.md`. Les sections historiques ci-dessous
 > décrivent l'état antérieur de l'agent éditorial ; leurs comptes de tirages et
 > indications de déploiement ne remplacent pas ces deux documents récents.
+> Maquette locale : `prototypes/editorial-home/index.html`, maintenant organisée en
+> quatre rubriques et cartes de contenus. Gabarit, frontières et prochain chantier
+> dans `docs/SITE-EDITORIAL-ARCHITECTURE.md`. Les 9 657 pages de tirage ont été
+> régénérées **localement** avec leurs mini-histogrammes ; aucun déploiement de ce
+> correctif n'a été effectué. Le fil de l'accueil reste un snapshot.
 > Pages Loto et sélecteur de jeu publiés le 30/09/2026 sur
 > `https://aleaquant.aleaquant.workers.dev`, version Worker
 > `27128adb-e8e6-4ec5-95a3-63d98370b445`. 9 687 assets actifs ; deux URL Loto

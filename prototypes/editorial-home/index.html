@@ -1,0 +1,230 @@
+<!doctype html>
+<!--
+File: prototypes/editorial-home/index.html
+Project: AleaQuant editorial homepage prototype
+Version: 0.2.0 · Date: 2026-09-30 · Author: AleaQuant
+History: 0.2.0 — four editorial rubrics and reusable content cards; 0.1.1 — latest-draw strip and original hero artwork.
+TODO: connect the rubric cards and latest-draw strip to approved publications and current facts; do not deploy as production.
+-->
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f6f5ef">
+  <title>AleaQuant — prototype éditorial</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #123633;
+      --paper: #f6f5ef;
+      --card: #fffefa;
+      --lime: #d8f36a;
+      --line: #d8ddd2;
+      --muted: #526962;
+      --orange: #e27c4b;
+      --blue: #7896cd;
+      --serif: Georgia, "Times New Roman", serif;
+      --sans: Arial, Helvetica, sans-serif;
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { margin: 0; background: #e9e9e0; color: var(--ink); font: 16px/1.55 var(--sans); }
+    a { color: inherit; text-decoration: none; }
+    a:focus-visible { outline: 3px solid #648735; outline-offset: 4px; }
+    .page { max-width: 1480px; margin: 26px auto; background: var(--paper); border: 1px solid #cbd2c7; box-shadow: 0 18px 55px #273c3010; }
+    .masthead, main, footer { padding-left: clamp(22px, 5vw, 76px); padding-right: clamp(22px, 5vw, 76px); }
+    .masthead { min-height: 88px; display: flex; align-items: center; justify-content: space-between; gap: 24px; border-bottom: 1px solid var(--line); }
+    .brand { font-size: 25px; letter-spacing: -1.3px; font-weight: 700; white-space: nowrap; }
+    .brand span { font-weight: 400; }
+    .brand b { color: #809752; font-size: 15px; padding-left: 6px; }
+    nav { display: flex; flex-wrap: wrap; gap: 8px 22px; font-size: 13px; color: var(--muted); }
+    nav a:hover, .text-link:hover { text-decoration: underline; text-underline-offset: 4px; }
+    .edition { font-size: 10px; letter-spacing: 1.5px; color: var(--muted); white-space: nowrap; }
+    .hero { padding-top: clamp(46px, 7vw, 96px); padding-bottom: clamp(44px, 6vw, 82px); display: grid; grid-template-columns: 0.9fr 1.1fr; gap: clamp(30px, 6vw, 90px); align-items: center; }
+    .eyebrow { font-size: 10px; letter-spacing: 1.8px; font-weight: 700; color: var(--muted); text-transform: uppercase; }
+    .eyebrow .dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #8ba55a; margin-right: 8px; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1 { max-width: 650px; margin: 20px 0 22px; font: 400 clamp(48px, 6vw, 82px)/0.99 var(--serif); letter-spacing: -3.5px; }
+    h1 em, h2 em { color: #748c4d; font-weight: 400; }
+    .hero-copy > p { max-width: 490px; color: var(--muted); font-size: 17px; }
+    .actions { display: flex; align-items: center; gap: 20px; flex-wrap: wrap; margin-top: 27px; }
+    .button { display: inline-flex; align-items: center; gap: 13px; padding: 13px 18px; background: var(--ink); color: white; border-radius: 3px; font-size: 13px; font-weight: 700; }
+    .button:hover { background: #254c43; }
+    .text-link { font-size: 13px; text-decoration: underline; text-underline-offset: 4px; }
+    .manifesto { display: block; margin-top: 24px; color: var(--muted); font-size: 12px; }
+    .latest { margin: 0 0 66px; padding: 32px; background: #e9eddf; border: 1px solid var(--line); border-radius: 5px; }
+    .latest-head { display: grid; grid-template-columns: 1fr minmax(180px, 310px); align-items: end; gap: 30px; margin-bottom: 24px; }
+    .latest-kicker { display: inline-flex; align-items: center; gap: 9px; color: #687c48; font-size: 10px; letter-spacing: 1.6px; font-weight: 700; text-transform: uppercase; }
+    .latest-kicker::before { content: ""; width: 25px; height: 2px; background: var(--orange); }
+    .latest h2 { max-width: 760px; margin: 12px 0 0; font: 400 clamp(36px, 5vw, 62px)/.99 var(--serif); letter-spacing: -2.4px; }
+    .latest h2 em { color: #748c4d; }
+    .latest-intro { margin: 0 0 5px; color: var(--muted); font-size: 13px; }
+    .latest-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+    .latest-card { position: relative; min-height: 255px; display: flex; flex-direction: column; justify-content: space-between; padding: 22px; overflow: hidden; background: var(--card); border: 1px solid #d7ddd0; border-radius: 4px; }
+    .latest-card::after { content: ""; position: absolute; width: 150px; height: 150px; right: -53px; top: -63px; border: 1px solid #a9b995; border-radius: 47% 53% 61% 39%; transform: rotate(31deg); box-shadow: 0 0 0 13px #e9eddf, 0 0 0 14px #a9b995, 0 0 0 29px #fffefa, 0 0 0 30px #d6deca; opacity: .65; }
+    .latest-top, .latest-bottom { position: relative; z-index: 1; }
+    .latest-top { display: flex; justify-content: space-between; gap: 16px; align-items: center; }
+    .latest-game { color: var(--muted); font-size: 10px; letter-spacing: 1.4px; font-weight: 700; text-transform: uppercase; }
+    .latest-date { color: #71834e; font: 16px var(--serif); }
+    .latest-card h3 { max-width: 490px; margin: 23px 0 9px; font: 400 clamp(25px, 3vw, 36px)/1.04 var(--serif); letter-spacing: -.7px; }
+    .latest-card p { max-width: 530px; margin: 0; color: var(--muted); font-size: 13px; }
+    .latest-balls { display: flex; align-items: center; gap: 7px; margin: 19px 0 17px; }
+    .latest-balls span { width: 34px; height: 34px; display: grid; place-items: center; border-radius: 50%; color: white; background: var(--ink); font: 15px var(--serif); }
+    .latest-balls span.chance { width: 30px; height: 30px; margin-left: 7px; border-radius: 7px; color: var(--ink); background: var(--lime); }
+    .latest-link { display: inline-flex; align-items: center; gap: 8px; margin-top: 15px; color: var(--ink); font-size: 12px; font-weight: 700; text-decoration: underline; text-underline-offset: 4px; }
+    .latest-foot { margin: 15px 0 0; color: #65766b; font-size: 10px; }
+    .hero-art { min-height: 390px; position: relative; overflow: hidden; border-radius: 5px; background: radial-gradient(ellipse at 65% 35%, #345b50 0, #1c443b 45%, #102e2b 100%); color: #f1f3d8; }
+    .art-label { position: absolute; top: 22px; left: 24px; z-index: 2; font-size: 9px; letter-spacing: 1.7px; color: #c2d1b3; }
+    .art-caption { position: absolute; bottom: 0; left: 0; right: 0; z-index: 2; padding: 18px 24px; background: linear-gradient(transparent, #102e2bf2 40%); font: 16px var(--serif); }
+    .art-caption small { display: block; margin-top: 4px; color: #c6d4c5; font: 11px var(--sans); }
+    .hero-art img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+    .section-intro { display: flex; justify-content: space-between; align-items: end; gap: 32px; padding: 27px 0 23px; border-top: 1px solid var(--line); }
+    .section-intro h2 { margin: 8px 0 0; font: 400 clamp(31px, 4vw, 46px)/1.08 var(--serif); letter-spacing: -1.4px; }
+    .section-intro p { max-width: 420px; margin: 0; color: var(--muted); font-size: 13px; }
+    .rubric-list { display: grid; gap: 16px; padding-bottom: 66px; }
+    .rubric { display: grid; grid-template-columns: minmax(200px, .64fr) minmax(0, 1.36fr); gap: 24px; padding: 24px; border: 1px solid var(--line); border-radius: 4px; background: #fffefa; }
+    .rubric:nth-child(even) { background: #eef0e8; }
+    .rubric-head { border-right: 1px solid var(--line); padding: 6px 24px 6px 0; }
+    .rubric-index { color: #829557; font-size: 10px; font-weight: 700; letter-spacing: 1.6px; text-transform: uppercase; }
+    .rubric h3 { margin: 13px 0 11px; font: 400 clamp(28px, 3.1vw, 39px)/1.02 var(--serif); letter-spacing: -1px; }
+    .rubric-head p { max-width: 270px; color: var(--muted); font-size: 13px; }
+    .rubric-link { color: var(--ink); font-size: 12px; font-weight: 700; text-decoration: underline; text-underline-offset: 4px; }
+    .publication-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 13px; }
+    .content-card { position: relative; min-height: 225px; display: flex; flex-direction: column; padding: 18px; overflow: hidden; border: 1px solid #d7ddd0; border-radius: 4px; background: #fff; }
+    a.content-card:hover { border-color: #9cad8e; box-shadow: 0 8px 22px #12363313; transform: translateY(-2px); }
+    .content-card--planned { background: #f5f6f0; }
+    .content-card::after { content: ''; position: absolute; right: -18px; bottom: -34px; width: 130px; height: 130px; border: 1px solid #b8c7b1; border-radius: 44% 56% 63% 37%; transform: rotate(23deg); opacity: .65; pointer-events: none; }
+    .content-card--curve::after { border-radius: 50%; box-shadow: 0 0 0 11px #fff, 0 0 0 12px #cfddc2, 0 0 0 24px #fff, 0 0 0 25px #cfddc2; }
+    .content-card--grid::after { border-radius: 8px; transform: rotate(24deg); box-shadow: 13px 13px 0 -1px #f0f4e8, 13px 13px 0 #b8c7b1; }
+    .content-meta { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; position: relative; z-index: 1; color: #59705f; font-size: 10px; font-weight: 700; letter-spacing: 1px; text-transform: uppercase; }
+    .content-meta span:first-child { padding: 3px 7px; background: #e8eedb; }
+    .content-card--planned .content-meta span:first-child { background: #e4e8e0; }
+    .content-card h4 { max-width: 400px; position: relative; z-index: 1; margin: 17px 0 9px; font: 400 clamp(21px, 2.1vw, 27px)/1.08 var(--serif); letter-spacing: -.45px; }
+    .content-card p { max-width: 380px; position: relative; z-index: 1; margin: 0 0 20px; color: var(--muted); font-size: 12px; }
+    .content-action { position: relative; z-index: 1; margin-top: auto; font-size: 11px; font-weight: 700; text-decoration: underline; text-underline-offset: 3px; }
+    .content-card--planned .content-action { color: #65766b; text-decoration: none; }
+    .bottom-note { margin: 0 0 70px; display: grid; grid-template-columns: 1fr 1.4fr; gap: 35px; align-items: center; padding: 30px; color: #eaf0da; background: var(--ink); border-radius: 4px; }
+    .bottom-note strong { font: 400 23px/1.2 var(--serif); }
+    .bottom-note p { margin: 0; max-width: 610px; color: #c3d0c1; font-size: 13px; }
+    footer { min-height: 90px; display: flex; align-items: center; gap: 22px; border-top: 1px solid var(--line); color: var(--muted); font-size: 11px; }
+    footer span:last-child { margin-left: auto; text-align: right; }
+    @media (max-width: 950px) {
+      .page { margin: 0; border: 0; }
+      .edition { display: none; }
+      .hero { grid-template-columns: 1fr 1fr; }
+      .latest-head { grid-template-columns: 1fr; gap: 13px; }
+      .rubric { grid-template-columns: minmax(180px, .45fr) minmax(0, 1fr); }
+    }
+    @media (max-width: 700px) {
+      .masthead { padding-top: 18px; padding-bottom: 17px; align-items: flex-start; flex-direction: column; gap: 13px; }
+      nav { gap: 7px 16px; }
+      .hero { grid-template-columns: 1fr; gap: 28px; padding-top: 42px; }
+      .latest { padding: 21px; margin-bottom: 48px; }
+      .latest-grid { grid-template-columns: 1fr; }
+      .latest h2 { letter-spacing: -1.5px; }
+      h1 { letter-spacing: -2px; }
+      .hero-art { min-height: 300px; }
+      .section-intro { align-items: flex-start; flex-direction: column; gap: 12px; }
+      .rubric-list { gap: 12px; padding-bottom: 48px; }
+      .rubric { grid-template-columns: 1fr; gap: 14px; padding: 20px; }
+      .rubric-head { border-right: 0; border-bottom: 1px solid var(--line); padding: 0 0 14px; }
+      .rubric h3 { margin: 7px 0; }
+      .rubric-head p { max-width: none; margin-bottom: 7px; }
+      .publication-grid { grid-template-columns: 1fr; }
+      .content-card { min-height: 195px; }
+      .bottom-note { grid-template-columns: 1fr; gap: 12px; padding: 23px; margin-bottom: 46px; }
+      footer { align-items: flex-start; flex-wrap: wrap; padding-top: 20px; padding-bottom: 20px; }
+      footer span:last-child { width: 100%; margin-left: 0; text-align: left; }
+    }
+    @media (prefers-reduced-motion: reduce) { html { scroll-behavior: auto; } *, *::before, *::after { transition-duration: .01ms !important; } }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <header class="masthead">
+      <a class="brand" href="#top" aria-label="AleaQuant, accueil">Alea<span>Quant</span><b>∴</b></a>
+      <nav aria-label="Rubriques">
+        <a href="#derniers-tirages">Tirages</a><a href="#comprendre">Comprendre</a><a href="#atlas">Atlas</a><a href="#recherche">Recherche</a><a href="#methode">Méthode</a>
+      </nav>
+      <span class="edition">ÉDITION EXPÉRIMENTALE · V0</span>
+    </header>
+    <main id="top">
+      <section class="hero" id="explorer" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <span class="eyebrow"><i class="dot"></i> PROBABILITÉS · COMBINATOIRE · CURIOSITÉ</span>
+          <h1 id="hero-title">Le hasard a des structures.<br><em>Explorons-les.</em></h1>
+          <p>Des tirages aux distributions, des intuitions aux preuves. AleaQuant rend les mathématiques du hasard lisibles, mesurables et discutables.</p>
+          <div class="actions"><a class="button" href="#rubriques">Choisir une exploration <span aria-hidden="true">→</span></a><a class="text-link" href="#rubriques">Voir les rubriques</a></div>
+          <small class="manifesto">Comprendre le hasard n’est pas prédire le prochain tirage.</small>
+        </div>
+        <figure class="hero-art" aria-label="Illustration abstraite de reliefs de probabilité, conçue comme ambiance et non comme graphique de données">
+          <span class="art-label">FIG. 01 / PAYSAGE DE PROBABILITÉ · IMAGE ALEAQUANT</span>
+          <img src="assets/probability-landscape.png" alt="Relief topographique abstrait évoquant une distribution de probabilités, avec des courbes de niveau et des points lumineux">
+          <figcaption class="art-caption">Une réalisation. Plusieurs géométries à explorer.<small>Illustration originale générée pour AleaQuant — les résultats chiffrés gardent leur propre échelle.</small></figcaption>
+        </figure>
+      </section>
+
+      <section class="latest" id="derniers-tirages" aria-labelledby="latest-title">
+        <div class="latest-head">
+          <div><span class="latest-kicker">Le fil des tirages · une lecture en mouvement</span><h2 id="latest-title">Le résultat tombe.<br><em>La curiosité commence.</em></h2></div>
+          <p class="latest-intro">Les derniers résultats sont un rendez-vous simple. Nous les regardons avec un angle maison : décrire leur forme, puis ouvrir une question plutôt que chercher un présage.</p>
+        </div>
+        <div class="latest-grid">
+          <article class="latest-card" aria-labelledby="latest-em-title">
+            <div class="latest-top"><span class="latest-game">EuroMillions · dernier résultat</span><time class="latest-date" datetime="2026-09-29">29 septembre 2026</time></div>
+            <div class="latest-bottom"><h3 id="latest-em-title">Une grille qui traverse quatre dizaines.</h3><p>De 4 à 44, les cinq numéros occupent quatre tranches de dix. Une petite géographie pour situer ce tirage, sans lui demander de raconter le prochain.</p><div class="latest-balls" aria-label="Numéros 4, 7, 12, 31 et 44 ; étoiles 8 et 11"><span>04</span><span>07</span><span>12</span><span>31</span><span>44</span><span class="chance">08</span><span class="chance">11</span></div><a class="latest-link" href="https://aleaquant.aleaquant.workers.dev/tirages/euromillions/2026-09-29/">Lire l’analyse du tirage <span aria-hidden="true">→</span></a></div>
+          </article>
+          <article class="latest-card" aria-labelledby="latest-loto-title">
+            <div class="latest-top"><span class="latest-game">Loto · dernier résultat</span><time class="latest-date" datetime="2026-09-28">28 septembre 2026</time></div>
+            <div class="latest-bottom"><h3 id="latest-loto-title">Deux numéros dans la décade 5.</h3><p>Les trois autres occupent chacun une décade différente. C’est le dessin de cette grille, un portrait du résultat — rien de plus prédictif.</p><div class="latest-balls" aria-label="Numéros 2, 30, 36, 44 et 48 ; numéro Chance 5"><span>02</span><span>30</span><span>36</span><span>44</span><span>48</span><span class="chance">05</span></div><a class="latest-link" href="https://aleaquant.aleaquant.workers.dev/tirages/loto/LO-20260928/">Lire l’analyse du tirage <span aria-hidden="true">→</span></a></div>
+          </article>
+        </div>
+        <p class="latest-foot">Données de la maquette : snapshot local au 30 septembre 2026. La version intégrée devra lire les tirages actualisés par jeu.</p>
+      </section>
+
+      <section id="rubriques" aria-labelledby="rubriques-title">
+        <div class="section-intro">
+          <div><span class="eyebrow">LE MAGAZINE ALEAQUANT</span><h2 id="rubriques-title">Quatre rubriques.<br><em>Des questions à suivre.</em></h2></div>
+          <p>Chaque rubrique accueille des articles, des analyses ou des brèves. Les cartes distinguent les contenus déjà en ligne des sujets encore en préparation.</p>
+        </div>
+        <div class="rubric-list">
+          <section class="rubric" id="tirages" aria-labelledby="rubric-tirages">
+            <div class="rubric-head"><span class="rubric-index">01 / Observer</span><h3 id="rubric-tirages">Tirages</h3><p>Le résultat, sa forme et son histoire, replacés dans la bonne règle du jeu.</p><a class="rubric-link" href="https://aleaquant.aleaquant.workers.dev/tirages/">Toutes les archives par jeu →</a></div>
+            <div class="publication-grid">
+              <a class="content-card content-card--curve" href="https://aleaquant.aleaquant.workers.dev/tirages/euromillions/2011-09-06/"><div class="content-meta"><span>Article approuvé</span><span>EuroMillions · 6 septembre 2011</span></div><h4>Une somme à 222, tout en haut de la grille.</h4><p>Un tirage historique lu avec ses lois exactes, ses écarts et sa signature de forme.</p><span class="content-action">Lire l’article →</span></a>
+              <a class="content-card content-card--grid" href="https://aleaquant.aleaquant.workers.dev/tirages/loto/LO-20260928/"><div class="content-meta"><span>Analyse du tirage</span><span>Loto · 28 septembre 2026</span></div><h4>Deux numéros dans la décade 5.</h4><p>La fiche du tirage relie les valeurs observées aux classes de la formule 5/49.</p><span class="content-action">Voir les faits →</span></a>
+            </div>
+          </section>
+          <section class="rubric" id="comprendre" aria-labelledby="rubric-comprendre">
+            <div class="rubric-head"><span class="rubric-index">02 / Expliquer</span><h3 id="rubric-comprendre">Comprendre</h3><p>Des expériences et des textes courts pour séparer probabilité d’une grille et probabilité d’une forme.</p></div>
+            <div class="publication-grid">
+              <a class="content-card content-card--curve" href="https://aleaquant.aleaquant.workers.dev/#experiment-title"><div class="content-meta"><span>Expérience</span><span>Calcul exact</span></div><h4>Une chance égale, des sommes inégales.</h4><p>Un petit univers exhaustif permet de voir pourquoi les classes de sommes n’ont pas toutes la même taille.</p><span class="content-action">Essayer l’expérience →</span></a>
+              <article class="content-card content-card--planned"><div class="content-meta"><span>Article à préparer</span><span>Probabilités</span></div><h4>Pourquoi une grille rare n’est pas une grille chanceuse.</h4><p>Sujet envisagé : distinguer combinaison exacte, classe de métrique et observation historique.</p><span class="content-action">Sujet non publié</span></article>
+            </div>
+          </section>
+          <section class="rubric" id="atlas" aria-labelledby="rubric-atlas">
+            <div class="rubric-head"><span class="rubric-index">03 / Visualiser</span><h3 id="rubric-atlas">Atlas &amp; géométries</h3><p>Voir les distributions, puis comprendre la couverture, les recouvrements et la dispersion des portefeuilles.</p></div>
+            <div class="publication-grid">
+              <a class="content-card content-card--grid" href="https://aleaquant.aleaquant.workers.dev/#atlas"><div class="content-meta"><span>Atlas</span><span>Cooccurrences</span></div><h4>Des motifs dans le bruit ?</h4><p>Parcourir les paires observées et les comparer au niveau attendu sous hasard pur.</p><span class="content-action">Explorer l’Atlas →</span></a>
+              <article class="content-card content-card--planned content-card--curve"><div class="content-meta"><span>Article à préparer</span><span>Portefeuilles</span></div><h4>Une géométrie de grilles, à budget égal.</h4><p>Sujet envisagé : présenter les familles de portefeuilles avant l’outil de comparaison.</p><span class="content-action">Sujet non publié</span></article>
+            </div>
+          </section>
+          <section class="rubric" id="recherche" aria-labelledby="rubric-recherche">
+            <div class="rubric-head"><span class="rubric-index">04 / Vérifier</span><h3 id="rubric-recherche">Recherche &amp; méthode</h3><p>Sources, hypothèses, contrôles et limites : rendre les preuves aussi visibles que les résultats.</p></div>
+            <div class="publication-grid">
+              <a class="content-card content-card--curve" href="https://aleaquant.aleaquant.workers.dev/#methode" id="methode"><div class="content-meta"><span>Méthode</span><span>Référence</span></div><h4>Ce que mesure AleaQuant.</h4><p>Loi exacte, histoire des tirages et simulation ont des rôles différents. La méthode les distingue.</p><span class="content-action">Lire la méthode →</span></a>
+              <article class="content-card content-card--planned content-card--grid"><div class="content-meta"><span>Brève à préparer</span><span>Veille scientifique</span></div><h4>Covariance des positions : une piste d’audit.</h4><p>Sujet envisagé : relier les positions ordonnées à l’étendue, régime par régime, sans lecture prédictive.</p><span class="content-action">Sujet non publié</span></article>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <aside class="bottom-note" aria-label="Principe éditorial">
+        <strong>Comprendre le hasard n’est pas prédire le prochain tirage.</strong>
+        <p>Les simulations éclairent des distributions ; l’historique décrit des observations passées ; les résultats exhaustifs valent pour un domaine défini. Aucun de ces outils ne révèle les prochains numéros.</p>
+      </aside>
+    </main>
+    <footer><a class="brand" href="#top">Alea<span>Quant</span><b>∴</b></a><span>Comprendre · mesurer · questionner</span><span>Prototype éditorial — non publié</span></footer>
+  </div>
+</body>
+</html>
