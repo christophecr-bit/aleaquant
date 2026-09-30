@@ -59,6 +59,54 @@ def build():
     return out
 
 
+def build_par_regime(game_id, prefixe):
+    """Profils d'un jeu, séparés par RÉGIME de composante (composante, k, domaine).
+
+    Le Loto a deux régimes principaux, 6 parmi 49 puis 5 parmi 49. Un niveau de référence
+    calculé à cheval sur les deux mélangerait deux distributions de sommes, d'écarts et
+    de dizaines, et fabriquerait une rareté qui n'existe pas. On calcule donc un profil
+    par régime ; un fait est situé dans le profil de SON régime.
+    """
+    import sys as _sys
+    _sys.path.insert(0, str(Path(__file__).resolve().parents[1].parent / 'aleaquant-data'))
+    from aleaquant_data import charger
+    config = charger(Path(__file__).resolve().parents[1].parent / 'aleaquant-data'
+                     / 'games' / f'{game_id}.yaml')
+    regles = {r.id: r for r in config.rules}
+    niveaux = defaultdict(lambda: defaultdict(Counter))
+    for fp in sorted((DATA / 'facts').glob(f'{prefixe}-*.json')):
+        d = json.loads(fp.read_text(encoding='utf-8'))
+        regle = regles[d['rule_id']]
+        for f in d['facts']:
+            if 'rarity' not in f or not f.get('metric'):
+                continue
+            comp, champ = f['metric'].split('.', 1)
+            regime = f"{comp}-{regle.picks[comp]}-{regle.domains[comp]}"
+            niveaux[regime][f['metric']][f['rarity']] += 1
+
+    regimes = {}
+    for regime, par_mesure in sorted(niveaux.items()):
+        mesures = {}
+        for metric, counts in sorted(par_mesure.items()):
+            n = sum(counts.values())
+            baseline, base_n = max(counts.items(), key=lambda kv: (kv[1], -ORDER[kv[0]]))
+            mesures[metric] = {
+                'draws': n, 'levels': {k: counts[k] for k in ORDER if k in counts},
+                'baseline': baseline, 'baseline_share': round(base_n / n, 4),
+                'constant': len(counts) == 1,
+                'informative': len(counts) > 1 and any(ORDER[k] > ORDER[baseline] for k in counts),
+                'share_above_baseline': round(
+                    sum(c for k, c in counts.items() if ORDER[k] > ORDER[baseline]) / n, 4),
+            }
+        regimes[regime] = mesures
+    out = {'schema': 'aleaquant-rarity-profiles-v2', 'engine': ENGINE_VERSION, 'game_id': game_id,
+           'method': ("par régime de composante (composante-k-domaine) : un profil ne mélange "
+                      "jamais deux formules"), 'regimes': regimes}
+    (DATA / 'rarity_profiles').mkdir(exist_ok=True)
+    write_json(DATA / 'rarity_profiles' / f'{game_id}.json', out, compact=False)
+    return out
+
+
 if __name__ == '__main__':
     r = build()
     nb_const = sum(1 for m in r['metrics'].values() if m['constant'])
