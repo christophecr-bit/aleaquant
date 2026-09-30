@@ -16,6 +16,12 @@ explicites donnent accès aux archives EuroMillions et Loto. Le plan de migratio
 un rendu par tirage à la demande, nécessaire avant Keno, est dans `docs/SCALING.md`.
 Le calendrier de l'accueil reste EuroMillions ; l'archive Loto dispose de son propre
 filtre par date, qui affiche les deux séances si elles ont eu lieu le même jour.
+Chaque page de tirage est aussi l'adresse canonique de son récit : lorsqu'un article
+est approuvé, l'import le relie par `research_pack.draw_id`, vérifie le SHA des faits
+et actualise cette seule page. L'exemple publié est `EM-2011053`, tirage du
+**6 septembre 2011**, à `/tirages/euromillions/2011-09-06/`. La plupart des pages
+n'ont encore que leurs faits calculés ; leur récit attend le batch et la relecture
+humaine. Aucun brouillon n'apparaît sur les pages publiques.
 
 Les pages Loto utilisent `/tirages/loto/<draw_id>/` : 1 886 dates historiques ont un
 premier et un second tirage, donc la date seule écraserait une page. Les pages nomment
@@ -26,8 +32,10 @@ historiques des faits portent seulement sur le régime `k parmi n` comparable.
 Pour régénérer les pages après mise à jour des faits :
 
 ```sh
-python3 engine/build_pages.py
-python3 -m unittest discover -s tests
+python3 -m venv .venv
+.venv/bin/python -m pip install -r requirements-dev.txt
+.venv/bin/python engine/build_pages.py
+.venv/bin/python -m unittest discover -s tests
 ```
 
 Ce build ne déploie rien sur Cloudflare. Le Journal et les pages sont à valider avant
@@ -35,13 +43,58 @@ Ce build ne déploie rien sur Cloudflare. Le Journal et les pages sont à valide
 dans `docs/CHANGELOG.md` et `docs/TECHNICAL-DEBT.md`.
 
 Le dépôt contient aussi les lois Keno 16/56 et 20/70 calculées par récurrence :
-16 mesures sur 20 sont disponibles, et les quatre absentes sont indiquées dans
+17 mesures sur 20 sont disponibles, et les trois absentes sont indiquées dans
 `missing_fields`. Aucun fait ou page Keno n'est encore publié. Les JSON de faits
 utilisés pour construire les pages restent versionnés, mais `dist/.assetsignore` les
 exclut des assets envoyés à Cloudflare. Après génération : 19 346 fichiers dans
 `dist/`, dont 9 658 faits intermédiaires. Wrangler a effectivement publié 9 686
-assets le 30/09/2026 ; deux pages Loto ont été vérifiées en HTTP 200 et une fiche
+assets lors du premier déploiement Loto le 30/09/2026 (9 688 après le calendrier) ;
+deux pages Loto ont été vérifiées en HTTP 200 et une fiche
 JSON exclue en HTTP 404.
+
+Pour Keno, `engine/facts_generic.py` distingue désormais la probabilité d'un **tirage
+exact** de toute probabilité de gain d'une grille jouée. Une génération ciblée par
+`--draw` permet de qualifier quelques tirages sans écrire tout l'historique dans
+`dist/`. Le prototype de groupes mensuels est dans `prototypes/keno-on-demand/` ;
+il ne contient encore que les tirages bruts, pas les faits ni l'analyse publiable.
+
+Une première piste de refonte éditoriale, sous forme de page HTML autonome, est
+disponible dans `prototypes/editorial-home/index.html`. Elle organise les sujets
+actuels en cartes et ajoute un fil de derniers tirages avec un commentaire descriptif
+plus vivant, ainsi qu'une image originale créée pour AleaQuant ; les résultats sont
+un snapshot et la maquette n'est pas reliée au processus de publication. L'Atlas et ses
+familles de portefeuilles restent dans la feuille de route éditoriale. Voir
+`docs/TECHNICAL-DEBT.md` pour les étapes qui restent avant toute intégration.
+
+Un **prototype local isolé** permet de tester un choix d'angle A/B/C et une relecture
+de fluidité sur un rapport EuroMillions. Il sert à préparer la future chaîne
+LangGraph dans le dépôt indépendant `../aleaquant-editorial-agents` ; il ne fait pas
+partie du batch de constitution du fonds d'articles. Les titres citent leurs faits
+d'appui et une sélection humaine est enregistrée avant l'essai direct :
+
+```sh
+.venv/bin/python agent/editorial_angle.py propose EM-26078
+.venv/bin/python agent/editorial_angle.py show runs-angles/EM-26078/angles.json
+.venv/bin/python agent/editorial_angle.py revise runs-angles/EM-26078/angles.json A --title "Une grille qui traverse quatre dizaines"
+.venv/bin/python agent/editorial_angle.py choose runs-angles/EM-26078/angles.json A
+.venv/bin/python agent/compose_draw_report.py EM-26078 --angle runs-angles/EM-26078/selected.json --write
+.venv/bin/python agent/editorial_polish.py runs-llm-compose/EM-26078/draft.json
+.venv/bin/python agent/draw_report.py show runs-llm-compose/EM-26078/draft-polished.json
+```
+
+La relecture humaine garde le dernier mot sur le titre et le corps. Les instructions
+expérimentales sont dans `agent/prompts/`. Le batch `compose_batch_*` continue avec
+son prompt et ses titres neutres ; il ne lit jamais `runs-angles/`. La conception
+agentique cible, ses contrôles et ses étapes non opérationnelles sont suivis dans le
+dépôt éditorial canonique.
+
+Le dépôt `../aleaquant-editorial-agents` possède désormais un profil typé de
+publication des tirages (`configs/draw-publication.json`) et un graphe court
+pour contrôler les brouillons collectés puis attendre l'accord humain. Le
+script `compose_batch_submit.py` accepte en option modèle, effort, fenêtre
+et empreinte du profil ; sans ces options, son comportement historique demeure.
+Le collecteur conserve le modèle réellement utilisé et l'empreinte éventuelle.
+Ce raccordement ne soumet aucun batch et ne déploie aucun article à lui seul.
 
 Aperçu privé sur cette machine uniquement : `python3 -m http.server 4174 --bind 127.0.0.1 --directory dist`, puis ouvrir `http://127.0.0.1:4174/`. Arrêter le serveur avec `Ctrl+C`. Le binding `127.0.0.1` empêche l'accès depuis les autres appareils du réseau.
 
@@ -127,8 +180,10 @@ porte aucune information.** Six des 26 mesures sont dans ce cas (les écarts ord
 « très rares » pour tout tirage possible), et 486 tirages sur 1984 n'ont aucune mesure
 au-dessus de sa référence — pour eux, l'article ne doit employer aucun mot de rareté.
 
-**2. Articles de fond du « Journal » — dépôt indépendant `../aleaquant-editorial-agents`**
-(pipeline LangGraph à 7 agents). Sa commande `editorial export` émet un JSON versionné,
+**2. Comité éditorial — dépôt indépendant `../aleaquant-editorial-agents`**
+(pipeline LangGraph à 7 agents). Son POC traite actuellement des sujets structurés ;
+la future chaîne pourra servir les articles de fond et des tirages sélectionnés, sans
+se confondre avec le batch de fonds. Sa commande `editorial export` émet un JSON versionné,
 importé ici avec :
 
 ```sh
@@ -137,10 +192,13 @@ python3 scripts/import_article.py ../aleaquant-editorial-agents/runs/solid-001/a
 
 Dans les deux cas : l'import est manuel et idempotent par `article_id`, une nouvelle
 version approuvée remplace la précédente, le JSON conserve les preuves et l'empreinte de
-la version approuvée. Les brouillons ne sont jamais copiés automatiquement dans `dist`.
-**Le navigateur rend la prose avec `textContent`, jamais `innerHTML`** — donc pas de
-markdown ni de HTML dans le corps, et toute mise en forme doit passer par un champ
-structuré calculé côté Python.
+la version approuvée. Pour `draw_report`, l'identifiant doit être `tirage-<draw_id>` ;
+l'import vérifie les faits du tirage et régénère sa page locale. Il ne déploie rien.
+Les brouillons ne sont jamais copiés automatiquement dans `dist`.
+Le Journal rend la prose avec `textContent` ; la page statique du tirage échappe
+chaque paragraphe avant de l'insérer dans son HTML. Il n'y a donc pas de Markdown
+ni de HTML interprété dans le corps ; toute mise en forme riche doit passer par
+un champ structuré calculé côté Python.
 
 ## Rafraîchissement des tirages (chantier B3)
 

@@ -4,6 +4,7 @@ Ce test exerce le build de pages sur de vrais faits des deux formules, sans écr
 dans dist/. Une régression sur l'URL ou la comparabilité serait visible au lecteur.
 """
 import importlib.util
+from hashlib import sha256
 import json
 import shutil
 import sys
@@ -19,6 +20,65 @@ SOURCE_FACTS = ROOT / 'dist' / 'data' / 'facts'
 
 
 class LotoPagesTests(unittest.TestCase):
+    def test_article_approuve_associe_uniquement_au_bon_tirage(self):
+        with tempfile.TemporaryDirectory() as dossier:
+            dist = Path(dossier) / 'dist'
+            data = dist / 'data'
+            facts_dir = data / 'facts'
+            facts_dir.mkdir(parents=True)
+            for did in ('EM-2011053', 'LO-19920328-1', 'LO-19920328-2'):
+                shutil.copy2(SOURCE_FACTS / f'{did}.json', facts_dir / f'{did}.json')
+            (data / 'draws.json').write_text(json.dumps({'rows': [
+                ['EM-2011053', '2011-09-06', 'euromillions-50-11-v1']
+            ]}))
+            article = {
+                'schema': 'aleaquant-article-v1',
+                'kind': 'draw_report', 'status': 'HUMAN_APPROVED',
+                'article_id': 'tirage-LO-19920328-1',
+                'research_pack': {
+                    'draw_id': 'LO-19920328-1',
+                    'facts_sha256': sha256((facts_dir / 'LO-19920328-1.json').read_bytes()).hexdigest(),
+                },
+                'draft': {'title': 'Un regard sur ce tirage',
+                          'body': 'Premier paragraphe.\n\n<script>alerte</script>', 'claims': []},
+            }
+            article['draft']['research_pack_sha256'] = build_pages.content_sha256(article['research_pack'])
+            article['draft_sha256'] = build_pages.content_sha256(article['draft'])
+            article['human_decision'] = {'approved': True, 'reviewer': 'Test',
+                                         'draft_sha256': article['draft_sha256']}
+            (dist / 'articles.json').write_text(json.dumps({'articles': [article, {
+                **article, 'status': 'READY_FOR_HUMAN',
+                'article_id': 'tirage-LO-19920328-2',
+                'research_pack': {'draw_id': 'LO-19920328-2'},
+            }]}))
+            original_data, original_dist = build_pages.DATA, build_pages.DIST
+            build_pages.DATA, build_pages.DIST = data, dist
+            try:
+                build_pages.build()
+                first_path = dist / 'tirages/loto/LO-19920328-1/index.html'
+                first = first_path.read_text()
+                self.assertIn('Un regard sur ce tirage', first)
+                self.assertIn('Premier paragraphe.', first)
+                self.assertIn('&lt;script&gt;alerte&lt;/script&gt;', first)
+                self.assertNotIn('<script>alerte</script>', first)
+                self.assertNotIn('Un regard sur ce tirage',
+                                 (dist / 'tirages/loto/LO-19920328-2/index.html').read_text())
+                self.assertNotIn('Un regard sur ce tirage',
+                                 (dist / 'tirages/euromillions/2011-09-06/index.html').read_text())
+                article['draft']['title'] = 'Titre revu'
+                article['draft_sha256'] = build_pages.content_sha256(article['draft'])
+                article['human_decision']['draft_sha256'] = article['draft_sha256']
+                (dist / 'articles.json').write_text(json.dumps({'articles': [article]}))
+                self.assertEqual(build_pages.refresh_draw_page('LO-19920328-1'), first_path)
+                self.assertIn('Titre revu', first_path.read_text())
+                article['draft']['title'] = 'Titre changé sans nouvelle approbation'
+                (dist / 'articles.json').write_text(json.dumps({'articles': [article]}))
+                build_pages.refresh_draw_page('LO-19920328-1')
+                self.assertNotIn('Titre changé sans nouvelle approbation', first_path.read_text())
+                self.assertNotIn('id="article-title"', first_path.read_text())
+            finally:
+                build_pages.DATA, build_pages.DIST = original_data, original_dist
+
     def test_sessions_et_regimes_restent_distincts(self):
         with tempfile.TemporaryDirectory() as dossier:
             dist = Path(dossier) / 'dist'

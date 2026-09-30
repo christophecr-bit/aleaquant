@@ -28,5 +28,33 @@ class ImportTests(unittest.TestCase):
             source.write_text(json.dumps(self.article()))
             module.import_article(source,target);module.import_article(source,target)
             self.assertEqual(len(json.loads(target.read_text())['articles']),1)
+    def test_draw_report_must_match_draw_id(self):
+        article = self.article()
+        article['kind'] = 'draw_report'
+        article['research_pack']['draw_id'] = 'EM-2011053'
+        article['draft']['research_pack_sha256'] = module.digest(article['research_pack'])
+        article['draft_sha256'] = module.digest(article['draft'])
+        article['human_decision']['draft_sha256'] = article['draft_sha256']
+        with self.assertRaisesRegex(ValueError, 'non concordants'):
+            module.validate(article)
+
+    def test_one_article_per_draw(self):
+        with tempfile.TemporaryDirectory() as folder:
+            source = Path(folder) / 'export.json'
+            target = Path(folder) / 'articles.json'
+            article = self.article()
+            article['kind'] = 'draw_report'
+            article['article_id'] = 'tirage-EM-2011053'
+            article['research_pack']['draw_id'] = 'EM-2011053'
+            article['draft']['research_pack_sha256'] = module.digest(article['research_pack'])
+            article['draft_sha256'] = module.digest(article['draft'])
+            article['human_decision']['draft_sha256'] = article['draft_sha256']
+            source.write_text(json.dumps(article))
+            target.write_text(json.dumps({'schema': 'aleaquant-journal-v1', 'articles': [{
+                'kind': 'draw_report', 'article_id': 'old-id',
+                'research_pack': {'draw_id': 'EM-2011053'}
+            }]}))
+            with self.assertRaisesRegex(ValueError, 'déjà associé'):
+                module.import_article(source, target)
 
 if __name__=='__main__':unittest.main()

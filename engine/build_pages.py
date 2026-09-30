@@ -10,6 +10,7 @@ Sorties : dist/tirages/euromillions/<date>/index.html,
 Usage : python3 engine/build_pages.py
 """
 import html
+from hashlib import sha256
 import json
 import sys
 from pathlib import Path
@@ -33,6 +34,11 @@ FOOTER = ('<footer><a class="brand" href="/">Alea<span>Quant</span></a>'
 
 def esc(s):
     return html.escape(str(s), quote=True)
+
+
+def content_sha256(value):
+    return sha256(json.dumps(value, sort_keys=True, ensure_ascii=False,
+                             separators=(',', ':')).encode()).hexdigest()
 
 
 def date_fr(d):
@@ -79,7 +85,49 @@ def balls_html(main, stars):
     return f'<div class="balls">{m}<span class="sep"></span>{s}</div>'
 
 
-def page_html(facts, prev_id, next_id):
+def approved_articles_by_draw():
+    """Indexe uniquement les récits approuvés, toujours par identifiant de tirage."""
+    journal_path = DIST / 'articles.json'
+    if not journal_path.exists():
+        return {}
+    articles = {}
+    for article in read_json(journal_path).get('articles', []):
+        if article.get('kind') != 'draw_report' or article.get('status') != 'HUMAN_APPROVED':
+            continue
+        draw_id = article.get('research_pack', {}).get('draw_id')
+        if not draw_id or article.get('article_id') != f'tirage-{draw_id}':
+            continue
+        draft = article.get('draft', {})
+        pack = article['research_pack']
+        decision = article.get('human_decision', {})
+        if (article.get('schema') != 'aleaquant-article-v1'
+                or decision.get('approved') is not True
+                or not str(decision.get('reviewer', '')).strip()
+                or content_sha256(draft) != article.get('draft_sha256')
+                or content_sha256(draft) != decision.get('draft_sha256')
+                or content_sha256(pack) != draft.get('research_pack_sha256')):
+            continue
+        facts_path = DATA / 'facts' / f'{draw_id}.json'
+        if not facts_path.is_file() or sha256(facts_path.read_bytes()).hexdigest() != article['research_pack'].get('facts_sha256'):
+            continue
+        if draw_id in articles:
+            raise ValueError(f'Plusieurs articles approuvés pour {draw_id}')
+        articles[draw_id] = article
+    return articles
+
+
+def article_html(article):
+    if article is None:
+        return ''
+    draft = article['draft']
+    paragraphs = ''.join(f'<p>{esc(part.strip())}</p>' for part in draft['body'].split('\n\n') if part.strip())
+    return (f'<article class="draw-article" aria-labelledby="article-title">'
+            f'<span class="eyebrow">ARTICLE · RELU ET APPROUVÉ</span>'
+            f'<h2 id="article-title">{esc(draft["title"])}</h2>'
+            f'<div class="draw-article-body">{paragraphs}</div></article>')
+
+
+def page_html(facts, prev_id, next_id, article=None):
     f_by_id = {f['fact_id']: f for f in facts['facts']}
     draw_id, date, rule = facts['draw_id'], facts['date'], facts['rule_id']
     main, stars = facts['main'], facts['stars']
@@ -140,6 +188,7 @@ def page_html(facts, prev_id, next_id):
 <p>{esc(grid_prob["statement"]) if grid_prob else ""}</p></div>
 <div class="draw-head"><div>{balls_html(main, stars)}
 <p class="draw-meta">{date_fr(date)} · tirage {esc(draw_id)} · {fmt_num(facts["prior_draws"])} tirages antérieurs dans l’historique · règle {esc(rule)}</p></div></div>
+{article_html(article)}
 {"".join(callouts)}
 <div class="metric-grid">{cards}</div>
 <p class="small">Loi exacte : énumération complète, sans simulation. Comparaisons historiques calculées uniquement sur les tirages antérieurs à ce tirage (aucun regard en avant).</p>
@@ -192,7 +241,7 @@ def loto_balls_html(components):
             f'<span class="draw-component-label">{esc(label)}</span></div>')
 
 
-def loto_page_html(facts, prev_id, next_id):
+def loto_page_html(facts, prev_id, next_id, article=None):
     """Page Loto fondée uniquement sur les faits du régime du tirage."""
     by_id = {f['fact_id']: f for f in facts['facts']}
     draw_id, date, rule = facts['draw_id'], facts['date'], facts['rule_id']
@@ -246,6 +295,7 @@ def loto_page_html(facts, prev_id, next_id):
 <p>{esc(by_id['F.grid.probability']['statement'])}</p></div>
 <div class="draw-head"><div>{loto_balls_html(facts['components'])}
 <p class="draw-meta">{esc(label)} · {esc(draw_id)} · {fmt_num(facts['prior_draws'])} tirages antérieurs comparables · règle {esc(rule)}</p></div></div>
+{article_html(article)}
 {''.join(callouts)}
 <div class="metric-grid">{cards}</div>
 <p class="small">Loi exacte des {k} numéros parmi {domain} : énumération complète, sans simulation. L’historique compare seulement les tirages antérieurs de la même formule {k}/{domain}. {complement_note}</p>
@@ -299,8 +349,44 @@ def games_index_html(em_count, loto_count):
 </section></main>{FOOTER}</body></html>'''
 
 
+def refresh_draw_page(draw_id):
+    """Met à jour la seule page concernée après import d'un article approuvé."""
+    facts_path = DATA / 'facts' / f'{draw_id}.json'
+    if not facts_path.is_file():
+        raise ValueError(f'Faits introuvables pour {draw_id}')
+    facts = read_json(facts_path)
+    article = approved_articles_by_draw().get(draw_id)
+    if draw_id.startswith('EM-'):
+        rows = read_json(DATA / 'draws.json')['rows']
+        positions = [i for i, row in enumerate(rows) if row[0] == draw_id]
+        if len(positions) != 1:
+            raise ValueError(f'Tirage EuroMillions non unique dans draws.json : {draw_id}')
+        i = positions[0]
+        previous = rows[i - 1][1] if i else None
+        following = rows[i + 1][1] if i + 1 < len(rows) else None
+        output = DIST / 'tirages' / 'euromillions' / facts['date'] / 'index.html'
+        content = page_html(facts, previous, following, article)
+    elif draw_id.startswith('LO-'):
+        loto = [read_json(path) for path in (DATA / 'facts').glob('LO-*.json')]
+        loto.sort(key=lambda f: (f['date'], str(f.get('session') or ''), f['draw_id']))
+        positions = [i for i, item in enumerate(loto) if item['draw_id'] == draw_id]
+        if len(positions) != 1:
+            raise ValueError(f'Tirage Loto non unique : {draw_id}')
+        i = positions[0]
+        previous = loto[i - 1]['draw_id'] if i else None
+        following = loto[i + 1]['draw_id'] if i + 1 < len(loto) else None
+        output = DIST / 'tirages' / 'loto' / draw_id / 'index.html'
+        content = loto_page_html(facts, previous, following, article)
+    else:
+        raise ValueError(f'Page de tirage non prise en charge : {draw_id}')
+    output.parent.mkdir(parents=True, exist_ok=True)
+    output.write_text(content, encoding='utf-8')
+    return output
+
+
 def build():
     draws_data = read_json(DATA / 'draws.json')
+    articles = approved_articles_by_draw()
     rows = draws_data['rows']  # [id, date, rule, main, stars, mvals, svals]
     ids = [r[0] for r in rows]
     out_dir = DIST / 'tirages' / 'euromillions'
@@ -316,7 +402,8 @@ def build():
         next_id = rows[i + 1][1] if i < len(rows) - 1 else None
         page_dir = out_dir / date
         page_dir.mkdir(parents=True, exist_ok=True)
-        (page_dir / 'index.html').write_text(page_html(facts, prev_id, next_id), encoding='utf-8')
+        (page_dir / 'index.html').write_text(
+            page_html(facts, prev_id, next_id, articles.get(draw_id)), encoding='utf-8')
         written += 1
     (out_dir / 'index.html').write_text(index_html(rows), encoding='utf-8')
 
@@ -333,7 +420,7 @@ def build():
         page_dir = loto_dir / draw_id
         page_dir.mkdir(parents=True, exist_ok=True)
         (page_dir / 'index.html').write_text(
-            loto_page_html(facts, prev_id, next_id), encoding='utf-8')
+            loto_page_html(facts, prev_id, next_id, articles.get(draw_id)), encoding='utf-8')
     (loto_dir / 'index.html').write_text(loto_index_html(loto_facts), encoding='utf-8')
 
     # Un point d'entrée commun rend explicite le jeu choisi, notamment depuis

@@ -5,11 +5,27 @@
 > fichiers modifiés dans `docs/CHANGELOG.md`. Les sections historiques ci-dessous
 > décrivent l'état antérieur de l'agent éditorial ; leurs comptes de tirages et
 > indications de déploiement ne remplacent pas ces deux documents récents.
-> Pages Loto publiées le 30/09/2026 sur `https://aleaquant.aleaquant.workers.dev`,
-> version Worker `079f1872-6934-400f-b044-0cf73e09791d`. 9 686 assets actifs ;
-> deux URL Loto testées en HTTP 200. GitHub ne déploie pas automatiquement à ce stade.
+> Pages Loto et sélecteur de jeu publiés le 30/09/2026 sur
+> `https://aleaquant.aleaquant.workers.dev`, version Worker
+> `27128adb-e8e6-4ec5-95a3-63d98370b445`. 9 687 assets actifs ; deux URL Loto
+> testées en HTTP 200 et sélecteur `/tirages/` vérifié. GitHub ne déploie pas
+> automatiquement à ce stade.
 > L'ajout de Keno impose un rendu à la demande ; décision et critères dans
-> `docs/SCALING.md`. Un sélecteur EuroMillions/Loto est en cours de livraison.
+> `docs/SCALING.md`. Le sélecteur EuroMillions/Loto est livré.
+> Le calendrier d'accueil est explicitement EuroMillions ; l'archive Loto filtre par
+> date sans fusionner les doubles séances. Worker actuel après cette mise à jour :
+> `bcea5001-4cdc-46a9-8e46-fe79935b6d78` (9 688 assets).
+> Keno : 17 lois exactes sur 20 ; génération ciblée de faits testée, aucune page
+> Keno publiée. Le fait `F.draw.probability` désigne le tirage exact, jamais le gain
+> d'une grille jouée. Prototype de groupes mensuels sous `prototypes/keno-on-demand/`.
+> Un profil du batch et un parcours de validation humaine **court** sont désormais
+> dans `../aleaquant-editorial-agents/configs/draw-publication.json` et
+> `aleaquant/graph/draw_publication.py`. Le batch web garde ses défauts et reste
+> à régler ; ce nouveau graphe n'importe ni ne publie automatiquement.
+> Un rapport de tirage approuvé se rattache par `draw_id` à sa page canonique :
+> `EM-2011053` correspond au **6 septembre 2011**, pas au 5. L'import du site
+> vérifie l'empreinte des faits et actualise seulement cette page. Les autres
+> tirages restent sans récit jusqu'à approbation ; le batch doit constituer ce fonds.
 
 Écrit le 30/09/2026 au matin, après une session de nuit intense sur l'agent éditorial.
 **À lire en entier avant de toucher au code si vous reprenez le projet sans son
@@ -50,9 +66,10 @@ Contraintes éditoriales non négociables, déjà inscrites dans le code :
 | Modèle utilisé | `gpt-5.4-mini`, `reasoning.effort = "low"` |
 
 Il existe un **second dépôt**, `../aleaquant-editorial-agents` : un pipeline LangGraph à
-7 agents (Scout→Gate→Planner→Writer→Editor→Fact-Checker→Final-Reviewer). Il est
-**réservé aux articles de fond du « Journal »**, pas aux 2 000 pages de tirage. Ne pas
-le confondre avec `agent/` du dépôt web, qui fait les rapports de tirage.
+7 agents (Scout→Gate→Planner→Writer→Editor→Fact-Checker→Final-Reviewer). Son POC
+traite aujourd'hui des sujets structurés ; l'extension éditoriale pourra couvrir
+des articles de fond et certains rapports de tirage sélectionnés. Il ne remplace
+pas le batch du dépôt web qui prépare le fonds d'articles.
 
 ---
 
@@ -91,9 +108,10 @@ python3 engine/build_pages.py
 | **reformulation** | `agent/llm_rewrite_test.py`, `llm_rewrite_batch.py`, `llm_batch_submit.py`, `llm_batch_collect.py` | Fonctionne (110 brouillons, batch validé) mais **abandonné** : le LLM ne voit que 7 claims déjà choisies, le résultat est cosmétique et identique d'un article à l'autre. |
 | **compose** ← **le bon** | `agent/compose_draw_report.py` | Le LLM reçoit les ~26 faits annotés et compose. C'est ce mode qui a produit le premier article publié. |
 
-Le mode compose n'a **pas encore de version batch** : `llm_batch_submit.py` /
-`llm_batch_collect.py` portent encore la reformulation. C'est la tâche n°1 pour traiter
-l'historique complet à moitié prix.
+Mise à jour du 30/09 : le mode compose a désormais son couple
+`compose_batch_submit.py` / `compose_batch_collect.py`. L'ancien couple
+`llm_batch_*` reste lié à la reformulation abandonnée. Le nouveau batch est
+encore en cours de réglage avant traitement du fonds d'articles.
 
 ### Pipeline du mode compose
 
@@ -249,12 +267,11 @@ Chiffres à connaître :
 4. Un batch OpenAI de 10 items a été validé end-to-end en mode reformulation
    (`batch_6abc41d36c28819082ad64bbb03fd9a5`, terminé, 0,0103 $).
 
-### Todolist, par priorité
+### Ancienne todolist du matin (état figé, remplacé par `docs/TECHNICAL-DEBT.md`)
 
-1. **Porter le mode compose dans le couple batch** (`llm_batch_submit.py` /
-   `llm_batch_collect.py` portent encore la reformulation), puis lancer l'historique
-   (~2 $ en batch). Ne pas lancer l'échelle avec l'ancienne approche : ça figerait
-   1 874 articles cosmétiques à refaire.
+1. **Portage réalisé depuis** dans `compose_batch_submit.py` /
+   `compose_batch_collect.py`. Le batch compose reste à régler avant constitution
+   du fonds ; ne pas relancer l'ancienne reformulation `llm_batch_*`.
 2. **Puces de rareté dans l'article** (demande du 30/09 matin). Critère d'affichage :
    uniquement une mesure au-dessus de sa référence (`notable_level()`). Implémentation :
    champ `draft.badges` calculé côté Python, rendu par `app.js` avec les classes CSS des
@@ -272,7 +289,13 @@ Chiffres à connaître :
    (`F.grid.probability`) n'a aucun fait attribué. Inclure les faits non métriques par
    leurs nombres distinctifs.
 6. **Encadré méthodologique commun** : `METHODO_NOTE` est pour l'instant collée à la fin
-   de chaque corps d'article. Mieux vaudrait un encadré rendu une fois par la page.
+  de chaque corps d'article. Mieux vaudrait un encadré rendu une fois par la page.
+7. **Accueil éditorial et Atlas** : poursuivre la maquette locale `prototypes/editorial-home/`
+   (cartes, fil des derniers tirages, image AleaQuant originale), puis préparer un premier
+   Atlas de portefeuilles. Avant l'outil, publier des articles de fond qui présentent les
+   familles de portefeuilles et expliquent leur géométrie (couverture, recouvrement,
+   dispersion) sans promesse de gain. Le fil de tirages utilise encore un snapshot ; son
+   raccordement aux données locales actualisées par jeu reste à concevoir.
 
 ---
 
@@ -293,3 +316,27 @@ Chiffres à connaître :
   se contourne alors qu'un libellé source ne se contourne pas.
 - **Avec 26 mesures par tirage, le remarquable est garanti par construction.** Tout le
   dispositif de référence existe pour résister à cette tentation.
+
+---
+
+## 9. Expérience éditoriale A/B/C du 30/09/2026
+
+Un prototype optionnel, versionné dans `agent/prompts/editorial_angle.md`, propose
+trois titres A/B/C, chacun lié à un à trois faits. Le choix humain est enregistré
+pour un **essai direct** ; le batch `compose_batch_*`, en cours de réglage pour
+constituer le fonds d'articles, ne charge pas ces angles et garde son prompt de base.
+`agent/prompts/editorial_polish.md` crée une copie relue avec nouveau SHA ; ses
+contrôles refusent les changements de nombres, de rareté et de faits cités.
+Le format « décade 2, 3, 4 » est testé dans ce prototype, pas imposé au batch.
+
+Essai local sur `EM-26078` : A a été choisi et révisé en « Une grille qui traverse
+quatre dizaines », à partir de `F.main.occupied_decades = 4`. Le brouillon et sa
+relecture restent en attente d'approbation humaine dans `runs-llm-compose/EM-26078/` ;
+aucune publication n'a été lancée. Les titres B/C sont conservés dans
+`runs-angles/EM-26078/` pour comparaison.
+
+Le **comité LangGraph canonique** est dans `../aleaquant-editorial-agents` : son graphe
+POC fonctionne, mais cette sélection A/B/C, la relecture de ton, la file matinale
+et le retour humain avec remarque n'y sont pas encore branchés. La feuille de
+route autoritative est `docs/roadmap-editorial-agentique.md` dans ce dépôt.
+Évaluer le prototype sur plusieurs tirages avant tout portage.
