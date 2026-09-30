@@ -42,6 +42,32 @@ METHODO_NOTE = (
     "elles n'aide à anticiper un tirage futur."
 )
 
+# dictionnaire des métriques du site (dist/metrics.json) : noms et définitions
+# officiels en français, réutilisés tels quels pour que le modèle n'improvise ni le
+# terme ni sa définition ("collision de finales" -> "paires de mêmes unités").
+def load_metric_dict():
+    path = ROOT / "dist" / "metrics.json"
+    if not path.exists():
+        return {}
+    out = {}
+    for m in json.loads(path.read_text(encoding="utf-8")):
+        key = re.sub(r"@v\d+$", "", re.sub(r"^euromillions\.", "", m["id"]))
+        out[key] = (m.get("name", ""), m.get("definition", ""))
+    return out
+
+
+METRIC_DICT = load_metric_dict()
+
+# familles de mesures emboîtées : la mesure fine est un raffinement des mesures
+# agrégées de sa famille, donc légitimement plus rare — ce n'est pas une
+# contradiction, mais l'article doit le dire explicitement.
+METRIC_FAMILIES = [
+    ("répartition par dizaines", "main.decade_counts",
+     ["main.max_same_decade", "main.occupied_decades"]),
+    ("écarts entre numéros", "main.sorted_gaps",
+     ["main.span", "main.mean_gap", "main.min_gap", "main.max_gap"]),
+]
+
 # métriques mathématiquement dérivées l'une de l'autre : même classe, même p_class,
 # donc jamais à citer comme deux preuves indépendantes.
 DERIVED_EQUIVALENTS = [
@@ -71,10 +97,35 @@ def evidence_block(facts):
                 bits.append(f"queue {pct(f['tail'])}")
             if "rarity" in f:
                 bits.append(f"rareté={RARITY_FR.get(f['rarity'], f['rarity'])}")
+            name, definition = METRIC_DICT.get(f["metric"], ("", ""))
+            if name:
+                bits.append(f'nom officiel="{name}"')
+            if definition:
+                bits.append(f"définition : {definition}")
             lines.append(" · ".join(bits))
         elif f.get("statement"):
             lines.append(f"{f['fact_id']} — {f['statement']}")
     return "\n".join(lines)
+
+
+def family_note(facts):
+    """Explique au modèle les familles emboîtées présentes, pour qu'une mesure fine
+    plus rare qu'une mesure agrégée de la même famille ne passe pas pour une
+    contradiction."""
+    present = {f.get("metric") for f in facts["facts"]}
+    notes = []
+    for label, fine, coarse in METRIC_FAMILIES:
+        others = [c for c in coarse if c in present]
+        if fine in present and others:
+            notes.append(
+                f"- Famille « {label} » : {fine} décrit la configuration EXACTE, "
+                f"{' et '.join(others)} n'en résument qu'un aspect. La mesure exacte est "
+                f"plus spécifique, donc normalement plus rare — ce n'est pas une "
+                f"contradiction. Si tu cites plusieurs mesures de cette famille avec des "
+                f"niveaux de rareté différents, nomme explicitement chaque mesure et dis "
+                f"que la mesure exacte est plus fine que les autres."
+            )
+    return "\n".join(notes)
 
 
 def redundancy_note(facts):
@@ -269,6 +320,8 @@ def main():
     stars = ' · '.join('%02d' % n for n in facts['stars'])
     redundancy = redundancy_note(facts)
     redundancy_section = f"\nMétriques redondantes à ne pas double-compter :\n{redundancy}\n" if redundancy else ""
+    families = family_note(facts)
+    family_section = f"\nFamilles de mesures emboîtées :\n{families}\n" if families else ""
 
     prompt = f"""Tu es rédacteur scientifique pour AleaQuant, un site français de vulgarisation sur les probabilités et la combinatoire appliquées à EuroMillions. Ta ligne éditoriale : rigueur, jamais de prédiction, jamais de promesse de gain, chaque nombre cité doit venir des faits fournis ci-dessous.
 
@@ -276,7 +329,7 @@ Tirage du {date_fr(facts['date'])} : {main_nums} ★ {stars}
 
 Faits calculés disponibles (utilise ceux qui sont pertinents, pas besoin de tous les citer) :
 {evidence_block(facts)}
-{redundancy_section}
+{redundancy_section}{family_section}
 Écris un article de 4 à 6 paragraphes qui :
 1. Situe le tirage (probabilité de la combinaison exacte).
 2. Commente la GÉOMÉTRIE du tirage : les numéros sont-ils plutôt concentrés (proches les uns des autres, dans peu de dizaines) ou dispersés sur l'étendue 1-50 ? Précise les tranches de dizaines que tu utilises (1-10, 11-20, etc.). Attention au SENS de la mesure : une étendue élevée (proche de 49) signifie dispersé, une étendue faible signifie concentré — ne qualifie jamais une grande étendue de "resserrée" ni l'inverse.
@@ -296,7 +349,9 @@ h. Distingue la POSITION sur l'échelle (numéros tous en haut ou en bas de 1-50
 i. N'écris jamais un pourcentage nu ni détaché de ce qu'il mesure : indique toujours "fréquence de classe" ou "queue de la loi", avec la mesure concernée. Ne place jamais un pourcentage de classe dans la même phrase que la probabilité de la combinaison complète, pour éviter toute confusion entre les deux.
 j. Ne qualifie JAMAIS globalement le tirage, la grille, la configuration ou "l'ensemble" (pas de "configuration serrée", "grille regroupée", "forme resserrée") : chaque adjectif géométrique doit être attaché à une mesure nommée et à sa valeur ("l'étendue vaut 15", "les numéros occupent 2 dizaines, toutes dans la moitié haute"). Décris position et dispersion comme deux constats séparés, sans les résumer en un jugement d'ensemble.
 k. N'écris PAS de paragraphe de synthèse qui récapitule ce que tu viens de dire : chaque paragraphe doit apporter un constat neuf. Si tu n'as plus rien à ajouter, termine sur ton dernier constat.
-l. Varie ta structure et tes formulations d'un article à l'autre, n'utilise pas un patron figé. Style vivant mais rigoureux, pas de sensationnalisme."""
+l. Emploie le nom officiel fourni pour chaque mesure (champ nom officiel=) plutôt qu'une formulation de ton invention, et donne en quelques mots la définition fournie la première fois qu'un terme n'est pas évident pour un lecteur non initié (par exemple "paires de mêmes unités : deux numéros se terminant par le même chiffre").
+m. Ne balaie pas toutes les mesures disponibles : choisis-en au plus sept, celles qui servent ton angle. Écarte les mesures secondaires de niveau courant qui n'apportent rien au propos plutôt que de les énumérer.
+n. Varie ta structure et tes formulations d'un article à l'autre, n'utilise pas un patron figé. Style vivant mais rigoureux, pas de sensationnalisme."""
 
     from openai import OpenAI
     client = OpenAI(api_key=load_key())
