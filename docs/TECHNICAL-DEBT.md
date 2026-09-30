@@ -46,7 +46,17 @@ deux documents pertinents avant le commit.
   auditer l'indépendance entre tirages. Décider ensuite si un indicateur agrégé
   d'audit mérite le dictionnaire ; ne pas ajouter une « rareté de covariance » à
   chaque tirage. Préparer un article sur covariance, étendue et contrôle du hasard,
-  sans interprétation prédictive. Aucun calcul ni article n'est encore réalisé.
+  sans interprétation prédictive. Proposition de registre à qualifier :
+  `theory.main.order_position_covariance@v1` pour la matrice attendue sous le
+  modèle k/N ; `history.main.order_position_covariance@v1` pour la matrice
+  estimée sur les tirages comparables. Libellé court commun : « Covariance des
+  positions ». Libellé long historique : « Matrice de covariance entre les
+  numéros classés par ordre croissant, estimée sur l'historique comparable ».
+  L'entrée historique devra porter jeu, régime, période, effectif, méthode
+  d'estimation et référence de la matrice théorique ; ce n'est pas un fait de
+  tirage individuel. Le registre actuel préfixe ses clés par jeu : décider si
+  ces identifiants logiques reçoivent un tel préfixe lors de l'implémentation.
+  Aucun calcul ni article n'est encore réalisé.
 - Produire puis relire les articles manquants, par lots quotidiens, pour arriver à
   un récit approuvé par tirage. Aujourd'hui l'association est possible mais le fonds
   d'articles est incomplet ; ne jamais afficher un brouillon comme article.

@@ -1,5 +1,11 @@
 # Journal de développement
 
+## 2026-09-30 — convention proposée pour la covariance des positions
+
+| Fichier | Changement | Vérification |
+|---|---|---|
+| `docs/TECHNICAL-DEBT.md`, `docs/CHANGELOG.md` | Deux entrées candidates de registre, théorique et historique, avec libellés et métadonnées minimales ; aucune métrique activée. | Cohérence avec le registre versionné existant et avec la distinction établie par Coronel-Brizio et al. |
+
 ## 2026-09-30 — piste de recherche sur la covariance
 
 | Fichier | Changement | Vérification |
