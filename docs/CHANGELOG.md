@@ -1,5 +1,13 @@
 # Journal de développement
 
+## 2026-10-01 — préparation de la maquette consultable à distance
+
+`prototypes/editorial-home/index.html` et sa copie `dist/maquette/` exposent un
+aperçu public explicitement signalé, avec données datées et noindex. L'accueil
+actuel est conservé ; les pages de tirage corrigées font partie du prochain
+déploiement. Pour resynchroniser l'aperçu : copier `index.html` et `assets/`
+du prototype dans `dist/maquette/`. Déploiement et vérification réseau à suivre.
+
 ## 2026-10-01 — sujet éditorial HPC en combinatoire
 
 Ajout de `docs/research/sujet-editorial-hpc-combinatoire.md` : angle, trois titres,
