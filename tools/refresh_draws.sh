@@ -41,9 +41,36 @@ PY
 avant="$(dernier_tirage)"
 journal "dernier tirage publié localement : $avant"
 
+# --check : préflight complet. La routine tourne sans surveillance deux fois par
+# semaine ; une dépendance manquante doit être signalée ICI, pas découverte au premier
+# vrai tirage.
 if [ "${1:-}" = "--check" ]; then
+  souci=0
+  verifie() {
+    if eval "$2" >/dev/null 2>&1; then
+      journal "  OK      $1"
+    else
+      journal "  MANQUE  $1 — $3"
+      souci=1
+    fi
+  }
+  journal "préflight :"
+  verifie "dépôt du laboratoire" "[ -d '$LAB_DIR' ]" "attendu en $LAB_DIR"
+  verifie "base des tirages" "[ -f '$LAB_DIR/$STORE' ]" "attendue en $LAB_DIR/$STORE"
+  verifie "dépôt du site" "[ -d '$WEB_DIR/engine' ]" "attendu en $WEB_DIR"
+  verifie "module d'ingestion" \
+    "cd '$LAB_DIR' && PYTHONPATH=src python3 -c 'import lottery_history'" \
+    "PYTHONPATH=src requis, le dépôt n'est pas installé"
+  verifie "numpy (requis par build_data)" "python3 -c 'import numpy'" \
+    "installer avec : python3 -m pip install --user numpy"
+  verifie "journal accessible" "[ -d '$LOG_DIR' ]" "dossier $LOG_DIR absent"
+  if [ $souci -eq 0 ]; then
+    journal "préflight complet : la routine peut tourner sans surveillance"
+  else
+    journal "préflight INCOMPLET : corriger avant de compter sur la planification"
+  fi
   journal "--check : rien n'a été modifié"
-  exit 0
+  exit $souci
 fi
 
 # 1. ingestion (seule étape qui a besoin du réseau)
