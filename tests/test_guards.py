@@ -17,7 +17,8 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'agent'))
 from llm_compose_test import (  # noqa: E402
     RARITY_PROFILES, guard_class_citations, guard_enum_leak,
-    guard_interpretive_words, notable_level, paragraph_evidence,
+    guard_interpretive_words, guard_markdown, notable_level, paragraph_evidence,
+    strip_markdown,
 )
 
 
@@ -66,6 +67,29 @@ class LexicalGuardTests(unittest.TestCase):
         f = facts('EM-2004010')
         self.assertEqual(guard_interpretive_words('Sa rareté se discute.', f), [])
         self.assertEqual(guard_interpretive_words('Profil VERY_RARE.', f), [])
+
+
+class MarkdownTests(unittest.TestCase):
+    """dist/app.js affiche le corps avec textContent (jamais innerHTML, par sécurité) :
+    un « ** » du modèle s'affiche donc littéralement sur le site."""
+
+    def test_gras_retire(self):
+        t = 'la **Somme** vaut 222 en **classe très rare**'
+        self.assertEqual(strip_markdown(t), 'la Somme vaut 222 en classe très rare')
+
+    def test_garde_detecte_les_marqueurs(self):
+        self.assertEqual(guard_markdown('la **Somme**'), ['**'])
+        self.assertEqual(guard_markdown('la Somme'), [])
+
+    def test_texte_sans_markdown_intact(self):
+        t = "La répartition 0-0-0-1-4 et l'étendue 15, de 35 à 50."
+        self.assertEqual(strip_markdown(t), t)
+
+    def test_chiffres_preserves(self):
+        """Le nettoyage ne doit toucher aucun nombre."""
+        from llm_compose_test import normalize_numbers
+        t = 'somme **222**, classe de **141** sur **2 118 760**'
+        self.assertEqual(normalize_numbers(strip_markdown(t)), normalize_numbers(t))
 
 
 class AttributionTests(unittest.TestCase):

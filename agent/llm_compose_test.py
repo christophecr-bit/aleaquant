@@ -364,10 +364,36 @@ def _sans_accent(s):
     return unicodedata.normalize("NFD", s.lower()).encode("ascii", "ignore").decode()
 
 
+# Le corps de l'article est affiché par dist/app.js avec textContent, jamais
+# innerHTML — choix de sécurité assumé puisque le texte vient d'un LLM. Donc le
+# markdown n'est pas interprété : « **Somme** » s'affiche avec ses astérisques.
+# On le retire de façon déterministe plutôt que de compter sur l'obéissance du modèle.
+MARKDOWN_RE = [
+    (re.compile(r"\*\*(.+?)\*\*", re.DOTALL), r"\1"),   # gras **...**
+    (re.compile(r"__(.+?)__", re.DOTALL), r"\1"),           # gras __...__
+    (re.compile(r"`([^`]+)`"), r"\1"),                      # code `...`
+    (re.compile(r"^\s{0,3}#{1,6}\s+", re.MULTILINE), ""),  # titres
+    (re.compile(r"^\s{0,3}>\s?", re.MULTILINE), ""),       # citations
+    (re.compile(r"^\s{0,3}[-*+]\s+", re.MULTILINE), ""),   # puces
+]
+
+
+def strip_markdown(text):
+    for motif, remplacement in MARKDOWN_RE:
+        text = motif.sub(remplacement, text)
+    return text
+
+
+def guard_markdown(text):
+    """Reste-t-il des marqueurs de mise en forme qui s'afficheraient littéralement ?"""
+    return sorted({m for m in ("**", "__", "`") if m in text})
+
+
 def run_all_guards(text, facts):
     """Les quatre contrôles, en un seul appel, pour pouvoir les rejouer après réparation."""
     word_problems = guard_interpretive_words(text, facts)
     return {
+        "mise_en_forme": guard_markdown(text),
         "nombres": sorted(guard_full_text(text, facts)),
         "mots_de_rarete": [w for w, _ in word_problems],
         "noms_de_code": guard_enum_leak(text),
@@ -535,10 +561,12 @@ l. Emploie le nom officiel fourni pour chaque mesure (champ nom officiel=) plut�
 m. Ne balaie pas toutes les mesures disponibles : choisis-en au plus sept, celles qui servent ton angle. Écarte les mesures secondaires de niveau courant qui n'apportent rien au propos plutôt que de les énumérer.
 n. N'emploie un mot de rareté QUE pour une mesure marquée « AU-DESSUS de sa référence ». Une mesure « dans sa normale » ou « NON INFORMATIVE » se cite sans aucun qualificatif de rareté : son niveau est celui de presque tous les tirages, le signaler comme remarquable serait trompeur.
 o. Pour expliquer ce que mesure une grandeur, reprends la définition officielle fournie plutôt qu'une paraphrase de ton cru (l'étendue est « l'écart entre le plus petit et le plus grand numéro », pas « le sommet de 35 à 50 »).
-p. Varie ta structure et tes formulations d'un article à l'autre, n'utilise pas un patron figé. Style vivant mais rigoureux, pas de sensationnalisme."""
+p. Écris en TEXTE BRUT. Aucun markdown : pas d'astérisques pour le gras, pas de titres, pas de puces, pas d'accents graves. La page affiche ton texte tel quel, donc un « ** » s'y verrait littéralement. Pour mettre en valeur un terme, emploie les mots, pas la typographie.
+q. Varie ta structure et tes formulations d'un article à l'autre, n'utilise pas un patron figé. Style vivant mais rigoureux, pas de sensationnalisme."""
 
     if args.text_file:
-        text, resp, proof = args.text_file.read_text(encoding="utf-8").strip(), None, None
+        text = strip_markdown(args.text_file.read_text(encoding="utf-8")).strip()
+        resp, proof = None, None
     else:
         from openai import OpenAI
         client = OpenAI(api_key=load_key())
@@ -573,7 +601,7 @@ TEXTE :
         final_text = text
         proof_status = f"REJETÉE (nombres identiques={same_numbers}, raretés identiques={same_rarity})"
 
-    text = final_text
+    text = strip_markdown(final_text).strip()
 
     print("=== ARTICLE COMPOSÉ ===\n")
     print(text)
@@ -592,6 +620,10 @@ TEXTE :
     print("\n=== GARDE JARGON (noms de code d'enum dans la prose) ===")
     print("OK" if not leaks else f"NOMS DE CODE À TRADUIRE : {leaks}")
 
+    md = guard_markdown(text)
+    print("\n=== GARDE MISE EN FORME (marqueurs markdown résiduels) ===")
+    print("OK" if not md else f"MARQUEURS RESTANTS : {md}")
+
     cite_problems = guard_class_citations(text, facts)
     print("\n=== GARDE EFFECTIFS (classes et queues citées vs faits sources) ===")
     print("OK" if not cite_problems else "ÉCARTS :\n  - " + "\n  - ".join(cite_problems))
@@ -607,7 +639,7 @@ TEXTE :
     print(f"\n=== COÛT === {cost:.5f} $ (in={in_tok} out={out_tok})")
 
     guards = {"nombres": sorted(problems), "mots_de_rarete": [w for w, _ in word_problems],
-              "noms_de_code": leaks, "effectifs": cite_problems}
+              "noms_de_code": leaks, "effectifs": cite_problems, "mise_en_forme": md}
 
     # --- réparation : on renvoie au modèle sa violation et on rejoue les gardes ---
     if any(guards.values()) and not args.text_file and not args.no_repair:
