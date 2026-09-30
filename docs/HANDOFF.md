@@ -3,18 +3,16 @@
 > Décision Atlas du 01/10/2026 : `docs/ATLAS-GEOMETRIES-ARCHITECTURE.md`
 > définit un contrat de géométrie commun et des cohortes séparées par jeu,
 > règle, format, taille et budget. Les 6 et 30 grilles sont les tailles déjà
-> montrées, pas la limite du catalogue : l'optimisation hors ligne doit couvrir
-> une matrice de tailles, pools et objectifs, dont Loto pool 10 / 25 grilles ;
+> montrées, pas la limite du catalogue. L'Atlas v0.1 doit qualifier quelques
+> références Loto et rendre les trois jeux lisibles sous un contrat commun ;
 > Keno v1 reste à 10 numéros par grille en 16/56. Le Loto affiché est encore
 > composé de cinq démonstrations à 6 grilles, sans évaluation exacte publiée.
 > Aucun calcul massif ni changement de l'Atlas en ligne n'a été lancé. Les tâches
-> d'implémentation sont dans `docs/TECHNICAL-DEBT.md`. Pour une cellule absente,
-> le parcours envisagé est une réponse différée avec statut, calcul local
-> reprenable et courriel facultatif ; Cloudflare Containers reste à mesurer.
-> Nouveau sujet de recherche : les garanties conditionnelles `x if y of p`
-> et leur éventuelle traduction en rang sont cadrées dans
-> `docs/research/garanties-conditionnelles-portefeuilles.md`. Aucun certificat
-> AleaQuant n'est encore produit ni affiché.
+> d'implémentation sont dans `docs/TECHNICAL-DEBT.md`. Les roues
+> conditionnelles, demandes personnalisées, réponse différée et toute vente
+> de compute ont été retirées du chemin de lancement : la note
+> `docs/research/garanties-conditionnelles-portefeuilles.md` reste une piste
+> scientifique pour plus tard. Aucun certificat AleaQuant n'est publié.
 
 > Mise à jour du 30/09/2026 : la collecte des trois jeux enchaîne maintenant avec
 > les calculs locaux. `bash tools/refresh_draws.sh --check` inspecte sans réseau ;

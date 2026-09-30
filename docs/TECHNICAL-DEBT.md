@@ -1,4 +1,4 @@
-# Dette technique et décisions — 30 septembre 2026
+# Dette technique et décisions — 1er octobre 2026
 
 Ce fichier suit la dette **active**. Une tâche réalisée est retirée de la liste active
 et reportée dans `CHANGELOG.md`. Toute modification de code doit mettre à jour les
@@ -142,38 +142,13 @@ deux documents pertinents avant le commit.
   version tant qu'un déploiement n'a pas été décidé.
 - Construire l'Atlas de portefeuilles selon `docs/ATLAS-GEOMETRIES-ARCHITECTURE.md`.
   Le contrat est défini ; restent à faire : schéma de cohorte et niveaux de
-  preuve, matrice de recherche Loto `(pool, taille de grille, budget, ordre de
-  couverture, objectif)` incluant **pool 10 / 25 grilles**, solution et
-  `RANDOM` au même budget, puis tailles 6 et 30 et autres cellules prioritaires.
-  Conserver provenance, score et bornes de qualité ; ne parler d'optimum qu'avec
-  preuve. Ajouter ensuite les cohortes EuroMillions/Keno pertinentes, la
-  séparation index/fiches et les articles de fond. Garder Keno 10-numéros pour
-  la première étape ; autres formats et régimes sont des cohortes distinctes.
-  L'interface doit retrouver une solution précalculée ; si la cellule manque,
-  signaler le calcul absent ou planifier une recherche hors ligne. Une commande
-  légère peut seulement **mesurer** la géométrie de grilles apportées. Ne pas
-  présenter les cinq démonstrations Loto comme une comparaison de performances,
-  ni afficher rareté ou gain sans référence et évaluation adaptées.
-- Étudier les garanties conditionnelles de roues `x if y of p` selon
-  `docs/research/garanties-conditionnelles-portefeuilles.md` : vérificateur
-  exhaustif indépendant du générateur, matrice des pires cas, contre-exemples,
-  multiplicité garantie et comparaison `RANDOM` à budget égal. Le cas Loto
-  pool 10 / 25 grilles doit séparer garantie sur les numéros principaux et
-  rang qui dépend aussi du Chance ; EuroMillions et Keno exigent leurs propres
-  barèmes/régimes. Ne pas qualifier un seuil de rang sans preuve complète.
-- Étudier la réponse différée aux demandes d'optimisation absentes du catalogue :
-  identifiant et statut persistants, déduplication des paramètres, quotas et
-  exécution hors ligne reprenable sur la machine AleaQuant. Une notification
-  courriel facultative attend un domaine et un service d'envoi configurés.
-  Comparer ensuite sur de vrais lots coût et débit de ce moteur local avec
-  Cloudflare Containers ; les Workers HTTP ne portent pas le calcul lourd.
-  Détails et liens de prix datés dans `docs/ATLAS-GEOMETRIES-ARCHITECTURE.md`.
-- Avant toute contribution sur une recherche personnalisée : mesurer temps
-  machine et temps de revue sur plusieurs cellules, définir un périmètre et
-  une durée de recherche bornés, dédupliquer les cellules déjà calculées et
-  annoncer le montant avant accord du demandeur. Garder libre l'Atlas déjà
-  publié ; ne vendre ni promesse d'optimum non prouvé ni perspective de gain.
-  Aucun paiement n'est implémenté dans cette version.
+  preuve, sélection puis qualification de portefeuilles Loto représentatifs
+  avec `RANDOM` sous un budget commun, cohérence de présentation avec les
+  références EuroMillions/Keno, séparation index/fiches et articles de fond.
+  Les cinq démonstrations Loto ne sont pas une comparaison de performances.
+  Garder Keno 10-numéros pour la première étape ; autres formats et régimes
+  sont des cohortes distinctes. Aucun outil de construction personnalisée
+  n'est requis pour livrer cet Atlas éditorial.
 - Vérifier le lien de déploiement GitHub–Cloudflare : le flux documenté actuellement
   reste `wrangler deploy` manuel, puis `git push`. Ne pas annoncer de CI non vérifiée.
 - Surveiller la disponibilité des archives FDJ et renouveler les URL dans
@@ -184,3 +159,14 @@ deux documents pertinents avant le commit.
 - Surveiller le nombre d'assets Wrangler avant chaque extension du site. Si ce nombre
   approche 20 000 sur le plan gratuit, regrouper ou externaliser les données nécessaires
   aux pages avant d'ajouter de nouveaux fichiers.
+
+## Pistes différées — hors objectif initial
+
+- Bibliothèque multi-tailles et garanties conditionnelles `x if y of p`, avec
+  éventuelle traduction en rang : note conservée dans
+  `docs/research/garanties-conditionnelles-portefeuilles.md`. Aucun moteur de
+  roues ni certificat n'est à développer pour l'Atlas v0.1.
+- Demandes personnalisées, file de calcul, réponse différée par courriel et
+  calcul hébergé : à réexaminer seulement si un besoin réel apparaît. La vente
+  de compute ou de produits dérivés en garantie **n'est pas un objectif du
+  projet** ; aucun parcours de paiement n'est prévu.

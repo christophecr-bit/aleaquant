@@ -1,5 +1,11 @@
 # Journal de développement
 
+## 2026-10-01 — recentrage de l'Atlas sur son objectif initial
+
+| Fichier | Changement | Vérification |
+|---|---|---|
+| `docs/ATLAS-GEOMETRIES-ARCHITECTURE.md`, `docs/research/garanties-conditionnelles-portefeuilles.md`, `docs/TECHNICAL-DEBT.md`, `docs/SITE-EDITORIAL-ARCHITECTURE.md`, `docs/HANDOFF.md`, `README.md` | Atlas v0.1 limité aux références éditoriales et à leur géométrie ; roues conditionnelles et optimisation personnalisée reportées ; aucune vente de compute ou parcours de paiement prévu. Les entrées du journal ci-dessous conservent l'historique des pistes explorées, pas la feuille de route active. | Contrôle de cohérence documentaire ; aucun calcul, service ou déploiement. |
+
 ## 2026-10-01 — garanties conditionnelles de portefeuilles
 
 | Fichier | Changement | Vérification |

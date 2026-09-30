@@ -1,6 +1,6 @@
 # Portefeuilles à garantie conditionnelle — note de cadrage
 
-Date : 1er octobre 2026 · Auteur : AleaQuant · Statut : recherche, aucun moteur ni classement publiés
+Date : 1er octobre 2026 · Auteur : AleaQuant · Statut : piste conservée pour plus tard, hors Atlas v0.1
 
 ## Sens de « 3 if 4 of 10 »
 
@@ -56,6 +56,10 @@ soit environ **0,443 %**. Ce calcul ne dépend pas de l'organisation des
 grilles ; celle-ci détermine uniquement ce qui est garanti **si** la condition
 se réalise. Il ne faut pas confondre la probabilité d'une grille exacte, la
 probabilité de la condition, et le rang obtenu une fois la condition satisfaite.
+Pour une garantie purement combinatoire, un modèle sur `{1,…,10}` peut être
+renommé bijectivement avec n'importe quel pool de 10 numéros sans perdre sa
+garantie. Cela ne transporte pas les contraintes liées à la valeur numérique,
+aux décades ou à l'historique.
 
 ## Du nombre de correspondances au rang de gain
 
@@ -79,7 +83,7 @@ au moins une des grilles certifiées en contient 3 ». Il ne faut écrire ni
 « trois bons numéros garantis au prochain tirage » ni « gain garanti » sans
 la condition complète et le barème applicable.
 
-## Étude proposée pour l'Atlas
+## Si cette piste est reprise ultérieurement
 
 1. Implémenter un vérificateur déterministe indépendant du générateur :
    validation des grilles, parcours exhaustif des conditions finies, matrice

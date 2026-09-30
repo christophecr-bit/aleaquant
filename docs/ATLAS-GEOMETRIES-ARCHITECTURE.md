@@ -1,6 +1,6 @@
 # Atlas des géométries de portefeuilles — architecture proposée
 
-Date : 1er octobre 2026 · Auteur : AleaQuant · Statut : décision de conception, calculs Loto à qualifier
+Date : 1er octobre 2026 · Auteur : AleaQuant · Statut : Atlas éditorial v0.1 ; outils personnalisés différés
 
 ## Objet et état réel
 
@@ -62,22 +62,20 @@ incertitude pour ces derniers.
 
 ## Politique de tailles et de calcul
 
-**Deux opérations différentes** doivent être séparées : mesurer la couverture
+**Deux opérations différentes** doivent être séparées : mesurer la géométrie
 d'un portefeuille déjà choisi est rapide ; *chercher les grilles* qui couvrent
 au mieux des sous-ensembles sous un budget et des contraintes est une
-optimisation combinatoire. La précédente formulation « géométrie à la demande »
-ne décrivait que la première opération. Elle ne suffit pas pour fabriquer un
-portefeuille qualifié à une nouvelle taille.
+optimisation combinatoire. L'Atlas v0.1 présente des références qualifiées et
+leurs limites ; il n'est pas un constructeur interactif de grilles.
 
-Le catalogue doit donc **précalculer hors ligne des solutions pour une matrice
-de paramètres utiles**, et non seulement pour 6 et 30 grilles. Une cellule de
+Le catalogue peut **précalculer hors ligne des références pour quelques
+cohortes choisies**, sans promettre de solution à chaque demande. Une cellule de
 recherche fixe : jeu/règle, taille du pool `p`, taille des grilles `k`, nombre
 de grilles `m` (ou budget et mise unitaire), composante secondaire, ordre de
 couverture `t`, objectif, contraintes et version du protocole. Les tailles 6
 et 30 sont les deux tailles *déjà montrées*, pas les seules prises en charge.
-Le premier plan de qualification Loto doit comprendre notamment **m = 25** ;
-les autres tailles prioritaires seront choisies avec une grille explicite de
-coût et d'intérêt éditorial, plutôt qu'un produit cartésien aveugle.
+Le choix de tailles supplémentaires, dont éventuellement **m = 25**, suivra
+l'intérêt pédagogique et le coût de qualification, sans matrice exhaustive.
 
 Pour chaque cellule retenue : construire plusieurs candidats avec graines
 fixes, conserver une référence `RANDOM` au même budget, mesurer la géométrie,
@@ -89,107 +87,32 @@ paires, des triplets, d'équilibrage des occurrences et de faible recouvrement
 peuvent être incompatibles : garder plusieurs solutions ou un front de
 compromis, sans classement universel.
 
-Une autre famille d'objectifs est la **garantie conditionnelle** de type
-`x if y of p` : si `y` numéros tirés appartiennent au pool de `p`, au moins
-une grille en recoupe `x`. Elle doit être certifiée sur tous les scénarios
-admissibles, et pas déduite d'un taux moyen de couverture. Sous budget fixé,
-chercher la meilleure garantie ou le nombre minimal de grilles pour une
-garantie cible sont deux problèmes distincts. Une garantie portant sur un
-**rang de gain** nécessite en plus les composantes Chance/étoiles et le barème
-de la règle ; le certificat sur les seuls numéros principaux ne suffit pas.
-Définitions, exemple Loto pool 10 / 25 grilles et plan de vérification dans
+Les garanties conditionnelles `x if y of p` et leur traduction en rang sont une
+**piste de recherche différée**, décrite dans
 [`garanties-conditionnelles-portefeuilles.md`](research/garanties-conditionnelles-portefeuilles.md).
-
-Les numéros concrets d'un pool n'obligent généralement pas à refaire la
-recherche **géométrique** : sous une règle symétrique, un modèle optimisé sur
-`{1,…,p}` peut être renommé bijectivement avec les `p` numéros choisis. Sa
-couverture et ses intersections sont identiques. Ce raccourci ne vaut pas pour
-des contraintes liées à la valeur ou à l'histoire des numéros (décades,
-distance numérique, observations passées) ; ces objectifs exigent une cellule
-et une validation distinctes. La sélection du pool et l'optimisation des
-grilles dans ce pool restent deux étapes explicites.
+Elles ne font pas partie de la première version de l'Atlas.
 
 Pour Keno v1, partir du tirage **16/56** avec des grilles de **10 numéros**.
 Les autres tailles de grilles et les anciens régimes sont des cohortes
-distinctes, à ajouter selon demande et barème. Un pool de 10 numéros avec des
-grilles Keno de 10 numéros ne produit qu'une grille distincte : l'exemple
-« pool de 10, budget de 25 grilles » concerne donc plutôt des grilles plus
-petites, comme les 5 numéros principaux du Loto.
+distinctes, à ajouter selon l'intérêt éditorial et le barème. La sélection
+du pool et la construction des grilles dans ce pool restent deux étapes
+explicites dans toute étude ultérieure.
 
-La géométrie d'un portefeuille **fourni** peut toujours être recalculée à la
-demande et mise en cache. Elle ne certifie pas que le portefeuille est bien
-construit. Si une cellule d'optimisation manque, l'Atlas affiche « solution non
-calculée » et peut l'inscrire dans une file de recherche hors ligne ; il ne
-prend pas les 25 premières grilles d'un portefeuille de 30 en les qualifiant
-d'optimales. Une famille *emboîtée* optimisée pour ses préfixes serait une
-méthode explicite distincte. Les distributions exactes, Monte-Carlo et
-évaluations économiques restent également hors ligne et ciblées.
+La géométrie d'un portefeuille **déjà disponible** peut être recalculée et
+vérifiée. Elle ne certifie pas que le portefeuille est optimal. Si une cohorte
+manque, l'Atlas v0.1 n'invente pas de solution et ne prend pas les 25 premières
+grilles d'un portefeuille de 30 en les qualifiant d'optimales. Les
+distributions exactes, Monte-Carlo et évaluations économiques restent hors
+ligne et ciblées.
 
-### Exemple concret : pool Loto de 10 numéros, 25 grilles
+### Hors périmètre de l'Atlas v0.1
 
-Le pool contient 10 numéros ; chaque grille principale en choisit 5. Il existe
-`C(10,5) = 252` grilles principales candidates. L'objectif pourrait être de
-couvrir autant que possible les `C(10,3) = 120` triplets du pool avec 25
-grilles, sous des contraintes de recouvrement et avec une politique explicite
-pour le numéro Chance. **Mesurer** les 25 grilles est simple ; sélectionner
-les 25 parmi 252 pour cet objectif est la recherche à précalculer. Il faut
-archiver aussi une solution `RANDOM` de 25 grilles et, si possible, une borne
-ou un certificat pour évaluer la qualité de la solution trouvée. Aucune
-couverture géométrique n'implique à elle seule un gain supérieur.
-
-Le site actuel publie des fichiers statiques et n'exécute pas cette recherche.
-L'interface devra d'abord chercher une cellule qualifiée dans le catalogue ;
-si elle existe, elle renomme le modèle canonique selon le pool demandé et
-affiche les grilles et leur provenance. Si elle manque, elle indique son statut
-ou propose seulement l'analyse descriptive de grilles apportées par le lecteur.
-Ni le Worker ni le navigateur ne lancent une optimisation lourde ou une
-énumération exhaustive lors de la consultation.
-
-### Exécution et réponse différée
-
-Pour une cellule absente du catalogue, l'interface pourra enregistrer une
-demande normalisée `(jeu, règle, p, k, m, objectif, contraintes, protocole)` et
-renvoyer un identifiant et une page de statut. Les demandes identiques sont
-fusionnées ; une limite par demandeur et un budget de calcul protègent le
-service. Un moteur **hors ligne**, d'abord sur la machine AleaQuant existante,
-prend la tâche lorsqu'il est disponible, écrit des checkpoints, produit les
-grilles, les mesures et la provenance, puis marque le résultat à relire avant
-son entrée au catalogue public. La page de statut reste le canal de réponse
-principal. Un courriel **facultatif et consenti** peut annoncer que le résultat
-est prêt avec un lien ; il ne transporte pas le résultat comme seule copie.
-Si la machine est arrêtée ou en veille, la demande reste en attente et aucune
-heure d'achèvement n'est promise.
-
-Le Worker actuel ne possède ni route de demande ni file de tâches. Une petite
-base de statut côté site, par exemple D1, et un moteur local qui récupère les
-tâches via un accès authentifié sont une piste de v0, pas une intégration déjà
-livrée. Le calcul hébergé peut être testé ensuite sur quelques cellules
-chronométrées. En octobre 2026, [Workers Free](https://developers.cloudflare.com/workers/platform/limits/)
-est limité à 10 ms de CPU par requête ; le plan Paid autorise jusqu'à 5 minutes
-et 128 Mo par invocation. Les [Containers](https://developers.cloudflare.com/containers/platform/pricing/)
-peuvent s'arrêter entre les tâches et facturent les ressources actives, avec un
-minimum de 5 USD/mois pour Workers Paid ; cela mérite un benchmark réel avant
-de remplacer le moteur local. [D1](https://developers.cloudflare.com/d1/platform/pricing/)
-dispose d'un palier gratuit pour le registre des demandes. L'[envoi à des
-destinataires arbitraires](https://developers.cloudflare.com/email-service/platform/pricing/)
-par le service courriel Cloudflare requiert Workers Paid ; ne pas promettre le
-courriel tant qu'un domaine, un expéditeur et ce service ne sont pas configurés.
-
-### Contribution aux calculs personnalisés
-
-La consultation des solutions **déjà calculées** et des explications de l'Atlas
-reste libre. Une demande réellement nouvelle qui consomme une recherche hors
-ligne peut donner lieu à une **contribution modeste aux frais de calcul**, annoncée
-avec le périmètre et le budget de recherche **avant** son lancement. La même
-cellule demandée plusieurs fois réutilise son résultat ; elle n'est pas
-refacturée comme un nouveau calcul. Une recherche bornée livre la meilleure
-solution trouvée selon l'objectif déclaré, avec sa référence `RANDOM` et ses
-limites ; elle ne promet ni optimum global sans certificat, ni gain au jeu.
-Un échec technique ou une demande non exécutée ne constitue pas une prestation
-achevée. Aucun montant ni mécanisme de paiement n'est fixé avant d'avoir mesuré
-le coût de plusieurs cellules représentatives, y compris le temps de revue.
-L'accès à une analyse descriptive de grilles fournies, peu coûteuse à calculer,
-ne doit pas être confondu avec cette prestation de recherche.
+Il n'y aura pour cette version **ni commande de roues à la demande, ni file
+de calcul public, ni réponse différée par courriel, ni vente de compute ou de
+produits de garantie**. Les recherches sur les roues conditionnelles et la
+capacité de calcul hébergée restent des notes de veille, sans chantier actif.
+L'Atlas doit d'abord montrer des portefeuilles de référence compréhensibles,
+leurs mesures et leurs limites, notamment pour le Loto.
 
 ## Données et parcours de publication
 
@@ -217,14 +140,12 @@ d'une grille et celle d'un événement concernant **plusieurs** grilles.
 
 1. Versionner le schéma de cohorte et l'adaptateur d'affichage des familles ;
    montrer jeu, règle, format, taille, budget connu et niveau de preuve partout.
-2. Définir la première matrice Loto `(pool p, grille k=5, budget m, objectif t)` ;
-   inclure le cas **p=10, m=25** et les tailles 6 et 30 déjà visibles. Qualifier
-   pour chaque cellule retenue une référence `RANDOM` et plusieurs familles
-   (équilibrée, faible recouvrement, couverture, concentration). Conserver
-   `CHANCE_SPREAD` comme expérience sur la composante Chance. Archiver grilles,
-   empreintes, graines, score, bornes disponibles et durée de recherche.
-   Ajouter au registre d'objectifs `x if y of p`, puis sa traduction prudente
-   en rang seulement après vérification du numéro Chance et du barème.
+2. Qualifier quelques portefeuilles Loto représentatifs : les cinq
+   démonstrations actuelles sont le point de départ, pas des résultats classés.
+   Montrer `RANDOM` et des familles de géométrie sous un protocole et un budget
+   communs ; retenir les tailles qui rendent la comparaison pédagogique.
+   Conserver `CHANCE_SPREAD` comme variante de la composante Chance, avec
+   grilles, graines, empreintes et limites archivées.
 3. Ajouter les cohortes pédagogiques à 6 grilles EuroMillions et Keno 10-numéros,
    en gardant leurs 30-grilles archivées. Comparer géométries uniquement à
    l'intérieur d'une cohorte tant que les protocoles d'évaluation divergent.
@@ -232,8 +153,7 @@ d'une grille et celle d'un événement concernant **plusieurs** grilles.
    et contre `RANDOM`, avant de publier un classement de résultats. Les cinq
    démonstrations actuelles ne constituent pas ce classement.
 5. Produire une fiche et un article d'introduction, tester la compréhension des
-   libellés et mesurer le poids de l'index avant d'étendre la matrice des
-   tailles, pools et objectifs.
+   libellés et mesurer le poids de l'index avant d'envisager d'autres tailles.
 
 Critère de sortie : chaque nombre affiché renvoie à sa définition, à sa cohorte
 et à sa provenance ; aucune comparaison de gains ne traverse deux cohortes ;

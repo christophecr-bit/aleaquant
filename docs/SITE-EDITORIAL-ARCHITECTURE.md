@@ -95,9 +95,9 @@ discordante conduit à omettre le graphe, pas à afficher un dessin trompeur.
 4. Décider du portage de ce gabarit dans le site actuel ou dans Astro après mesure
    du coût de génération, du nombre d'assets et du rendu mobile.
 5. Qualifier le premier Atlas de portefeuilles et ses articles d'introduction selon
-   `ATLAS-GEOMETRIES-ARCHITECTURE.md` : 6 et 30 grilles sont les tailles déjà
-   montrées ; le catalogue Loto doit aussi précalculer d'autres budgets, dont
-   un pool de 10 numéros avec 25 grilles. Les autres formats Keno restent séparés.
+   `ATLAS-GEOMETRIES-ARCHITECTURE.md` : qualifier des références Loto,
+   homogénéiser leur présentation avec EuroMillions/Keno et expliquer les
+   limites des comparaisons. La construction de roues à la demande est différée.
 
 Ni cette maquette ni les mini-histogrammes ne changent la chaîne d'approbation,
 les faits ou le sens des probabilités. Comprendre le hasard n'est pas prédire le
