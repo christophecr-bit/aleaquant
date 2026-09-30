@@ -364,6 +364,59 @@ def _sans_accent(s):
     return unicodedata.normalize("NFD", s.lower()).encode("ascii", "ignore").decode()
 
 
+def run_all_guards(text, facts):
+    """Les quatre contrôles, en un seul appel, pour pouvoir les rejouer après réparation."""
+    word_problems = guard_interpretive_words(text, facts)
+    return {
+        "nombres": sorted(guard_full_text(text, facts)),
+        "mots_de_rarete": [w for w, _ in word_problems],
+        "noms_de_code": guard_enum_leak(text),
+        "effectifs": guard_class_citations(text, facts),
+    }
+
+
+def repair_prompt(text, guards, facts):
+    """Renvoie au modèle ses propres violations, avec le motif exact, pour correction
+    minimale. Le cas le plus fréquent : un mot de rareté employé sur une mesure qui est
+    dans sa normale — souvent parce qu'aucune mesure n'est au-dessus de sa référence,
+    et qu'un tirage ordinaire est alors la seule description honnête."""
+    notables = [f"{f['fact_id']} ({RARITY_FR.get(f['rarity'], f['rarity'])})"
+                for f in facts["facts"] if notable_level(f) is not None]
+    etat = ("Mesures réellement AU-DESSUS de leur référence : " + ", ".join(notables)
+            if notables else
+            "AUCUNE mesure de ce tirage n'est au-dessus de sa référence : sa forme est "
+            "ORDINAIRE. C'est une observation valide et suffisante — dis-le simplement, "
+            "n'emploie aucun mot de rareté, et ne cherche pas un angle remarquable.")
+    violations = []
+    if guards["mots_de_rarete"]:
+        violations.append("Mots de rareté employés sans justification : "
+                          + ", ".join(f'« {w} »' for w in guards["mots_de_rarete"]))
+    if guards["nombres"]:
+        violations.append("Nombres absents des faits : " + ", ".join(guards["nombres"]))
+    if guards["noms_de_code"]:
+        violations.append("Noms de code techniques à traduire en français : "
+                          + ", ".join(guards["noms_de_code"]))
+    if guards["effectifs"]:
+        violations.append("Effectifs ou queues erronés : " + " ; ".join(guards["effectifs"]))
+
+    return f"""Ton texte a été refusé par un contrôle automatique. Corrige-le de façon MINIMALE.
+
+{etat}
+
+Violations à corriger :
+- """ + "\n- ".join(violations) + f"""
+
+Règles de correction :
+- Ne change QUE ce qui est nécessaire pour lever ces violations. Ne réécris pas le reste.
+- N'ajoute AUCUN nombre nouveau, ne modifie aucun nombre existant.
+- Si un mot de rareté n'est pas justifié, supprime-le ou remplace-le par une formulation neutre qui décrit la mesure sans la qualifier de rare, notable ou exceptionnelle.
+- Ne supprime aucun paragraphe entier ; garde la structure.
+- Renvoie uniquement le texte corrigé, sans commentaire ni préambule.
+
+TEXTE À CORRIGER :
+{text}"""
+
+
 def paragraph_evidence(paragraph, facts):
     """Faits effectivement cités dans ce paragraphe, par appariement déterministe.
 
@@ -438,6 +491,8 @@ def main():
                     help="écrit le brouillon dans runs-llm-compose/<id>/draft.json")
     ap.add_argument("--text-file", type=Path,
                     help="construit le brouillon depuis un texte existant, sans appel API")
+    ap.add_argument("--no-repair", action="store_true",
+                    help="n'essaie pas de faire corriger une violation par le modèle")
     args = ap.parse_args()
     draw_id = args.draw_id
     facts_path = ROOT / "dist" / "data" / "facts" / f"{draw_id}.json"
@@ -551,9 +606,32 @@ TEXTE :
     cost = in_tok / 1e6 * 0.75 + out_tok / 1e6 * 4.50
     print(f"\n=== COÛT === {cost:.5f} $ (in={in_tok} out={out_tok})")
 
+    guards = {"nombres": sorted(problems), "mots_de_rarete": [w for w, _ in word_problems],
+              "noms_de_code": leaks, "effectifs": cite_problems}
+
+    # --- réparation : on renvoie au modèle sa violation et on rejoue les gardes ---
+    if any(guards.values()) and not args.text_file and not args.no_repair:
+        print("\n=== RÉPARATION === contrôle en échec, nouvelle tentative")
+        fix = client.responses.create(model=MODEL, input=repair_prompt(text, guards, facts),
+                                      reasoning={"effort": "low"})
+        repaired = fix.output_text.strip()
+        new_guards = run_all_guards(repaired, facts)
+        # la réparation ne doit pas introduire de nombre nouveau
+        sans_nouveau_nombre = not (normalize_numbers(repaired) - normalize_numbers(text))
+        if not any(new_guards.values()) and sans_nouveau_nombre:
+            text, guards = repaired, new_guards
+            print("réparation ACCEPTÉE : tous les contrôles passent")
+        else:
+            motif = ("nombre nouveau introduit" if not sans_nouveau_nombre
+                     else f"contrôles encore en échec : { {k: v for k, v in new_guards.items() if v} }")
+            print(f"réparation REFUSÉE ({motif}) — le texte d'origine est conservé")
+        cost += ((getattr(fix.usage, "input_tokens", 0) or 0) / 1e6 * 0.75
+                 + (getattr(fix.usage, "output_tokens", 0) or 0) / 1e6 * 4.50)
+        print(f"coût cumulé : {cost:.5f} $")
+        print("\n=== TEXTE RETENU ===\n")
+        print(text)
+
     if args.write:
-        guards = {"nombres": sorted(problems), "mots_de_rarete": [w for w, _ in word_problems],
-                  "noms_de_code": leaks, "effectifs": cite_problems}
         article = build_compose_article(facts_path, facts, text, guards)
         out = ROOT / "runs-llm-compose" / draw_id / "draft.json"
         out.parent.mkdir(parents=True, exist_ok=True)
