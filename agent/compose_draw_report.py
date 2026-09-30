@@ -591,21 +591,9 @@ def build_compose_article(facts_path, facts, text, guards):
                            "facts_path": str(facts_path)}}
 
 
-def main():
-    import argparse
-    ap = argparse.ArgumentParser(description=__doc__)
-    ap.add_argument("draw_id")
-    ap.add_argument("--write", action="store_true",
-                    help="écrit le brouillon dans runs-llm-compose/<id>/draft.json")
-    ap.add_argument("--text-file", type=Path,
-                    help="construit le brouillon depuis un texte existant, sans appel API")
-    ap.add_argument("--no-repair", action="store_true",
-                    help="n'essaie pas de faire corriger une violation par le modèle")
-    args = ap.parse_args()
-    draw_id = args.draw_id
-    facts_path = ROOT / "dist" / "data" / "facts" / f"{draw_id}.json"
-    facts = json.loads(facts_path.read_text(encoding="utf-8"))
-
+def compose_prompt(facts):
+    """Le prompt de composition. Extrait de main() pour que le mode direct et le
+    mode batch partagent exactement le même texte : deux copies divergeraient."""
     main_nums = ' · '.join('%02d' % n for n in facts['main'])
     stars = ' · '.join('%02d' % n for n in facts['stars'])
     redundancy = redundancy_note(facts)
@@ -645,6 +633,25 @@ n. N'emploie un mot de rareté QUE pour une mesure marquée « AU-DESSUS de sa r
 o. Pour expliquer ce que mesure une grandeur, reprends la définition officielle fournie plutôt qu'une paraphrase de ton cru (l'étendue est « l'écart entre le plus petit et le plus grand numéro », pas « le sommet de 35 à 50 »).
 p. Écris en TEXTE BRUT. Aucun markdown : pas d'astérisques pour le gras, pas de titres, pas de puces, pas d'accents graves. La page affiche ton texte tel quel, donc un « ** » s'y verrait littéralement. Pour mettre en valeur un terme, emploie les mots, pas la typographie.
 q. Varie ta structure et tes formulations d'un article à l'autre, n'utilise pas un patron figé. Style vivant mais rigoureux, pas de sensationnalisme."""
+    return prompt
+
+
+def main():
+    import argparse
+    ap = argparse.ArgumentParser(description=__doc__)
+    ap.add_argument("draw_id")
+    ap.add_argument("--write", action="store_true",
+                    help="écrit le brouillon dans runs-llm-compose/<id>/draft.json")
+    ap.add_argument("--text-file", type=Path,
+                    help="construit le brouillon depuis un texte existant, sans appel API")
+    ap.add_argument("--no-repair", action="store_true",
+                    help="n'essaie pas de faire corriger une violation par le modèle")
+    args = ap.parse_args()
+    draw_id = args.draw_id
+    facts_path = ROOT / "dist" / "data" / "facts" / f"{draw_id}.json"
+    facts = json.loads(facts_path.read_text(encoding="utf-8"))
+
+    prompt = compose_prompt(facts)
 
     if args.text_file:
         text = strip_markdown(args.text_file.read_text(encoding="utf-8")).strip()
