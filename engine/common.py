@@ -8,9 +8,11 @@ from __future__ import annotations
 import hashlib
 import json
 import os
+import re
 import sqlite3
 import sys
 from fractions import Fraction
+from math import comb
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -21,6 +23,29 @@ PATTERNS = Path(os.environ.get('ALEAQUANT_PATTERNS', LAB / 'src' / 'lottery_game
 
 ENGINE_VERSION = 'aleaquant-engine-v0.1'
 CURRENT_RULE = 'euromillions-50-12-v1'
+
+# Les étoiles d'EuroMillions ont changé deux fois : 9 étoiles jusqu'au 06/05/2011,
+# 11 du 10/05/2011 au 23/09/2016, 12 depuis le 27/09/2016. Le dénominateur de la
+# combinaison complète doit suivre la règle EN VIGUEUR À LA DATE du tirage, jamais la
+# règle courante — sinon un tirage de 2011 annonce 1 sur 139 838 160 au lieu de
+# 1 sur 116 531 800.
+RULE_RE = re.compile(r'^euromillions-(\d+)-(\d+)-v\d+$')
+
+
+def rule_star_total(rule_id):
+    """Nombre de couples d'étoiles possibles sous la règle du tirage."""
+    m = RULE_RE.match(rule_id or '')
+    if not m:
+        raise ValueError('règle de tirage inconnue : %r' % (rule_id,))
+    return comb(int(m.group(2)), 2)
+
+
+def rule_main_total(rule_id):
+    """Nombre de combinaisons de numéros principaux sous la règle du tirage."""
+    m = RULE_RE.match(rule_id or '')
+    if not m:
+        raise ValueError('règle de tirage inconnue : %r' % (rule_id,))
+    return comb(int(m.group(1)), 5)
 
 MAIN_FIELDS = ['sum', 'span', 'min_gap', 'max_gap', 'mean_gap', 'longest_consecutive_run',
                'consecutive_pairs', 'runs_ge2', 'max_same_decade', 'occupied_decades',

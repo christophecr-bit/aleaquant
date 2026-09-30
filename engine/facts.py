@@ -11,6 +11,7 @@ from itertools import combinations
 from math import comb
 
 from common import (CURRENT_RULE, ENGINE_VERSION, MAIN_CAT, MAIN_FIELDS, STAR_FIELDS,
+                    rule_star_total,
                     key, rarity)
 
 LABELS = {
@@ -124,7 +125,12 @@ def build_draw_facts(draw, prior_rows, laws, idx, patterns, pascal_prior):
     main, stars = tuple(draw['main']), tuple(draw['stars'])
     mp, sp = patterns.main_pattern(main), patterns.stars_pattern(stars)
     n_prior = len(prior_rows)
-    total_main, total_stars = laws['main_total'], laws['stars_total']
+    # dénominateur de la combinaison complète : règle en vigueur à la date du tirage
+    # (9, 11 ou 12 étoiles). laws['stars_total'] vaut toujours C(12,2) puisque les lois
+    # exactes sont bâties sur la règle courante ; l'utiliser ici fausserait les 940
+    # tirages antérieurs à septembre 2016.
+    total_main = laws['main_total']
+    total_stars = rule_star_total(draw['rule'])
     facts = [{
         'fact_id': 'F.grid.probability', 'category': 'exact_grid', 'method': 'combinatoire exacte',
         'value': {'full_combinations': total_main * total_stars},
