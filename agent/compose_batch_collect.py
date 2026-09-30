@@ -25,7 +25,7 @@ OUT_DIR = ROOT / "runs-llm-compose"
 MANIFEST_DIR = OUT_DIR / "_batches"
 
 sys.path.insert(0, str(ROOT / "agent"))
-from compose_draw_report import (  # noqa: E402
+from guards import (  # noqa: E402
     build_compose_article, run_all_guards, strip_markdown,
 )
 

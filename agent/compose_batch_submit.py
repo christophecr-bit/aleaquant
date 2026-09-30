@@ -28,7 +28,8 @@ OUT_DIR = ROOT / "runs-llm-compose"
 MANIFEST_DIR = OUT_DIR / "_batches"
 
 sys.path.insert(0, str(ROOT / "agent"))
-from compose_draw_report import MODEL, compose_prompt  # noqa: E402
+from compose_draw_report import compose_prompt  # noqa: E402
+from guards import MODEL  # noqa: E402
 
 PRICE_IN = 0.75 / 1e6 / 2   # tarif batch : moitié du direct
 PRICE_OUT = 4.50 / 1e6 / 2
