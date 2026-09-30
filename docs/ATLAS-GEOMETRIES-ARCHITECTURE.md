@@ -86,6 +86,34 @@ distributions exactes, Monte-Carlo et évaluations économiques restent des
 travaux hors ligne sur un sous-ensemble justifié ; elles ne sont pas lancées par
 une visite de page. Un calcul non fait s'affiche « non évalué », pas comme zéro.
 
+### Exemple concret : demander 20 grilles
+
+L'utilisateur choisit **jeu et règle**, format de grille (pour Keno, par exemple
+10 numéros), `20` grilles, famille et éventuellement graine ; il peut aussi
+fournir ses 20 grilles. Le moteur génère ou lit **les 20 grilles elles-mêmes** :
+il ne coupe pas un portefeuille de 30, car cette coupe changerait sa géométrie
+et le sens de sa méthode de construction. Il valide valeurs, composantes,
+nombre de grilles et options, puis calcule union, occurrences, intersections
+des 190 couples de grilles, couverture des paires et triplets, et les mesures
+propres à la composante secondaire. Un portefeuille de référence `RANDOM` de
+20 grilles peut être construit sous les mêmes contraintes et au même budget.
+
+La réponse immédiate est une **fiche de géométrie descriptive** avec règles,
+grilles, graine, version et empreinte. Elle ne reçoit ni badge « rare » sans
+distribution de référence à 20 grilles, ni probabilité de gain, ni classement
+économique improvisé. Une évaluation de résultats peut être demandée comme
+travail séparé, avec son événement, son barème, sa méthode et son statut.
+
+Le site actuel publie des fichiers statiques : cette demande publique
+interactive **n'existe pas encore**. Première réalisation possible : une
+commande locale dans le moteur Python, produisant la fiche reproductible ;
+ensuite une interface et un petit service de calcul pour la géométrie seule.
+Le service devra être vérifié contre les mêmes cas de référence que le moteur
+Python. Son cache pourra indexer le contenu canonique, le jeu, la règle et la
+version du calcul ; l'identité de la famille et la graine restent dans la
+provenance. Ni le Worker ni le navigateur ne déclencheront d'énumération
+exhaustive pour répondre à cette demande.
+
 ## Données et parcours de publication
 
 ```mermaid

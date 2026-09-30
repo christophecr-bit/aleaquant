@@ -1,5 +1,11 @@
 # Journal de développement
 
+## 2026-10-01 — demande Atlas d'une taille libre
+
+| Fichier | Changement | Vérification |
+|---|---|---|
+| `docs/ATLAS-GEOMETRIES-ARCHITECTURE.md`, `docs/TECHNICAL-DEBT.md` | Cas concret de 20 grilles : génération ou apport des grilles, géométrie immédiate, référence RANDOM de même taille, calcul de gain séparé ; distinction entre commande locale future et interface publique encore absente. | Relecture du contrat avec le site statique actuel et les métriques du laboratoire. |
+
 ## 2026-10-01 — architecture de l'Atlas des géométries
 
 | Fichier | Changement | Vérification |

@@ -148,7 +148,11 @@ deux documents pertinents avant le commit.
   limites. Garder Keno 10-numéros pour cette première étape ; les grilles de 4 à 9
   numéros et les autres régimes requièrent des cohortes et barèmes distincts.
   Ne pas lancer l'évaluation exhaustive de toutes les tailles ni présenter les
-  cinq démonstrations Loto comme une comparaison de performances.
+  cinq démonstrations Loto comme une comparaison de performances. Pour une
+  demande de 20 grilles, ajouter d'abord une commande locale reproductible qui
+  génère ou valide les grilles et calcule leur seule géométrie, puis une interface
+  publique avec service léger et tests de concordance avec le moteur Python.
+  Ne donner aucune rareté ni métrique de gain sans référence adaptée à 20 grilles.
 - Vérifier le lien de déploiement GitHub–Cloudflare : le flux documenté actuellement
   reste `wrangler deploy` manuel, puis `git push`. Ne pas annoncer de CI non vérifiée.
 - Surveiller la disponibilité des archives FDJ et renouveler les URL dans
