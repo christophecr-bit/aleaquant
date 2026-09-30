@@ -1,6 +1,6 @@
 # Portefeuilles à garantie conditionnelle — note de cadrage
 
-Date : 1er octobre 2026 · Auteur : AleaQuant · Statut : piste conservée pour plus tard, hors Atlas v0.1
+Date : 1er octobre 2026 · Auteur : AleaQuant · Statut : axe de recherche de l'Atlas ; aucun produit de roues à la demande
 
 ## Sens de « 3 if 4 of 10 »
 
@@ -38,9 +38,9 @@ numéros, sans nécessairement contenir chacun des `C(10,3)=120` triplets.
 
 Le [catalogue Pick 5 de Lottery Post](https://www.lotterypost.com/wheels/pick5)
 affiche une roue `3 if 4 of 10` à **7 grilles**, une `4 if 5 of 10` à **14**
-et une `4 if 4 of 10` à **52**. Ce sont des offres listées, **pas des minima
-prouvés ici** ; le contenu détaillé est réservé aux membres et ne sera pas
-repris. On peut toutefois prouver indépendamment que `4 if 4 of 10` est
+et une `4 if 4 of 10` à **52**. Ce sont des offres listées, pas des minima
+prouvés par ce catalogue ; le contenu détaillé est réservé aux membres et ne
+sera pas repris. On peut toutefois prouver indépendamment que `4 if 4 of 10` est
 impossible avec 25 grilles : chaque grille de 5 contient seulement 5
 quadruplets, alors qu'il faut couvrir les 210 quadruplets du pool ; il faut
 donc au moins `ceil(210/5)=42` grilles. Avec 25 grilles, le bon objectif est à
@@ -60,6 +60,30 @@ Pour une garantie purement combinatoire, un modèle sur `{1,…,10}` peut être
 renommé bijectivement avec n'importe quel pool de 10 numéros sans perdre sa
 garantie. Cela ne transporte pas les contraintes liées à la valeur numérique,
 aux décades ou à l'historique.
+
+### Premier certificat AleaQuant
+
+Le vérificateur exhaustif indépendant `engine/conditional_guarantees.py`
+contrôle une roue candidate sur les **210** scénarios `4 of 10` et conserve un
+témoin du pire cas. Le solveur facultatif `tools/solve_conditional_wheel.py`
+cherche le **plus petit nombre** de grilles parmi les `C(10,5)=252` grilles
+possibles. Pour `3 if 4 of 10`, SciPy/HiGHS a trouvé **7 grilles**, une borne
+duale de **7** et un écart nul en **8,452 s** lors du premier essai. Ce cas
+dispose donc d'une preuve d'optimalité par le solveur ; la roue produite a été
+revérifiée séparément sur les 210 scénarios. Le résultat reproductible et ses
+empreintes sont archivés dans
+[`conditional-wheel-10-5-4-3.json`](conditional-wheel-10-5-4-3.json).
+La borne de comptage élémentaire seule n'était que **4** et n'aurait pas
+permis cette conclusion. Cette preuve concerne ce petit cas précis, pas tous
+les pools ni toutes les contraintes.
+
+L'intérêt est d'expliquer la **frontière combinatoire** : combien de grilles
+sont nécessaires pour une garantie formulée sans ambiguïté, sous quelle
+condition et avec quel certificat. Le rang bas correspondant à trois numéros
+Loto peut rapporter peu au regard de la mise de sept grilles. Sans barème
+versionné, composante Chance et comparaison du coût au paiement, aucune
+conclusion économique n'est établie. Cette étude ne justifie ni stratégie de
+jeu ni vente de roues.
 
 ## Du nombre de correspondances au rang de gain
 
@@ -83,20 +107,22 @@ au moins une des grilles certifiées en contient 3 ». Il ne faut écrire ni
 « trois bons numéros garantis au prochain tirage » ni « gain garanti » sans
 la condition complète et le barème applicable.
 
-## Si cette piste est reprise ultérieurement
+## Suite de l'axe de recherche
 
-1. Implémenter un vérificateur déterministe indépendant du générateur :
-   validation des grilles, parcours exhaustif des conditions finies, matrice
-   `x if y of p`, témoin de pire cas et contre-exemple en cas d'échec.
-2. Pour Loto `p=10, k=5`, comparer les 25-grilles candidates et `RANDOM`
-   sous les mêmes contraintes ; chercher aussi le **nombre minimal de grilles**
-   pour une garantie cible, sans déclarer un optimum non démontré.
-3. Ajouter multiplicité minimale de grilles à chaque seuil, puis composants
+1. Étendre la matrice de petites conditions `x if y of p` en archivant pour
+   chacune le statut de preuve, une solution, les bornes et le coût de calcul.
+   Ne pas extrapoler la vitesse du cas 10/5 à tous les pools.
+2. Pour des budgets fixés, comparer les portefeuilles candidats à `RANDOM`
+   sous les mêmes contraintes, puis confronter la garantie au coût de toutes
+   les grilles. Une heuristique ou Monte-Carlo explore ; seul un contrôle
+   exhaustif ou un certificat formel autorise le mot « garantie ».
+3. Conserver la multiplicité minimale de grilles à chaque seuil, puis étudier les composants
    Chance/étoiles et barèmes historiques par régime. Keno exige une cohorte
    par taille de grille et objectif de rang.
-4. Tester qu'enlever une grille peut invalider le certificat, que le renommage
-   bijectif du pool le conserve, et que les pires cas sont réellement atteints.
-   Ne pas copier les listes de grilles réservées aux membres de Lottery Post.
+4. Étendre les tests à d'autres cohortes et à leurs limites de taille. Le cas
+   archivé vérifie déjà que retirer l'une quelconque des sept grilles détruit
+   la garantie. Ne pas copier les
+   listes de grilles réservées aux membres de Lottery Post.
 
 La garantie combinatoire décrit la **répartition conditionnelle** de résultats
 entre plusieurs grilles. Elle ne prédit pas le prochain tirage, ne change pas

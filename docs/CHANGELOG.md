@@ -1,5 +1,13 @@
 # Journal de développement
 
+## 2026-10-01 — premier certificat de garantie conditionnelle pour l'Atlas
+
+| Fichier | Changement | Vérification |
+|---|---|---|
+| `engine/conditional_guarantees.py`, `tools/solve_conditional_wheel.py`, `docs/research/conditional-wheel-10-5-4-3.json` | Vérificateur exhaustif indépendant, constructeur glouton et pilote MILP facultatif ; `3 if 4 of 10` Loto résolu à 7 grilles minimum (borne du solveur 7, écart nul). Ce résultat porte seulement sur les numéros principaux. | 210 scénarios contrôlés ; solution archivée avec empreintes ; 8,452 s lors de l'essai. |
+| `tests/test_conditional_guarantees.py` | Cas de certification, contre-exemple, borne de comptage, renommage, limites de calcul et vérification indépendante de la solution archivée. | Suite de tests du projet. |
+| `docs/research/garanties-conditionnelles-portefeuilles.md`, `docs/ATLAS-GEOMETRIES-ARCHITECTURE.md`, `docs/TECHNICAL-DEBT.md`, `docs/HANDOFF.md` | Les garanties deviennent un axe de recherche ciblé de l'Atlas ; roues personnalisées et vente de calcul restent différées. Le coût des mises et la faiblesse possible des petits rangs sont explicites. | Cohérence du contrat et des limites éditoriales. |
+
 ## 2026-10-01 — recentrage de l'Atlas sur son objectif initial
 
 | Fichier | Changement | Vérification |

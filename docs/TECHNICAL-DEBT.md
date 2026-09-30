@@ -6,6 +6,13 @@ deux documents pertinents avant le commit.
 
 ## Réalisé dans cette livraison
 
+- Garantie conditionnelle Loto sur la composante principale : vérificateur
+  exhaustif indépendant, constructeur glouton et solveur de recherche facultatif.
+  Pour un pool de 10, grilles de 5 et condition `3 if 4`, le minimum de **7**
+  grilles a été prouvé par MILP et le candidat vérifié sur 210 scénarios.
+  Résultat, bornes et empreintes archivés dans
+  `docs/research/conditional-wheel-10-5-4-3.json`. Aucun rang ni rendement
+  économique n'est déduit de ce certificat.
 - La collecte planifiée enchaîne maintenant EuroMillions, Loto et Keno depuis
   `aleaquant-data`, puis les faits et, pour les deux premiers jeux, les profils et
   pages avec mini-histogrammes. Le SQLite commun est filtré par jeu ; les SHA des
@@ -149,6 +156,12 @@ deux documents pertinents avant le commit.
   Garder Keno 10-numéros pour la première étape ; autres formats et régimes
   sont des cohortes distinctes. Aucun outil de construction personnalisée
   n'est requis pour livrer cet Atlas éditorial.
+- Étendre prudemment l'axe de recherche des garanties conditionnelles : choisir
+  quelques cohortes pédagogiques par jeu, archiver solution et bornes, confronter
+  une garantie à la mise totale et à `RANDOM` au même budget. Pour toute
+  traduction en rang, intégrer d'abord Chance/étoiles et barèmes par régime ;
+  les petits rangs peuvent rapporter très peu. Ne pas généraliser l'optimum
+  prouvé pour `3 if 4 of 10` à d'autres paramètres.
 - Vérifier le lien de déploiement GitHub–Cloudflare : le flux documenté actuellement
   reste `wrangler deploy` manuel, puis `git push`. Ne pas annoncer de CI non vérifiée.
 - Surveiller la disponibilité des archives FDJ et renouveler les URL dans
@@ -162,10 +175,9 @@ deux documents pertinents avant le commit.
 
 ## Pistes différées — hors objectif initial
 
-- Bibliothèque multi-tailles et garanties conditionnelles `x if y of p`, avec
-  éventuelle traduction en rang : note conservée dans
-  `docs/research/garanties-conditionnelles-portefeuilles.md`. Aucun moteur de
-  roues ni certificat n'est à développer pour l'Atlas v0.1.
+- Bibliothèque exhaustive de toutes tailles de pool et de portefeuille : hors
+  du périmètre initial ; l'axe de recherche actif sélectionne quelques cas
+  utiles et les documente individuellement.
 - Demandes personnalisées, file de calcul, réponse différée par courriel et
   calcul hébergé : à réexaminer seulement si un besoin réel apparaît. La vente
   de compute ou de produits dérivés en garantie **n'est pas un objectif du

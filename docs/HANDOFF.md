@@ -8,11 +8,14 @@
 > Keno v1 reste à 10 numéros par grille en 16/56. Le Loto affiché est encore
 > composé de cinq démonstrations à 6 grilles, sans évaluation exacte publiée.
 > Aucun calcul massif ni changement de l'Atlas en ligne n'a été lancé. Les tâches
-> d'implémentation sont dans `docs/TECHNICAL-DEBT.md`. Les roues
-> conditionnelles, demandes personnalisées, réponse différée et toute vente
-> de compute ont été retirées du chemin de lancement : la note
-> `docs/research/garanties-conditionnelles-portefeuilles.md` reste une piste
-> scientifique pour plus tard. Aucun certificat AleaQuant n'est publié.
+> d'implémentation sont dans `docs/TECHNICAL-DEBT.md`. Les garanties
+> conditionnelles sont un axe de recherche hors ligne : un premier certificat
+> `3 if 4 of 10` Loto prouve un minimum de 7 grilles, avec contrôle exhaustif
+> des 210 scénarios. Voir `docs/research/garanties-conditionnelles-portefeuilles.md`
+> et `docs/research/conditional-wheel-10-5-4-3.json`. Il ne couvre ni Chance,
+> ni rang, ni rentabilité. Aucun certificat n'est encore publié sur le site.
+> Demandes personnalisées, réponse différée et vente de compute restent hors
+> du chemin de lancement.
 
 > Mise à jour du 30/09/2026 : la collecte des trois jeux enchaîne maintenant avec
 > les calculs locaux. `bash tools/refresh_draws.sh --check` inspecte sans réseau ;

@@ -87,10 +87,16 @@ paires, des triplets, d'équilibrage des occurrences et de faible recouvrement
 peuvent être incompatibles : garder plusieurs solutions ou un front de
 compromis, sans classement universel.
 
-Les garanties conditionnelles `x if y of p` et leur traduction en rang sont une
-**piste de recherche différée**, décrite dans
+Les garanties conditionnelles `x if y of p` constituent un **axe de recherche
+de l'Atlas**, décrit dans
 [`garanties-conditionnelles-portefeuilles.md`](research/garanties-conditionnelles-portefeuilles.md).
-Elles ne font pas partie de la première version de l'Atlas.
+Un premier cas Loto 10/5, `3 if 4`, a été résolu à **7 grilles minimum** avec
+certificat du solveur et vérification exhaustive des 210 scénarios. Une fiche
+de recherche peut présenter condition, taille minimale prouvée ou bornes,
+grilles, méthode, temps et coût des mises. Le rang et le paiement éventuels
+exigent encore Chance et un barème versionné. Les faibles rangs ne sont pas un
+argument économique : la garantie conditionnelle doit être rapportée au coût
+du portefeuille, sans promesse de rendement.
 
 Pour Keno v1, partir du tirage **16/56** avec des grilles de **10 numéros**.
 Les autres tailles de grilles et les anciens régimes sont des cohortes
@@ -109,8 +115,8 @@ ligne et ciblées.
 
 Il n'y aura pour cette version **ni commande de roues à la demande, ni file
 de calcul public, ni réponse différée par courriel, ni vente de compute ou de
-produits de garantie**. Les recherches sur les roues conditionnelles et la
-capacité de calcul hébergée restent des notes de veille, sans chantier actif.
+produits de garantie**. Le calcul de petites frontières conditionnelles reste
+une recherche hors ligne, indépendante de toute offre personnalisée.
 L'Atlas doit d'abord montrer des portefeuilles de référence compréhensibles,
 leurs mesures et leurs limites, notamment pour le Loto.
 
