@@ -164,6 +164,22 @@ destinataires arbitraires](https://developers.cloudflare.com/email-service/platf
 par le service courriel Cloudflare requiert Workers Paid ; ne pas promettre le
 courriel tant qu'un domaine, un expéditeur et ce service ne sont pas configurés.
 
+### Contribution aux calculs personnalisés
+
+La consultation des solutions **déjà calculées** et des explications de l'Atlas
+reste libre. Une demande réellement nouvelle qui consomme une recherche hors
+ligne peut donner lieu à une **contribution modeste aux frais de calcul**, annoncée
+avec le périmètre et le budget de recherche **avant** son lancement. La même
+cellule demandée plusieurs fois réutilise son résultat ; elle n'est pas
+refacturée comme un nouveau calcul. Une recherche bornée livre la meilleure
+solution trouvée selon l'objectif déclaré, avec sa référence `RANDOM` et ses
+limites ; elle ne promet ni optimum global sans certificat, ni gain au jeu.
+Un échec technique ou une demande non exécutée ne constitue pas une prestation
+achevée. Aucun montant ni mécanisme de paiement n'est fixé avant d'avoir mesuré
+le coût de plusieurs cellules représentatives, y compris le temps de revue.
+L'accès à une analyse descriptive de grilles fournies, peu coûteuse à calculer,
+ne doit pas être confondu avec cette prestation de recherche.
+
 ## Données et parcours de publication
 
 ```mermaid

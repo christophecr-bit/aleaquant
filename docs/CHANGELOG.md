@@ -1,5 +1,11 @@
 # Journal de développement
 
+## 2026-10-01 — contribution éventuelle aux calculs personnalisés
+
+| Fichier | Changement | Vérification |
+|---|---|---|
+| `docs/ATLAS-GEOMETRIES-ARCHITECTURE.md`, `docs/TECHNICAL-DEBT.md` | Accès libre aux solutions déjà calculées ; contribution modeste envisageable uniquement pour une recherche nouvelle, bornée et annoncée avant lancement ; aucun tarif ou paiement activé. | Recherche de politique existante dans les documents et contrôle du diff. |
+
 ## 2026-10-01 — optimisation différée et hébergement
 
 | Fichier | Changement | Vérification |

@@ -161,6 +161,12 @@ deux documents pertinents avant le commit.
   Comparer ensuite sur de vrais lots coût et débit de ce moteur local avec
   Cloudflare Containers ; les Workers HTTP ne portent pas le calcul lourd.
   Détails et liens de prix datés dans `docs/ATLAS-GEOMETRIES-ARCHITECTURE.md`.
+- Avant toute contribution sur une recherche personnalisée : mesurer temps
+  machine et temps de revue sur plusieurs cellules, définir un périmètre et
+  une durée de recherche bornés, dédupliquer les cellules déjà calculées et
+  annoncer le montant avant accord du demandeur. Garder libre l'Atlas déjà
+  publié ; ne vendre ni promesse d'optimum non prouvé ni perspective de gain.
+  Aucun paiement n'est implémenté dans cette version.
 - Vérifier le lien de déploiement GitHub–Cloudflare : le flux documenté actuellement
   reste `wrangler deploy` manuel, puis `git push`. Ne pas annoncer de CI non vérifiée.
 - Surveiller la disponibilité des archives FDJ et renouveler les URL dans
