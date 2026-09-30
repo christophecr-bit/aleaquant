@@ -62,6 +62,18 @@ incertitude pour ces derniers.
 
 ## Politique de tailles et de calcul
 
+### Acquis HPC à réutiliser
+
+La [capitalisation HPC du laboratoire](../../loto-keno-lab/docs/CAPITALISATION-HPC-ATLAS.md)
+est le point de départ des travaux de performance : Gosper/colex, revolving-door
+Algorithm R, unranking Gray, B3 bitslicing/SWAR, SIMD NEON et réduction Metal.
+Elle conserve les sources, preuves, benchmarks et résultats négatifs B1/B2.
+Le débit historique de 8,7 G combinaisons/s concerne le matching de 30 grilles
+sur des sous-espaces qualifiés ; il ne mesure ni une optimisation de portefeuille
+ni le calcul des lois des features. La généralisation des tailles et des jeux
+reste à qualifier. Réutiliser aussi le partitionnement colex et la persistance
+du worker B3 avant de concevoir une nouvelle reprise de calcul.
+
 **Deux opérations différentes** doivent être séparées : mesurer la géométrie
 d'un portefeuille déjà choisi est rapide ; *chercher les grilles* qui couvrent
 au mieux des sous-ensembles sous un budget et des contraintes est une

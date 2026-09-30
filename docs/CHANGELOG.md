@@ -1,5 +1,14 @@
 # Journal de développement
 
+## 2026-10-01 — capitalisation des algorithmes HPC pour l'Atlas
+
+La note versionnée `../loto-keno-lab/docs/CAPITALISATION-HPC-ATLAS.md` rassemble
+sources B3, Gray/Algorithm R, colex, SWAR/NEON, benchmarks et limites, pistes
+B1/B2 écartées et qualification du worker durable. Architecture, dette et
+handoff pointent vers cette référence ; adaptation des tailles et jeux à
+qualifier. Liens locaux et diff vérifiés ; documentation seule, aucun benchmark
+relancé, moteur modifié ou déploiement.
+
 ## 2026-10-01 — premier certificat de garantie conditionnelle pour l'Atlas
 
 | Fichier | Changement | Vérification |

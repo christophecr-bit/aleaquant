@@ -1,5 +1,13 @@
 # AleaQuant — document de reprise (handoff)
 
+> Capital HPC retrouvé et documenté le 01/10/2026 : lire
+> `../loto-keno-lab/docs/CAPITALISATION-HPC-ATLAS.md` avant toute nouvelle
+> optimisation Atlas. B3 combine Algorithm R/revolving-door, Gray et bitplanes
+> pour les 30 scores ; le worker ultérieur ajoute intervalles colex et reprise.
+> Les 8,7 G combinaisons/s sont un benchmark historique borné de matching,
+> pas un débit des lois de features ni un contrat multi-tailles. Les adaptations
+> sont inscrites dans `TECHNICAL-DEBT.md`.
+
 > Décision Atlas du 01/10/2026 : `docs/ATLAS-GEOMETRIES-ARCHITECTURE.md`
 > définit un contrat de géométrie commun et des cohortes séparées par jeu,
 > règle, format, taille et budget. Les 6 et 30 grilles sont les tailles déjà

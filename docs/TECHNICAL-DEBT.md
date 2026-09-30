@@ -6,6 +6,10 @@ deux documents pertinents avant le commit.
 
 ## Réalisé dans cette livraison
 
+- Capitalisation des recherches HPC historiques dans
+  `../loto-keno-lab/docs/CAPITALISATION-HPC-ATLAS.md` : algorithmes B3/Gray/colex,
+  SWAR/NEON, résultats B1/B2, périmètres des benchmarks et worker durable.
+  Aucun recalcul lourd ni changement de moteur lors de cette documentation.
 - Garantie conditionnelle Loto sur la composante principale : vérificateur
   exhaustif indépendant, constructeur glouton et solveur de recherche facultatif.
   Pour un pool de 10, grilles de 5 et condition `3 if 4`, le minimum de **7**
@@ -156,6 +160,13 @@ deux documents pertinents avant le commit.
   Garder Keno 10-numéros pour la première étape ; autres formats et régimes
   sont des cohortes distinctes. Aucun outil de construction personnalisée
   n'est requis pour livrer cet Atlas éditorial.
+- Réutiliser le capital HPC avant toute nouvelle recherche de performance :
+  auditer les constantes 30-grilles du matching B3 (masques, seuils, sorties,
+  allocations et barèmes), proposer des effectifs actifs paramétrables puis
+  qualifier tailles/jeux contre oracle et RANDOM. Au-delà de 32 grilles,
+  étudier plusieurs blocs de bitplanes. Conserver les garanties de partition,
+  checksum et reprise du worker existant ; aucune extrapolation du débit B3
+  aux lois des features. Référence : note de capitalisation du laboratoire.
 - Étendre prudemment l'axe de recherche des garanties conditionnelles : choisir
   quelques cohortes pédagogiques par jeu, archiver solution et bornes, confronter
   une garantie à la mise totale et à `RANDOM` au même budget. Pour toute
