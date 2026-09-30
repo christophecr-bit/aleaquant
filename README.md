@@ -46,29 +46,83 @@ point d'entrée public en attendant (hors périmètre de ce chantier).
 **Redéploiement manuel** (si besoin, hors CI) : `npx wrangler deploy` depuis la racine du
 dépôt, avec une session `wrangler login` valide.
 
-**Vérification** : un `git push` sur `main` doit se refléter sur l'URL publique en moins
-de deux minutes.
+**Un `git push` ne déploie RIEN** : il n'y a aucun CI, GitHub ne sert que d'archive. La
+mise en ligne est toujours une action explicite, `npx wrangler deploy`, lancée depuis le
+poste avec une session `wrangler login` valide. Les pages sont pré-générées dans `dist/`,
+donc régénérer les faits sans relancer `engine/build_pages.py` laisse des pages obsolètes
+en ligne.
+
+**Vérification** : après un déploiement, l'URL publique doit refléter le contenu de
+`dist/` en moins de deux minutes.
 
 ## Chaîne éditoriale
 
-Les LLM tournent dans le dépôt indépendant `../aleaquant-editorial-agents`.
-Après relecture et approbation explicite d’un brouillon, sa commande `editorial export`
-émet un JSON versionné. Importer ce document ici avec :
+Deux chaînes distinctes, à ne pas confondre.
+
+**1. Rapports de tirage — dans CE dépôt, `agent/`.** Un article par tirage, à partir des
+faits calculés. Trois modes, dont un seul est retenu :
+
+| Mode | Script | Statut |
+|---|---|---|
+| template déterministe | `agent/draw_report.py draft` | sans LLM, base de référence |
+| reformulation | `agent/llm_rewrite_*.py`, `agent/llm_batch_*.py` | abandonné : le modèle ne voit que les claims déjà choisies, le résultat est cosmétique |
+| **compose** | `agent/llm_compose_test.py` | **mode retenu** : le modèle reçoit les ~26 faits annotés et compose |
+
+```sh
+python3 agent/llm_compose_test.py EM-26077 --write
+python3 agent/draw_report.py show runs-llm-compose/EM-26077/draft.json
+python3 agent/draw_report.py approve runs-llm-compose/EM-26077/draft.json --reviewer "Christophe"
+npx wrangler deploy
+```
+
+Le mode compose applique cinq gardes déterministes sur le texte produit : tout nombre doit
+venir des faits ; un mot de rareté n'est autorisé que si la mesure **dépasse sa propre
+référence** (`dist/data/rarity_profiles.json`, produit par `engine/rarity_profiles.py`) ;
+aucun nom de code technique dans la prose ; chaque effectif de classe cité doit exister ;
+aucun marqueur markdown. Quand un garde bloque, une passe de réparation renvoie au modèle
+sa violation exacte, et n'est acceptée que si tous les gardes passent ensuite sans qu'un
+nombre nouveau apparaisse. Une relecture de langue est appliquée puis rejetée si elle
+touche un chiffre ou un mot de rareté. La note de méthode finale est une constante, pas
+une phrase du modèle.
+
+Point important : **une mesure dont la rareté est constante sur tout l'historique ne
+porte aucune information.** Six des 26 mesures sont dans ce cas (les écarts ordonnés sont
+« très rares » pour tout tirage possible), et 486 tirages sur 1984 n'ont aucune mesure
+au-dessus de sa référence — pour eux, l'article ne doit employer aucun mot de rareté.
+
+**2. Articles de fond du « Journal » — dépôt indépendant `../aleaquant-editorial-agents`**
+(pipeline LangGraph à 7 agents). Sa commande `editorial export` émet un JSON versionné,
+importé ici avec :
 
 ```sh
 python3 scripts/import_article.py ../aleaquant-editorial-agents/runs/solid-001/article.json
 ```
 
-L’import est manuel et idempotent par article_id : une nouvelle version approuvée
-remplace la précédente. Le JSON conserve les preuves et le hash de la version approuvée.
-La mise en ligne reste une action distincte via Sites. Les brouillons ne sont jamais
-copiés automatiquement dans `dist`. Le navigateur rend la prose comme texte, pas comme HTML.
+Dans les deux cas : l'import est manuel et idempotent par `article_id`, une nouvelle
+version approuvée remplace la précédente, le JSON conserve les preuves et l'empreinte de
+la version approuvée. Les brouillons ne sont jamais copiés automatiquement dans `dist`.
+**Le navigateur rend la prose avec `textContent`, jamais `innerHTML`** — donc pas de
+markdown ni de HTML dans le corps, et toute mise en forme doit passer par un champ
+structuré calculé côté Python.
 
 ## Suite
 
-Brancher les métriques calculées sur le dépôt de données, produire et approuver le
-premier article réel, puis choisir domaine personnalisé et audience. Le site est privé
-au démarrage. Aucun CMS, Research Lab, formulaire factice ou collecte périodique ici.
+État au 30/09/2026 :
+
+- ~~Brancher les métriques calculées sur le dépôt de données~~ — **fait** : 1 984 tirages
+  de faits, manifeste traçant le SHA de la base et des définitions.
+- ~~Produire et approuver le premier article réel~~ — **fait le 30/09/2026** :
+  `tirage-EM-2011053`, mode compose, approuvé et publié.
+- **Choisir domaine personnalisé et audience** — à faire. Le site est privé au démarrage.
+
+Chantiers suivants, par priorité : porter le mode compose dans les scripts Batch API
+(ils portent encore la reformulation) avant de traiter l'historique complet ; afficher les
+puces de rareté dans l'article pour les seules mesures au-dessus de leur référence ;
+apparier chaque affirmation de rareté à son `fact_id` plutôt qu'à l'ensemble des faits.
+Détail et invariants dans `docs/HANDOFF.md`, journal de conception dans
+`docs/agent-editorial-v2-notes.md`.
+
+Aucun CMS, Research Lab, formulaire factice ou collecte périodique ici.
 
 ## V0 tirages : moteur, facts, agent (branche `v0-draws`)
 
