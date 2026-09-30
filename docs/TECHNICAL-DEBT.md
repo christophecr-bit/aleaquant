@@ -6,6 +6,9 @@ deux documents pertinents avant le commit.
 
 ## Réalisé dans cette livraison
 
+- Sujet éditorial HPC cadré dans `docs/research/sujet-editorial-hpc-combinatoire.md` :
+  petit article technique pour Recherche & méthode, trois titres, trame,
+  preuves sources et figure à produire. Rédaction et approbation restent à faire.
 - Capitalisation des recherches HPC historiques dans
   `../loto-keno-lab/docs/CAPITALISATION-HPC-ATLAS.md` : algorithmes B3/Gray/colex,
   SWAR/NEON, résultats B1/B2, périmètres des benchmarks et worker durable.
@@ -160,6 +163,10 @@ deux documents pertinents avant le commit.
   Garder Keno 10-numéros pour la première étape ; autres formats et régimes
   sont des cohortes distinctes. Aucun outil de construction personnalisée
   n'est requis pour livrer cet Atlas éditorial.
+- Rédiger le petit article HPC « Trente grilles dans quatre mots » depuis
+  `docs/research/sujet-editorial-hpc-combinatoire.md` : exemple de bitplanes
+  illustré et vérifié, contrôle des benchmarks archivés, relecture scientifique
+  puis validation humaine. Rubrique Recherche & méthode ; lien vers l'Atlas.
 - Réutiliser le capital HPC avant toute nouvelle recherche de performance :
   auditer les constantes 30-grilles du matching B3 (masques, seuils, sorties,
   allocations et barèmes), proposer des effectifs actifs paramétrables puis

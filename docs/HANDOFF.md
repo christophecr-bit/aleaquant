@@ -1,5 +1,9 @@
 # AleaQuant — document de reprise (handoff)
 
+> Sujet éditorial à préparer : `research/sujet-editorial-hpc-combinatoire.md`,
+> petit article technique sur revolving-door, bitplanes et popcount. Angle
+> proposé : « Trente grilles dans quatre mots ». Brief seulement, non publié.
+
 > Capital HPC retrouvé et documenté le 01/10/2026 : lire
 > `../loto-keno-lab/docs/CAPITALISATION-HPC-ATLAS.md` avant toute nouvelle
 > optimisation Atlas. B3 combine Algorithm R/revolving-door, Gray et bitplanes

@@ -1,5 +1,11 @@
 # Journal de développement
 
+## 2026-10-01 — sujet éditorial HPC en combinatoire
+
+Ajout de `docs/research/sujet-editorial-hpc-combinatoire.md` : angle, trois titres,
+plan court, sources de preuve, figure et conditions de relecture. Dette et
+handoff reliés au brief. Documentation seule, liens vérifiés ; aucun article publié.
+
 ## 2026-10-01 — capitalisation des algorithmes HPC pour l'Atlas
 
 La note versionnée `../loto-keno-lab/docs/CAPITALISATION-HPC-ATLAS.md` rassemble
