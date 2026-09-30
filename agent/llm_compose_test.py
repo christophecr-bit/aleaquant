@@ -443,6 +443,30 @@ TEXTE À CORRIGER :
 {text}"""
 
 
+# Faits sans champ `metric` (probabilité de la grille, signature, historique exact,
+# Pascal, règle des étoiles, principe éditorial) : ils étaient ignorés, donc le
+# paragraphe citant la probabilité de la combinaison complète n'avait aucun fait
+# attribué. On les apparie par un nombre distinctif (au moins 4 chiffres, pour éviter
+# qu'un « 2 » attribue n'importe quoi) ou, pour ceux qui n'en contiennent pas, par une
+# expression caractéristique de leur énoncé.
+NON_METRIC_KEYWORDS = {
+    "F.grid.probability": ("probabilite", "combinaison complete"),
+    "F.signature": ("forme du tirage", "suite consecutive maximale", "signature"),
+    "F.history.exact_main": ("jamais sorti", "quadruplet"),
+    "F.pascal.subsets": ("paires", "triplets"),
+    "F.stars.rule": ("ancienne regle",),
+    "F.editorial.expectation": ("esperance",),
+}
+
+
+def non_metric_evidence(fact, nums, texte):
+    grands = {n for n in normalize_numbers(json.dumps(fact, ensure_ascii=False))
+              if "." not in n and len(n) >= 4}
+    if grands & nums:
+        return True
+    return any(kw in texte for kw in NON_METRIC_KEYWORDS.get(fact["fact_id"], ()))
+
+
 def paragraph_evidence(paragraph, facts):
     """Faits effectivement cités dans ce paragraphe, par appariement déterministe.
 
@@ -457,6 +481,8 @@ def paragraph_evidence(paragraph, facts):
     used = []
     for f in facts["facts"]:
         if f.get("metric") is None:
+            if non_metric_evidence(f, nums, texte):
+                used.append(f["fact_id"])
             continue
         effectif = "class_size" in f and normalize_numbers(str(f["class_size"])) & nums
         valeur = "value" in f and not isinstance(f["value"], dict) and \

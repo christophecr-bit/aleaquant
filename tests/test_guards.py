@@ -113,6 +113,17 @@ class AttributionTests(unittest.TestCase):
         f = facts('EM-2011053')
         self.assertIn('F.main.span', paragraph_evidence("l'étendue vaut 15", f))
 
+    def test_faits_non_metriques_attribues(self):
+        """La probabilité de la combinaison complète, la signature et l'historique
+        exact n'ont pas de champ metric : ils étaient ignorés, donc le premier
+        paragraphe d'un article n'avait aucun fait attribué."""
+        f = facts('EM-2011053')
+        para = ("le 6 septembre 2011, la combinaison avait une probabilité de "
+                "1 sur 116 531 800 sous la règle alors en vigueur")
+        self.assertIn('F.grid.probability', paragraph_evidence(para, f))
+        para2 = "ces cinq numéros n'étaient jamais sortis ensemble auparavant"
+        self.assertIn('F.history.exact_main', paragraph_evidence(para2, f))
+
     def test_domaine_non_distinctif(self):
         """2 118 760 est commun à tous les faits : il ne doit rien attribuer seul."""
         f = facts('EM-2011053')
