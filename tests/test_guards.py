@@ -69,6 +69,44 @@ class LexicalGuardTests(unittest.TestCase):
         self.assertEqual(guard_interpretive_words('Profil VERY_RARE.', f), [])
 
 
+sys.path.insert(0, str(ROOT / 'tools'))
+from lint_language import INTERDITES, LEGITIMES, lint as lint_language  # noqa: E402
+
+
+class LinterTests(unittest.TestCase):
+    """Chantier D3 : la ligne éditoriale doit être un test qui échoue."""
+
+    def test_phrases_interdites_refusees(self):
+        for phrase in INTERDITES:
+            self.assertTrue(lint_language(phrase), f"non refusée : {phrase}")
+
+    def test_phrases_legitimes_acceptees(self):
+        for phrase in LEGITIMES:
+            self.assertEqual(lint_language(phrase), [], f"faux positif : {phrase}")
+
+    def test_article_publie_conforme(self):
+        journal = json.loads((ROOT / 'dist' / 'articles.json').read_text(encoding='utf-8'))
+        for a in journal['articles']:
+            self.assertEqual(lint_language(a['draft']['body']), [], a['article_id'])
+
+    def test_import_refuse_un_vocabulaire_interdit(self):
+        """Le linter doit bloquer l'import, pas seulement avertir."""
+        import importlib.util
+        spec = importlib.util.spec_from_file_location('ia', ROOT / 'scripts' / 'import_article.py')
+        m = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(m)
+        pack = {'evidence': []}
+        draft = {'title': 'T', 'body': 'Le 42 va sortir au prochain tirage.',
+                 'claims': [{'text': 'x'}], 'research_pack_sha256': m.digest(pack)}
+        sha = m.digest(draft)
+        article = {'schema': 'aleaquant-article-v1', 'status': 'HUMAN_APPROVED',
+                   'article_id': 'test-lint', 'draft': draft, 'draft_sha256': sha,
+                   'research_pack': pack,
+                   'human_decision': {'approved': True, 'reviewer': 'T', 'draft_sha256': sha}}
+        with self.assertRaises(ValueError):
+            m.validate(article)
+
+
 class BadgeTests(unittest.TestCase):
     """Les puces de rareté sont calculées côté Python, jamais rédigées par le modèle,
     et n'apparaissent que pour une mesure au-dessus de sa propre référence."""

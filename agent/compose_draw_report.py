@@ -40,7 +40,9 @@ ROOT = Path(__file__).resolve().parent.parent
 ENV_PATH = ROOT.parent / "aleaquant-editorial-agents" / ".env"
 
 sys.path.insert(0, str(ROOT / "agent"))
+sys.path.insert(0, str(ROOT / "tools"))
 from draw_report import normalize_numbers, pct, date_fr  # noqa: E402
+from lint_language import lint as lint_language  # noqa: E402
 
 # même mapping que dist/draws.js (RARITY) — le modèle ne doit voir que le français
 MODEL = "gpt-5.4-mini"
@@ -410,6 +412,7 @@ def run_all_guards(text, facts):
     """Les quatre contrôles, en un seul appel, pour pouvoir les rejouer après réparation."""
     word_problems = guard_interpretive_words(text, facts)
     return {
+        "vocabulaire": [f"{nom} — {extrait}" for nom, extrait, _ in lint_language(text)],
         "mise_en_forme": guard_markdown(text),
         "nombres": sorted(guard_full_text(text, facts)),
         "mots_de_rarete": [w for w, _ in word_problems],
@@ -441,6 +444,13 @@ def repair_prompt(text, guards, facts):
                           + ", ".join(guards["noms_de_code"]))
     if guards["effectifs"]:
         violations.append("Effectifs ou queues erronés : " + " ; ".join(guards["effectifs"]))
+    if guards.get("vocabulaire"):
+        violations.append("Formulations interdites par la ligne éditoriale (jamais de "
+                          "prédiction, de promesse de gain ni de comparaison de grilles) : "
+                          + " ; ".join(guards["vocabulaire"]))
+    if guards.get("mise_en_forme"):
+        violations.append("Marqueurs de mise en forme à retirer : "
+                          + ", ".join(guards["mise_en_forme"]))
 
     return f"""Ton texte a été refusé par un contrôle automatique. Corrige-le de façon MINIMALE.
 
@@ -717,6 +727,15 @@ TEXTE :
     print("\n=== GARDE MISE EN FORME (marqueurs markdown résiduels) ===")
     print("OK" if not md else f"MARQUEURS RESTANTS : {md}")
 
+    vocab = lint_language(text)
+    print("\n=== GARDE VOCABULAIRE (formulations prédictives, D3) ===")
+    if not vocab:
+        print("OK")
+    else:
+        for nom, extrait, conseil in vocab:
+            print(f"  [{nom}] {extrait}")
+            print(f"      → {conseil}")
+
     cite_problems = guard_class_citations(text, facts)
     print("\n=== GARDE EFFECTIFS (classes et queues citées vs faits sources) ===")
     print("OK" if not cite_problems else "ÉCARTS :\n  - " + "\n  - ".join(cite_problems))
@@ -732,7 +751,8 @@ TEXTE :
     print(f"\n=== COÛT === {cost:.5f} $ (in={in_tok} out={out_tok})")
 
     guards = {"nombres": sorted(problems), "mots_de_rarete": [w for w, _ in word_problems],
-              "noms_de_code": leaks, "effectifs": cite_problems, "mise_en_forme": md}
+              "noms_de_code": leaks, "effectifs": cite_problems, "mise_en_forme": md,
+              "vocabulaire": [f"{nom} — {extrait}" for nom, extrait, _ in vocab]}
 
     # --- réparation : on renvoie au modèle sa violation et on rejoue les gardes ---
     if any(guards.values()) and not args.text_file and not args.no_repair:

@@ -10,6 +10,11 @@ ROOT = Path(__file__).resolve().parents[1]
 def digest(value):
     return sha256(json.dumps(value, sort_keys=True, ensure_ascii=False, separators=(',', ':')).encode()).hexdigest()
 
+import sys as _sys
+_sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'tools'))
+from lint_language import lint as _lint  # noqa: E402
+
+
 def validate(article):
     if article.get('schema') != 'aleaquant-article-v1' or article.get('status') != 'HUMAN_APPROVED':
         raise ValueError('Only human-approved editorial exports may be imported')
@@ -24,6 +29,11 @@ def validate(article):
         raise ValueError('Research Pack changed after drafting')
     if not draft['body'].strip() or not draft['claims']:
         raise ValueError('Empty article')
+    # chantier D3 : la ligne éditoriale est un test qui échoue, pas une consigne.
+    infractions = _lint(draft['body'])
+    if infractions:
+        detail = ' ; '.join(f"{nom} — {extrait}" for nom, extrait, _ in infractions)
+        raise ValueError(f'Vocabulaire refusé par le linter : {detail}')
     return article
 
 def import_article(source, destination):
