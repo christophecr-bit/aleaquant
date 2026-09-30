@@ -8,11 +8,12 @@ importées en lecture seule de loto-keno-lab-generic (feature_definitions.py, 29
 ## État des pages de tirage — 30 septembre 2026
 
 `engine/build_pages.py` produit 1 985 pages EuroMillions et 7 672 pages Loto, plus un
-index par jeu et un sitemap commun. Les faits Loto viennent du dépôt frère
+sélecteur commun `/tirages/`, un index par jeu et un sitemap commun. Les faits Loto viennent du dépôt frère
 `../aleaquant-data` et de `engine/facts_generic.py` ; les faits EuroMillions restent
 issus du pilote publié, sans bascule de ses étoiles vers le moteur générique. L'outil
-interactif de la page d'accueil est encore consacré à EuroMillions ; un lien donne accès
-à l'index statique Loto.
+interactif de la page d'accueil est encore consacré à EuroMillions ; deux cartes
+explicites donnent accès aux archives EuroMillions et Loto. Le plan de migration vers
+un rendu par tirage à la demande, nécessaire avant Keno, est dans `docs/SCALING.md`.
 
 Les pages Loto utilisent `/tirages/loto/<draw_id>/` : 1 886 dates historiques ont un
 premier et un second tirage, donc la date seule écraserait une page. Les pages nomment
@@ -36,7 +37,9 @@ Le dépôt contient aussi les lois Keno 16/56 et 20/70 calculées par récurrenc
 `missing_fields`. Aucun fait ou page Keno n'est encore publié. Les JSON de faits
 utilisés pour construire les pages restent versionnés, mais `dist/.assetsignore` les
 exclut des assets envoyés à Cloudflare. Après génération : 19 346 fichiers dans
-`dist/`, dont 9 658 faits intermédiaires, soit environ 9 688 assets publiables.
+`dist/`, dont 9 658 faits intermédiaires. Wrangler a effectivement publié 9 686
+assets le 30/09/2026 ; deux pages Loto ont été vérifiées en HTTP 200 et une fiche
+JSON exclue en HTTP 404.
 
 Aperçu privé sur cette machine uniquement : `python3 -m http.server 4174 --bind 127.0.0.1 --directory dist`, puis ouvrir `http://127.0.0.1:4174/`. Arrêter le serveur avec `Ctrl+C`. Le binding `127.0.0.1` empêche l'accès depuis les autres appareils du réseau.
 

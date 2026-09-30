@@ -12,3 +12,18 @@
 | `tests/test_loto_pages.py`, `tests/test_laws_recurrence.py` | Non-régression des deux régimes Loto, doubles séances et lois récurrentes. | Suite web |
 | `tests/test_asset_budget.py` | Bloque localement un dépassement du plafond de 20 000 assets après exclusion des faits intermédiaires. | Suite web |
 | `README.md`, `docs/HANDOFF.md`, `docs/TECHNICAL-DEBT.md`, `docs/CHANGELOG.md` | Reprise, déploiement, dettes actives et décisions. | Relecture |
+
+Déploiement vérifié le 30/09/2026 : Wrangler 4.144.0, Worker version
+`079f1872-6934-400f-b044-0cf73e09791d`, 7 678 assets nouveaux ou modifiés et
+2 008 déjà présents (9 686 au total). Les pages `LO-20081006` et `LO-19920328-2`
+répondent en HTTP 200 ; `/data/facts/LO-20081006.json` répond en HTTP 404.
+Suite web complète : 60 tests réussis. Le déploiement GitHub → Cloudflare automatique
+reste à vérifier ; ce déploiement-ci a été lancé manuellement par Wrangler.
+
+## 2026-09-30 — choix du jeu et croissance des archives
+
+| Fichier | Changement | Vérification |
+|---|---|---|
+| `engine/build_pages.py`, `dist/index.html`, `dist/atlas.css` | Choix explicite EuroMillions/Loto depuis l'accueil et toutes les pages de tirage ; index commun `/tirages/`. | `tests/test_loto_pages.py` et suite web |
+| `docs/SCALING.md` | Décision de ne pas créer 19 452 pages Keno ; conception de groupes mensuels et rendu Worker à la demande, avec critères SEO et de validation. | Limites Cloudflare et comptage local |
+| `README.md`, `docs/TECHNICAL-DEBT.md`, `docs/CHANGELOG.md` | Parcours utilisateur et dette de migration mis à jour. | Relecture |

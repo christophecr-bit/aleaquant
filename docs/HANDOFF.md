@@ -5,6 +5,11 @@
 > fichiers modifiés dans `docs/CHANGELOG.md`. Les sections historiques ci-dessous
 > décrivent l'état antérieur de l'agent éditorial ; leurs comptes de tirages et
 > indications de déploiement ne remplacent pas ces deux documents récents.
+> Pages Loto publiées le 30/09/2026 sur `https://aleaquant.aleaquant.workers.dev`,
+> version Worker `079f1872-6934-400f-b044-0cf73e09791d`. 9 686 assets actifs ;
+> deux URL Loto testées en HTTP 200. GitHub ne déploie pas automatiquement à ce stade.
+> L'ajout de Keno impose un rendu à la demande ; décision et critères dans
+> `docs/SCALING.md`. Un sélecteur EuroMillions/Loto est en cours de livraison.
 
 Écrit le 30/09/2026 au matin, après une session de nuit intense sur l'agent éditorial.
 **À lire en entier avant de toucher au code si vous reprenez le projet sans son

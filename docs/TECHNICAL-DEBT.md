@@ -10,7 +10,8 @@ deux documents pertinents avant le commit.
   tirage pour préserver les séances multiples d'une même journée.
 - Régimes Loto distingués : 6/49 avec complémentaire non cochée, puis 5/49 + Chance.
 - Déploiement statique maintenu sous le plafond Worker par exclusion des JSON de faits
-  intermédiaires avec `dist/.assetsignore`. Les faits restent dans Git.
+  intermédiaires avec `dist/.assetsignore`. Les faits restent dans Git. Le Worker a
+  accepté 9 686 assets le 30/09/2026 ; deux pages Loto répondent en HTTP 200.
 - Lois Keno exactes par récurrence pour 16 mesures sur 20, avec total de chaque loi
   vérifié contre C(n,k). Les mesures absentes sont déclarées dans `missing_fields`.
 
@@ -22,6 +23,8 @@ deux documents pertinents avant le commit.
   `longest_arithmetic_progression`, `clusteredness_close_pairs_5`, `sorted_gaps`.
   Ne pas afficher de badge de rareté pour un champ sans loi.
 - Construire les faits Keno après validation des lois et qualifier les pages Keno.
+  Le rendu à la demande et les groupes mensuels sont décrits dans `SCALING.md` ;
+  mesurer un groupe Keno avant de supprimer les pages statiques existantes.
 - Décider séparément la bascule EuroMillions vers le pilote générique ; l'équivalence
   de la composante principale ne valide pas les étoiles historiques.
 - Automatiser le mode de composition éditoriale en batch, avec approbation humaine.

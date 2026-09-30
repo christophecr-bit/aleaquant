@@ -66,6 +66,12 @@ class LotoPagesTests(unittest.TestCase):
             index = (loto / 'index.html').read_text()
             self.assertIn('LO-19920328-1/', index)
             self.assertIn('LO-19920328-2/', index)
+            hub = (dist / 'tirages' / 'index.html').read_text()
+            self.assertIn('href="/tirages/euromillions/"', hub)
+            self.assertIn('href="/tirages/loto/"', hub)
+            self.assertIn('Keno est en préparation', hub)
+            self.assertIn('href="/tirages/">Tirages', first)
+            self.assertIn('/tirages/</loc>', sitemap)
 
 
 if __name__ == '__main__':

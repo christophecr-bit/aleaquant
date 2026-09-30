@@ -22,7 +22,7 @@ RARITY_FR = {'COMMON': 'courante', 'UNCOMMON': 'peu courante', 'RARE': 'rare', '
 SITE_URL = 'https://aleaquant.aleaquant.workers.dev'
 NAV = ('<a class="brand" href="/">Alea<span>Quant</span><i>∴</i></a>'
        '<nav aria-label="Navigation principale">'
-       '<a href="/#explorer">Explorer</a><a href="/tirages/euromillions/">Tirages</a>'
+       '<a href="/#explorer">Explorer</a><a href="/tirages/">Tirages</a>'
        '<a href="/#atlas">Atlas</a><a href="/#geometries">Géométries</a><a href="/#lab">Lab</a>'
        '<a href="/#dictionnaire">Métriques</a><a href="/#journal">Le journal</a>'
        '<a href="/#methode">Méthode</a></nav>')
@@ -228,7 +228,7 @@ def loto_page_html(facts, prev_id, next_id):
         'author': {'@type': 'Organization', 'name': 'AleaQuant'},
         'publisher': {'@type': 'Organization', 'name': 'AleaQuant'},
     }
-    nav = NAV.replace('href="/tirages/euromillions/"', 'href="/tirages/loto/"')
+    nav = NAV
     complement_note = ('La complémentaire historique n’entre pas dans la probabilité de '
                        'la grille.' if 'complementaire' in facts['components'] else '')
     return f'''<!doctype html>
@@ -262,7 +262,7 @@ def loto_index_html(facts_list):
     title = 'Tous les tirages Loto | AleaQuant'
     desc = ('Index des tirages Loto analysés par AleaQuant. Les anciens premier et second '
             'tirages d’une même journée ont chacun leur page.')
-    nav = NAV.replace('href="/tirages/euromillions/"', 'href="/tirages/loto/"')
+    nav = NAV
     return f'''<!doctype html>
 <html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{esc(title)}</title><meta name="description" content="{esc(desc)}">
@@ -272,6 +272,25 @@ def loto_index_html(facts_list):
 <main id="main"><section class="section"><div class="section-head"><div><span class="eyebrow">DRAW / LOTO</span>
 <h1>Tous les tirages Loto</h1></div><p>{fmt_num(len(facts_list))} tirages. Les métriques et l’historique de chaque page respectent la formule en vigueur à sa date. <a href="/tirages/euromillions/">Voir aussi EuroMillions</a>.</p></div>
 <ul class="draw-index">{items}</ul></section></main>{FOOTER}</body></html>'''
+
+
+def games_index_html(em_count, loto_count):
+    """Choix explicite du jeu ; seuls les jeux publiés sont proposés."""
+    title = 'Choisir un jeu et explorer ses tirages | AleaQuant'
+    desc = 'Tirages EuroMillions et Loto analysés selon leurs règles historiques.'
+    return f'''<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{esc(title)}</title><meta name="description" content="{esc(desc)}">
+<link rel="canonical" href="{SITE_URL}/tirages/">
+<link rel="stylesheet" href="../style.css"><link rel="stylesheet" href="../atlas.css"></head>
+<body><a class="skip" href="#main">Aller au contenu</a><header>{NAV}<span class="edition">ÉDITION EXPÉRIMENTALE · V0</span></header>
+<main id="main"><section class="section"><div class="section-head"><div><span class="eyebrow">DRAW / JEUX</span>
+<h1>Choisir un jeu</h1></div><p>Les règles et les lois changent selon le jeu et la date du tirage.</p></div>
+<div class="game-choices">
+<a class="game-choice" href="/tirages/euromillions/"><strong>EuroMillions</strong><span>{fmt_num(em_count)} tirages analysés · cinq numéros et deux étoiles</span><em>Explorer EuroMillions →</em></a>
+<a class="game-choice" href="/tirages/loto/"><strong>Loto</strong><span>{fmt_num(loto_count)} tirages analysés · formules historiques respectées</span><em>Explorer Loto →</em></a>
+</div><p class="small">Keno est en préparation : ses lois et son historique ne sont pas encore publiés.</p>
+</section></main>{FOOTER}</body></html>'''
 
 
 def build():
@@ -311,8 +330,15 @@ def build():
             loto_page_html(facts, prev_id, next_id), encoding='utf-8')
     (loto_dir / 'index.html').write_text(loto_index_html(loto_facts), encoding='utf-8')
 
+    # Un point d'entrée commun rend explicite le jeu choisi, notamment depuis
+    # la navigation des pages de tirage. Le Keno n'y figure pas avant qualification.
+    game_dir = DIST / 'tirages'
+    game_dir.mkdir(parents=True, exist_ok=True)
+    (game_dir / 'index.html').write_text(
+        games_index_html(len(rows), len(loto_facts)), encoding='utf-8')
+
     # sitemap.xml
-    urls = [f'{SITE_URL}/', f'{SITE_URL}/tirages/euromillions/',
+    urls = [f'{SITE_URL}/', f'{SITE_URL}/tirages/', f'{SITE_URL}/tirages/euromillions/',
             f'{SITE_URL}/tirages/loto/']
     urls += [f'{SITE_URL}/tirages/euromillions/{r[1]}/' for r in rows]
     urls += [f'{SITE_URL}/tirages/loto/{f["draw_id"]}/' for f in loto_facts]
