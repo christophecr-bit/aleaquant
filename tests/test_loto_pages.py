@@ -37,6 +37,17 @@ class LotoPagesTests(unittest.TestCase):
         wrong = build_pages.read_regime_law(str(ROOT / 'dist/data/laws/regime-5-49.json'))
         self.assertEqual(build_pages.metric_spark(sum_fact, {'main': wrong}), '')
 
+    def test_loto_toutes_les_mesures_scalaires_ont_un_graphe(self):
+        facts = json.loads((SOURCE_FACTS / 'LO-20260928.json').read_text())
+        page = build_pages.loto_page_html(facts, None, None)
+        # Les deux signatures non ordonnées restent textuelles ; les 18 mesures
+        # scalaires ont leur loi, notamment écart maximal et dizaines occupées.
+        self.assertEqual(page.count('class="metric-spark"'), 18)
+        self.assertIn('Loi exacte — écart maximal', page)
+        self.assertIn('Loi exacte — dizaines occupées', page)
+        self.assertNotIn('Loi exacte — écarts ordonnés', page)
+        self.assertIn('45V44.00', page)  # queue non nulle : au moins un pixel
+
     def test_article_approuve_associe_uniquement_au_bon_tirage(self):
         with tempfile.TemporaryDirectory() as dossier:
             dist = Path(dossier) / 'dist'

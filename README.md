@@ -7,7 +7,7 @@ importées en lecture seule de loto-keno-lab-generic (feature_definitions.py, 29
 
 ## État des pages de tirage — 30 septembre 2026
 
-`engine/build_pages.py` produit 1 985 pages EuroMillions et 7 672 pages Loto, plus un
+`engine/build_pages.py` produit localement 1 985 pages EuroMillions et 7 673 pages Loto, plus un
 sélecteur commun `/tirages/`, un index par jeu et un sitemap commun. Les faits Loto viennent du dépôt frère
 `../aleaquant-data` et de `engine/facts_generic.py` ; les faits EuroMillions restent
 issus du pilote publié, sans bascule de ses étoiles vers le moteur générique. L'outil
@@ -16,6 +16,11 @@ explicites donnent accès aux archives EuroMillions et Loto. Le plan de migratio
 un rendu par tirage à la demande, nécessaire avant Keno, est dans `docs/SCALING.md`.
 Le calendrier de l'accueil reste EuroMillions ; l'archive Loto dispose de son propre
 filtre par date, qui affiche les deux séances si elles ont eu lieu le même jour.
+Les pages de tirage dessinent maintenant toutes les lois **numériques** disponibles :
+18 mini-histogrammes sur la fiche Loto du 28/09/2026. Les signatures sans axe naturel
+(écarts ordonnés et répartition par dizaines) restent textuelles. Loto 5/49 et
+EuroMillions 5/50 ont des lois distinctes ; leurs silhouettes proches ne sont pas
+identiques. La hauteur minimale d'un pixel évite de faire disparaître les queues.
 Chaque page de tirage est aussi l'adresse canonique de son récit : lorsqu'un article
 est approuvé, l'import le relie par `research_pack.draw_id`, vérifie le SHA des faits
 et actualise cette seule page. L'exemple publié est `EM-2011053`, tirage du
@@ -44,10 +49,11 @@ dans `docs/CHANGELOG.md` et `docs/TECHNICAL-DEBT.md`.
 
 Le dépôt contient aussi les lois Keno 16/56 et 20/70 calculées par récurrence :
 17 mesures sur 20 sont disponibles, et les trois absentes sont indiquées dans
-`missing_fields`. Aucun fait ou page Keno n'est encore publié. Les JSON de faits
+`missing_fields`. Des fiches Keno récentes existent localement, mais aucun fait ou
+page Keno n'est encore publié. Les JSON de faits
 utilisés pour construire les pages restent versionnés, mais `dist/.assetsignore` les
-exclut des assets envoyés à Cloudflare. Après génération : 19 346 fichiers dans
-`dist/`, dont 9 658 faits intermédiaires. Wrangler a effectivement publié 9 686
+exclut des assets envoyés à Cloudflare. Avant le nouveau cycle local : 19 346 fichiers
+dans `dist/`, dont 9 658 faits intermédiaires. Wrangler a effectivement publié 9 686
 assets lors du premier déploiement Loto le 30/09/2026 (9 688 après le calendrier) ;
 deux pages Loto ont été vérifiées en HTTP 200 et une fiche
 JSON exclue en HTTP 404.
@@ -202,33 +208,48 @@ chaque paragraphe avant de l'insérer dans son HTML. Il n'y a donc pas de Markdo
 ni de HTML interprété dans le corps ; toute mise en forme riche doit passer par
 un champ structuré calculé côté Python.
 
-## Rafraîchissement des tirages (chantier B3)
+## Rafraîchissement local des trois jeux
+
+Le dépôt `../aleaquant-data` conserve les archives FDJ et les révisions dans son
+SQLite commun. Installer une fois l'environnement du pipeline :
+
+```sh
+python3 -m venv ~/.local/share/aleaquant-pipeline-venv
+~/.local/share/aleaquant-pipeline-venv/bin/python -m pip install -r requirements-pipeline.txt
+```
 
 ```sh
 bash tools/refresh_draws.sh --check      # dit seulement où on en est
 bash tools/refresh_draws.sh              # ingère, recalcule faits, profils et pages
 ```
 
-Chaîne : ingestion de l'archive officielle FDJ dans le SQLite du laboratoire (append-only,
-idempotente) → `engine/build_data.py` → `engine/rarity_profiles.py` →
-`engine/build_pages.py`. Sans nouveau tirage, le script ne touche à rien et sort en 0.
+Chaîne : ingestion des trois archives officielles dans le SQLite de `aleaquant-data`
+(révisions conservées) → détection des tirages nouveaux ou corrigés → calcul des faits
+et profils nécessaires → pages EuroMillions/Loto → vérification des SHA de provenance
+et des mini-histogrammes. Keno produit pour l'instant des **faits ciblés locaux** :
+ses pages et profils attendent la qualification du rendu à la demande. Au premier
+passage, 30 fiches Keno récentes sont amorcées ; ensuite chaque tirage modifié est
+recalculé. Une correction ancienne recalcule aussi les fiches Keno déjà présentes
+qui lui succèdent. Le journal d'avancement local reprend un calcul interrompu.
+Sans nouvelle révision, aucun calcul ni fichier de sortie n'est réécrit.
 
 **Il ne publie rien** : ni commit, ni `wrangler deploy`, ni approbation d'article. La mise
 en ligne reste une décision humaine explicite.
 
-Automatisation via launchd (mercredi et samedi, EuroMillions tirant le mardi et le
-vendredi) :
+Automatisation via launchd, tous les jours à 08 h 12 et 13 h 12 :
 
 ```sh
 cp tools/com.aleaquant.refresh.plist ~/Library/LaunchAgents/
-launchctl load -w ~/Library/LaunchAgents/com.aleaquant.refresh.plist
+launchctl unload ~/Library/LaunchAgents/com.aleaquant.refresh.plist 2>/dev/null || true
+launchctl load ~/Library/LaunchAgents/com.aleaquant.refresh.plist
 tail -f ~/Library/Logs/aleaquant-refresh.log
 ```
 
-Deux dépendances à connaître : `engine/build_data.py` exige **numpy** (simulations
-Monte-Carlo de la section Lab, générateur à graine fixe), et l'URL de l'archive FDJ est
-dans `tools/refresh.conf` — elle change quand FDJ ouvre une nouvelle période d'archive, et
-l'ingestion refuse toute URL hors du domaine officiel, volontairement.
+Les versions Python du calcul sont figées dans `requirements-pipeline.txt` ; les URL
+des archives et les règles de jeu résident dans `../aleaquant-data/games/*.yaml`.
+`tools/refresh.conf` contient les chemins locaux. Vérifier et mettre à jour une URL
+lorsque FDJ ouvre une nouvelle période d'archive. Un import hors de l'hôte officiel
+est refusé. La mise en ligne reste un lancement manuel de Wrangler après relecture.
 
 ## Suite
 

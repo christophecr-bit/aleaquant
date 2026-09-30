@@ -13,10 +13,9 @@
   Désinstallation :
     launchctl unload -w ~/Library/LaunchAgents/com.aleaquant.refresh.plist
 
-  Horaires : EuroMillions tire le mardi et le vendredi soir. On passe donc le mercredi
-  et le samedi, à 8 h 12 puis à 13 h 12 en filet (le script est idempotent : le second
-  passage ne fait rien si le premier a réussi). Minutes décalées volontairement pour ne
-  pas tomber sur l'heure pile.
+  Horaires : tous les jours à 8 h 12 puis à 13 h 12. Keno tire chaque soir,
+  Loto trois jours par semaine et EuroMillions deux ; chaque passage vérifie les
+  trois archives et ne recalcule que les jeux dont une révision a changé.
 
   Ce travail ne publie RIEN : il ingère, recalcule, et laisse les modifications non
   committées. La mise en ligne reste une décision humaine.
@@ -37,10 +36,8 @@
 
   <key>StartCalendarInterval</key>
   <array>
-    <dict><key>Weekday</key><integer>3</integer><key>Hour</key><integer>8</integer><key>Minute</key><integer>12</integer></dict>
-    <dict><key>Weekday</key><integer>3</integer><key>Hour</key><integer>13</integer><key>Minute</key><integer>12</integer></dict>
-    <dict><key>Weekday</key><integer>6</integer><key>Hour</key><integer>8</integer><key>Minute</key><integer>12</integer></dict>
-    <dict><key>Weekday</key><integer>6</integer><key>Hour</key><integer>13</integer><key>Minute</key><integer>12</integer></dict>
+    <dict><key>Hour</key><integer>8</integer><key>Minute</key><integer>12</integer></dict>
+    <dict><key>Hour</key><integer>13</integer><key>Minute</key><integer>12</integer></dict>
   </array>
 
   <key>RunAtLoad</key>

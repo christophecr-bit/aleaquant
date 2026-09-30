@@ -22,13 +22,8 @@ from common import DATA, read_json  # noqa: E402
 DIST = DATA.parent
 
 RARITY_FR = {'COMMON': 'courante', 'UNCOMMON': 'peu courante', 'RARE': 'rare', 'VERY_RARE': 'très rare'}
-# Les mini-histogrammes portent sur quelques mesures numériques lisibles. Les
-# signatures catégorielles et les métriques sans loi restent des cartes textuelles.
-GRAPH_METRICS = frozenset({
-    'main.sum', 'main.span', 'main.max_same_decade',
-    'main.clusteredness_close_pairs_5', 'main.longest_consecutive_run',
-    'stars.sum',
-})
+# Toute mesure scalaire munie d'une loi reçoit son histogramme. Les signatures
+# catégorielles n'ont pas d'axe numérique : elles restent des cartes textuelles.
 SITE_URL = 'https://aleaquant.aleaquant.workers.dev'
 NAV = ('<a class="brand" href="/">Alea<span>Quant</span><i>∴</i></a>'
        '<nav aria-label="Navigation principale">'
@@ -90,9 +85,9 @@ def card_laws(facts):
 
 
 def metric_spark(fact, laws):
-    """SVG compact d'une loi exacte ; l'orange repère la valeur observée."""
+    """SVG compact d'une loi exacte scalaire ; l'orange repère la valeur observée."""
     metric = fact.get('metric', '')
-    if metric not in GRAPH_METRICS:
+    if '.' not in metric or not isinstance(fact.get('value'), (int, float)):
         return ''
     component, field = metric.split('.', 1)
     regime = laws.get(component)
@@ -115,7 +110,9 @@ def metric_spark(fact, laws):
             for i in range(0, len(values), group_size)]
     maximum = max(bins)
     width = 300 / len(bins)
-    bars = ' '.join(f'M{(i + .5) * width:.1f} 45V{45 - 41 * count / maximum:.1f}'
+    # Un pixel minimal comme sur l'accueil : les queues non nulles ne disparaissent pas
+    # après l'arrondi du SVG, sans modifier les probabilités utilisées pour la hauteur.
+    bars = ' '.join(f'M{(i + .5) * width:.2f} 45V{45 - max(1, 41 * count / maximum):.2f}'
                     for i, count in enumerate(bins))
     marker = (positions[0] // group_size + .5) * width
     grouped = ' regroupées pour l’affichage' if group_size > 1 else ''

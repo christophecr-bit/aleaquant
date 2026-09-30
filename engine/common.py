@@ -107,7 +107,8 @@ def load_draws():
     con = sqlite3.connect(f'file:{HISTORY_DB}?mode=ro', uri=True)
     best = {}
     for _game, draw_id, revision, body, sha in con.execute(
-            'select game, draw_id, revision, body, sha from revisions'):
+            'select game, draw_id, revision, body, sha from revisions where game=?',
+            ('euromillions',)):
         if draw_id not in best or revision > best[draw_id][0]:
             best[draw_id] = (revision, json.loads(body), sha)
     draws = []

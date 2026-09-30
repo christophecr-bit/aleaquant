@@ -1,5 +1,21 @@
 # Journal de développement
 
+## 2026-09-30 — cohérence des histogrammes de tirage
+
+| Fichier | Changement | Vérification |
+|---|---|---|
+| `engine/build_pages.py`, `tests/test_loto_pages.py` | Toutes les métriques scalaires dont la loi correspond au fait ont un mini-histogramme ; queue non nulle visible sur un pixel ; les signatures non ordonnées restent textuelles. | Test de régression `LO-20260928` : 18 graphes, bonne loi 5/49 et refus de la loi 5/50. |
+| `dist/tirages/{euromillions,loto}/**/index.html`, `README.md`, `docs/HANDOFF.md`, `docs/TECHNICAL-DEBT.md` | 9 658 fiches locales régénérées et état documenté ; aucun déploiement. | Inspection visuelle locale, suite web complète. |
+
+## 2026-09-30 — collecte et calcul enchaînés pour trois jeux
+
+| Fichier | Changement | Vérification |
+|---|---|---|
+| `tools/refresh_draws.py`, `tools/refresh_draws.sh`, `tools/refresh.conf`, `tools/com.aleaquant.refresh.plist`, `requirements-pipeline.txt` | Ingestion EuroMillions/Loto/Keno avant calcul, journal d'avancement, reprise, contrôle de provenance ; deux passages quotidiens planifiés ; environnement Python figé. Keno reste local sans page. | Préflight, cycle réel, reprise simulée et passage idempotent. |
+| `engine/common.py`, `tests/test_refresh_pipeline.py` | Filtre EuroMillions sur le SQLite commun ; régressions d'ordre des étapes et d'échec sans avancement. | Suite web complète. |
+| `dist/data/**`, `dist/tirages/**`, `dist/sitemap.xml` | Faits locaux des nouveaux Loto/Keno et pages EuroMillions/Loto recalculées ; pas de déploiement. | SHA des sources, mini-histogrammes et contrôle des pages. |
+| `README.md`, `docs/HANDOFF.md`, `docs/TECHNICAL-DEBT.md`, `docs/CHANGELOG.md` | Contrat de collecte, état réel et dette Keno mis à jour. | Relecture et suite de tests. |
+
 ## 2026-09-30 — gabarit de rubriques et retour des graphes de tirage
 
 | Fichier | Changement | Vérification |

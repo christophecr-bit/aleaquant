@@ -1,13 +1,20 @@
 # AleaQuant — document de reprise (handoff)
 
-> Mise à jour du 30/09/2026 : les pages Loto et les premières lois Keno ont avancé.
+> Mise à jour du 30/09/2026 : la collecte des trois jeux enchaîne maintenant avec
+> les calculs locaux. `bash tools/refresh_draws.sh --check` inspecte sans réseau ;
+> `bash tools/refresh_draws.sh` importe depuis `../aleaquant-data`, calcule les faits
+> et régénère les pages EuroMillions/Loto si nécessaire. Keno n'a que des faits
+> ciblés, sans page publiée. Aucun commit ni déploiement automatique.
+> Les pages EuroMillions/Loto locales ont été régénérées avec toutes leurs lois
+> scalaires représentables ; `LO-20260928` affiche désormais 18 histogrammes.
+> Les queues ont un minimum visuel d'un pixel, sans modification des effectifs.
 > Le détail actuel et la dette active sont dans `docs/TECHNICAL-DEBT.md`, et les
 > fichiers modifiés dans `docs/CHANGELOG.md`. Les sections historiques ci-dessous
 > décrivent l'état antérieur de l'agent éditorial ; leurs comptes de tirages et
 > indications de déploiement ne remplacent pas ces deux documents récents.
 > Maquette locale : `prototypes/editorial-home/index.html`, maintenant organisée en
 > quatre rubriques et cartes de contenus. Gabarit, frontières et prochain chantier
-> dans `docs/SITE-EDITORIAL-ARCHITECTURE.md`. Les 9 657 pages de tirage ont été
+> dans `docs/SITE-EDITORIAL-ARCHITECTURE.md`. Les 9 658 pages de tirage ont été
 > régénérées **localement** avec leurs mini-histogrammes ; aucun déploiement de ce
 > correctif n'a été effectué. Le fil de l'accueil reste un snapshot.
 > Pages Loto et sélecteur de jeu publiés le 30/09/2026 sur
@@ -39,7 +46,8 @@
 > Mise à jour : le calcul théorique et l'identité avec l'étendue sont vérifiés ;
 > sept matrices historiques exploratoires sont enregistrées par jeu/règle dans
 > `docs/research/order-position-history-2026-09-30.json`. Aucun test d'audit ni
-> article n'en découle encore. La source Keno locale s'arrête au 17/09/2026.
+> article n'en découle encore. La base source locale atteint le 30/09/2026 pour
+> Keno ; ce rapport exploratoire antérieur n'a pas encore été régénéré.
 
 Écrit le 30/09/2026 au matin, après une session de nuit intense sur l'agent éditorial.
 **À lire en entier avant de toucher au code si vous reprenez le projet sans son

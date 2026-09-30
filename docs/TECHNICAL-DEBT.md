@@ -6,10 +6,18 @@ deux documents pertinents avant le commit.
 
 ## Réalisé dans cette livraison
 
+- La collecte planifiée enchaîne maintenant EuroMillions, Loto et Keno depuis
+  `aleaquant-data`, puis les faits et, pour les deux premiers jeux, les profils et
+  pages avec mini-histogrammes. Le SQLite commun est filtré par jeu ; les SHA des
+  révisions sont vérifiés avant d'enregistrer l'avancement. Reprise après échec et
+  second passage sans recalcul testés. Au 30/09, la base locale compte 1 985
+  EuroMillions, 7 673 Loto et 19 465 Keno. La routine reste locale et ne publie rien.
 - La régression des mini-histogrammes sur les pages de tirage est corrigée dans
-  le générateur. Les 9 657 fiches EuroMillions/Loto ont été régénérées localement :
-  toutes comportent cinq ou six graphes de mesures choisies, chacun lié à la loi
-  de son régime. La légende distingue regroupement graphique et rareté de la
+  le générateur. Les 9 658 fiches EuroMillions/Loto ont été régénérées localement :
+  toutes comportent les graphes des mesures scalaires pour lesquelles une loi est
+  disponible (18 sur `LO-20260928`), chacun lié à la loi de son régime. Les queues
+  non nulles conservent un pixel visible ; les signatures catégorielles restent
+  textuelles. La légende distingue regroupement graphique et rareté de la
   classe exacte. Rien de cela n'a encore été déployé sur le Worker.
 - Le gabarit de l'accueil éditorial est défini dans
   `docs/SITE-EDITORIAL-ARCHITECTURE.md` et illustré par la maquette locale : quatre
@@ -27,7 +35,7 @@ deux documents pertinents avant le commit.
   concernée. L'article du 6 septembre 2011 (`EM-2011053`) est désormais présent sur
   sa page locale. Les autres pages gardent leurs faits sans récit tant que leur
   article n'a pas été approuvé.
-- Pages Loto construites à partir des 7 672 fiches de faits ; URL par identifiant de
+- Pages Loto construites à partir des 7 673 fiches de faits ; URL par identifiant de
   tirage pour préserver les séances multiples d'une même journée.
 - Régimes Loto distingués : 6/49 avec complémentaire non cochée, puis 5/49 + Chance.
 - Déploiement statique maintenu sous le plafond Worker par exclusion des JSON de faits
@@ -77,8 +85,9 @@ deux documents pertinents avant le commit.
   `euromillions.history.main.order_position_covariance@v1`, et conserver
   `rule_id` ou `k/N` dans chaque résultat ; Loto et Keno ont plusieurs régimes.
   Ne pas mêler étoiles EuroMillions ou Chance Loto aux numéros principaux.
-  Contrôler la fraîcheur Keno : le dernier tirage local de la base source est
-  daté du 17/09/2026. Aucun article ni test d'audit calibré n'est encore réalisé.
+  Contrôler régulièrement la fraîcheur Keno : l'archive courante a été ajoutée
+  au collecteur et la base atteint le 30/09/2026. Aucun article ni test d'audit
+  calibré n'est encore réalisé.
 - Produire puis relire les articles manquants, par lots quotidiens, pour arriver à
   un récit approuvé par tirage. Aujourd'hui l'association est possible mais le fonds
   d'articles est incomplet ; ne jamais afficher un brouillon comme article.
@@ -91,7 +100,9 @@ deux documents pertinents avant le commit.
 - Couvrir les trois lois Keno encore absentes : `arithmetic_triples`,
   `longest_arithmetic_progression`, `sorted_gaps`.
   Ne pas afficher de badge de rareté pour un champ sans loi.
-- Construire les faits Keno après validation des lois et qualifier les pages Keno.
+- Qualifier les pages et profils Keno avant publication. Le pipeline local calcule
+  les nouvelles fiches et a amorcé les 30 plus récentes ; le fonds historique
+  complet n'est pas encore calculé dans `dist/data/facts`.
   Le rendu à la demande et les groupes mensuels sont décrits dans `SCALING.md` ;
   mesurer un groupe Keno avant de supprimer les pages statiques existantes.
   Un prototype brut a regroupé 19 452 tirages en 397 mois ; il faut maintenant
@@ -136,6 +147,11 @@ deux documents pertinents avant le commit.
   confusion entre organisation d'un portefeuille et probabilité du tirage.
 - Vérifier le lien de déploiement GitHub–Cloudflare : le flux documenté actuellement
   reste `wrangler deploy` manuel, puis `git push`. Ne pas annoncer de CI non vérifiée.
+- Surveiller la disponibilité des archives FDJ et renouveler les URL dans
+  `../aleaquant-data/games/*.yaml` lorsqu'une période change. Les réponses de
+  l'archive Keno peuvent brièvement diverger selon le cache : le 30/09, deux
+  lectures successives ont donné le 29 puis le 30 comme dernier tirage ; les
+  révisions déjà importées restent conservées.
 - Surveiller le nombre d'assets Wrangler avant chaque extension du site. Si ce nombre
   approche 20 000 sur le plan gratuit, regrouper ou externaliser les données nécessaires
   aux pages avant d'ajouter de nouveaux fichiers.
