@@ -6,6 +6,10 @@ deux documents pertinents avant le commit.
 
 ## Réalisé dans cette livraison
 
+- Covariance **théorique** des positions ordonnées k/N calculée en fractions exactes
+  pour les régimes AleaQuant ; chaque cellule vérifiée sur de petits univers et la
+  variance de l'étendue recoupée avec la loi exacte existante. Note de recherche
+  dans `docs/research/covariance-positions-ordonnees.md`. Aucun indicateur public.
 - Les récits de tirage approuvés sont reliés aux pages par `research_pack.draw_id` :
   l'import vérifie l'identifiant et le SHA des faits, puis régénère uniquement la page
   concernée. L'article du 6 septembre 2011 (`EM-2011053`) est désormais présent sur
@@ -19,7 +23,7 @@ deux documents pertinents avant le commit.
   accepté 9 686 assets le 30/09/2026 ; deux pages Loto répondent en HTTP 200.
 - Lois Keno exactes par récurrence pour 17 mesures sur 20, avec total de chaque loi
   vérifié contre C(n,k). Les mesures absentes sont déclarées dans `missing_fields`.
-- Prototype **local et optionnel** A/B/C pour EuroMillions : trois titres issus des
+- Prototype **local et optionnel** A/B/C pour EuroMillions/loto/keno : trois titres issus des
   faits, sélection humaine liée aux empreintes, essai direct avec angle et copie
   relue sous un nouveau SHA. Le batch qui constitue le fonds d'articles reste
   indépendant : aucun choix A/B/C, aucune passe de fluidité. EM-26078 conserve
@@ -35,12 +39,14 @@ deux documents pertinents avant le commit.
 
 - Étudier Coronel-Brizio et al., « Statistical auditing and randomness test of lotto
   k/N-type games » (2008, https://arxiv.org/abs/0806.4595), comme piste d'audit
-  AleaQuant et d'article de fond. Leur covariance porte sur les **positions ordonnées
-  d'un même tirage** ; elle n'est pas une autocovariance entre tirages. Pour chaque
-  régime k/N, vérifier la moyenne et la matrice de covariance théoriques, puis
-  comparer prudemment aux estimations historiques par période homogène (taille,
+  AleaQuant et d'article de fond. La partie théorique et son lien avec `span` sont
+  vérifiés dans `docs/research/covariance-positions-ordonnees.md` ; restent
+  **l'estimation historique et la qualification d'un audit** pour **chaque jeu et
+  régime**. Leur covariance porte sur les **positions ordonnées d'un même tirage** ;
+  elle n'est pas une autocovariance entre tirages. Comparer prudemment la matrice
+  théorique aux estimations historiques par période homogène (taille,
   changement de règle, données manquantes, multiplicité des tests, Monte-Carlo).
-  Étudier le lien exact avec `span = Y(k) - Y(1)` et les autres métriques de géométrie,
+  Étudier les dépendances restantes avec les autres métriques de géométrie,
   en évitant de compter des grandeurs dépendantes comme preuves indépendantes.
   Tester séparément une éventuelle autocovariance à décalage temporel si l'on veut
   auditer l'indépendance entre tirages. Décider ensuite si un indicateur agrégé
@@ -54,9 +60,11 @@ deux documents pertinents avant le commit.
   numéros classés par ordre croissant, estimée sur l'historique comparable ».
   L'entrée historique devra porter jeu, régime, période, effectif, méthode
   d'estimation et référence de la matrice théorique ; ce n'est pas un fait de
-  tirage individuel. Le registre actuel préfixe ses clés par jeu : décider si
-  ces identifiants logiques reçoivent un tel préfixe lors de l'implémentation.
-  Aucun calcul ni article n'est encore réalisé.
+  tirage individuel. Préfixer les clés publiées par jeu, par exemple
+  `euromillions.history.main.order_position_covariance@v1`, et conserver
+  `rule_id` ou `k/N` dans chaque résultat ; Loto et Keno ont plusieurs régimes.
+  Ne pas mêler étoiles EuroMillions ou Chance Loto aux numéros principaux.
+  Aucun calcul historique ni article n'est encore réalisé.
 - Produire puis relire les articles manquants, par lots quotidiens, pour arriver à
   un récit approuvé par tirage. Aujourd'hui l'association est possible mais le fonds
   d'articles est incomplet ; ne jamais afficher un brouillon comme article.

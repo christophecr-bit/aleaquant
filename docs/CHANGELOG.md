@@ -1,5 +1,12 @@
 # Journal de développement
 
+## 2026-09-30 — covariance théorique des positions ordonnées
+
+| Fichier | Changement | Vérification |
+|---|---|---|
+| `engine/order_position_covariance.py`, `tests/test_order_position_covariance.py` | Moments exacts par régime et identité de variance de l'étendue, avec `game_id` explicite et refus d'une association jeu/régime invalide, sans donnée historique ni effet sur les pages. | Toutes les cellules comparées à l'énumération de petits univers ; étendue recoupée avec la loi exacte des régimes 5/50 et 16/56. |
+| `docs/research/covariance-positions-ordonnees.md`, `docs/TECHNICAL-DEBT.md`, `docs/CHANGELOG.md` | Résultats, source primaire et limites consignés ; audit futur séparé par jeu, composante et régime ; dette recentrée sur l'historique et l'article. | Documentation relue et suite complète. |
+
 ## 2026-09-30 — convention proposée pour la covariance des positions
 
 | Fichier | Changement | Vérification |
