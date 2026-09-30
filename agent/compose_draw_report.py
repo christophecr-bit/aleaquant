@@ -1,17 +1,34 @@
-"""Test v2 : composition analytique réelle (pas une reformulation phrase à phrase).
-Donne TOUS les faits calculés au LLM, lui demande de choisir, synthétiser, commenter
-la géométrie (concentration/dispersion), et varier la structure d'un article à l'autre.
+"""Rapport de tirage — chaîne de production (mode « compose »).
 
-Trois gardes, tous déterministes :
-  1. numérique — chaque nombre du texte doit venir des faits (tolérance % arrondis,
-     bornes de dizaines reconnues seulement en contexte de plage explicite) ;
-  2. lexical — les mots de rareté (rare, notable, exceptionnel...) doivent être
-     justifiés par le champ `rarity` d'au moins un fait fourni ;
-  3. jargon — aucun nom de code d'enum (COMMON, VERY_RARE...) ne doit apparaître dans
-     la prose française.
+Donne TOUS les faits calculés au modèle, annotés de leur niveau de rareté ET de leur
+position par rapport à la référence de leur propre mesure, puis lui demande de choisir,
+synthétiser et commenter. Ce fichier s'appelait llm_compose_test.py : ce n'est plus un
+test, c'est la chaîne qui produit les articles publiés (premier article : EM-2011053,
+30/09/2026).
 
-  python3 agent/llm_compose_test.py EM-26077
-  python3 agent/llm_compose_test.py EM-2011053
+Cinq gardes, tous déterministes :
+  1. numérique — chaque nombre du texte doit venir des faits (tolérance sur les
+     pourcentages arrondis ; les bornes de dizaines ne sont acceptées que dans un
+     contexte de plage explicite, jamais en liste blanche globale) ;
+  2. lexical — un mot de rareté (rare, très rare, notable, exceptionnel, peu courant,
+     inhabituel ; négations ignorées) n'est autorisé que si une mesure DÉPASSE la
+     référence de sa propre distribution (dist/data/rarity_profiles.json). Comparer au
+     maximum brut de tous les faits rendait ce garde inopérant : main.sorted_gaps est
+     très rare pour tout tirage possible ;
+  3. jargon — aucun nom de code (COMMON, VERY_RARE...) dans la prose française ;
+  4. effectifs — chaque « classe de N sur M » et chaque « queue de X % » cités doivent
+     exister dans les faits ;
+  5. mise en forme — aucun marqueur markdown, le site rend le corps en textContent.
+
+Plus une relecture de langue (rejetée si elle touche un chiffre ou un mot de rareté),
+une passe de réparation quand un garde bloque, une note de méthode constante, et des
+puces de rareté calculées ici, jamais rédigées par le modèle.
+
+  python3 agent/compose_draw_report.py EM-26077 --write
+  python3 agent/draw_report.py show runs-llm-compose/EM-26077/draft.json
+  python3 agent/draw_report.py approve runs-llm-compose/EM-26077/draft.json --reviewer "..."
+
+Pour tout l'historique à moitié prix, voir compose_batch_submit.py / _collect.py.
 """
 import json
 import re

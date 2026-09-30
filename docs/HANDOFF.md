@@ -78,7 +78,7 @@ python3 engine/build_pages.py
 |---|---|---|
 | **template** déterministe | `agent/draw_report.py draft` | Fonctionne, sans LLM. Base de référence. |
 | **reformulation** | `agent/llm_rewrite_test.py`, `llm_rewrite_batch.py`, `llm_batch_submit.py`, `llm_batch_collect.py` | Fonctionne (110 brouillons, batch validé) mais **abandonné** : le LLM ne voit que 7 claims déjà choisies, le résultat est cosmétique et identique d'un article à l'autre. |
-| **compose** ← **le bon** | `agent/llm_compose_test.py` | Le LLM reçoit les ~26 faits annotés et compose. C'est ce mode qui a produit le premier article publié. |
+| **compose** ← **le bon** | `agent/compose_draw_report.py` | Le LLM reçoit les ~26 faits annotés et compose. C'est ce mode qui a produit le premier article publié. |
 
 Le mode compose n'a **pas encore de version batch** : `llm_batch_submit.py` /
 `llm_batch_collect.py` portent encore la reformulation. C'est la tâche n°1 pour traiter
@@ -116,7 +116,7 @@ en Batch API. Reformulation : ~0,0022 $. Les 200 pages visées tiennent largemen
 
 ## 5. Les cinq gardes — et ce qu'ils ne garantissent pas
 
-Tous déterministes, dans `agent/llm_compose_test.py` :
+Tous déterministes, dans `agent/compose_draw_report.py` :
 
 1. **numérique** (`guard_full_text`) — tout nombre du texte doit venir des faits.
    Tolérance sur les pourcentages arrondis ; les bornes de dizaines (1-10, 11-20…) ne

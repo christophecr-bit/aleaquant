@@ -1,6 +1,6 @@
 # Agent éditorial — notes de session (29-30/09/2026)
 
-Trois itérations testées dans la nuit sur `agent/llm_compose_test.py` (et son prédécesseur
+Trois itérations testées dans la nuit sur `agent/compose_draw_report.py` (et son prédécesseur
 claim-par-claim `agent/llm_rewrite_batch.py`), sur des tirages réels. Objectif : passer du
 brouillon déterministe (`agent/draw_report.py`, mode `template`) à un article réellement
 rédigé, sans rien inventer.
@@ -12,7 +12,7 @@ rédigé, sans rien inventer.
    100 tirages réels (100/100 OK, 0 bloqué, 0,21 $) : texte fidèle mais **cosmétique**,
    même squelette d'un article à l'autre, aucune analyse nouvelle.
 
-2. **Composition avec tous les faits, sans garde-fou éditorial** (`llm_compose_test.py`,
+2. **Composition avec tous les faits, sans garde-fou éditorial** (`compose_draw_report.py`,
    v1) : le LLM reçoit les ~31 faits calculés (dont géométrie : étendue, écarts, dizaines,
    paires proches) et compose librement. Résultat : **inventaire de métriques**, pas un
    article — empile les chiffres sans hiérarchie, répète le rappel "pas de prédiction" à
@@ -88,7 +88,7 @@ Coûts mesurés cette nuit (gpt-5.4-mini, reasoning effort low) :
 
 ## Round 4 — après patch du garde (bornes de dizaines en contexte)
 
-Fix appliqué : `decade_range_numbers()` dans `llm_compose_test.py` reconnaît les bornes
+Fix appliqué : `decade_range_numbers()` dans `compose_draw_report.py` reconnaît les bornes
 (1,10,11,20,...,41,50) uniquement quand elles apparaissent dans un motif de plage explicite
 ("1-10, 11-20, ..."), pas en liste blanche globale — un `20` isolé ailleurs reste signalé.
 Testé sur EM-26077 et EM-2011053 : garde OK sur les deux, plus de faux positif.
@@ -155,7 +155,7 @@ Décision de Christophe : les deux vont dans la todolist, A en priorité plus ha
 
 ## Garde lexical ajouté et testé (30/09/2026, ~1h45)
 
-`guard_interpretive_words()` ajouté à `llm_compose_test.py` : vérifie que tout mot de
+`guard_interpretive_words()` ajouté à `compose_draw_report.py` : vérifie que tout mot de
 rareté employé dans le texte (rare, très rare, notable, exceptionnel, frappant,
 remarquable, peu courant, inhabituel — avec gestion de la négation, "ce n'est pas rare")
 est justifié par AU MOINS un fait fourni atteignant ce niveau de `rarity`. Testé hors
@@ -342,7 +342,7 @@ empreintes et refus d'un brouillon non approuvé), mais le mode compose n'écriv
 sur disque — il n'y avait donc jamais eu de brouillon à approuver, et « Le journal » du
 site est resté vide pour cette raison, pas par choix de publication.
 
-Ajouté à `agent/llm_compose_test.py` :
+Ajouté à `agent/compose_draw_report.py` :
 - `--write` : écrit `runs-llm-compose/<draw_id>/draft.json` au schéma
   `aleaquant-article-v1`, identique à celui du mode template, pour que
   `show` / `approve` / `reject` et l'import fonctionnent sans modification. Le garde

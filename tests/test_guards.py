@@ -15,7 +15,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'agent'))
-from llm_compose_test import (  # noqa: E402
+from compose_draw_report import (  # noqa: E402
     RARITY_PROFILES, guard_class_citations, guard_enum_leak,
     guard_interpretive_words, guard_markdown, notable_badges, notable_level,
     paragraph_evidence, strip_markdown,
@@ -121,7 +121,7 @@ class MarkdownTests(unittest.TestCase):
 
     def test_chiffres_preserves(self):
         """Le nettoyage ne doit toucher aucun nombre."""
-        from llm_compose_test import normalize_numbers
+        from compose_draw_report import normalize_numbers
         t = 'somme **222**, classe de **141** sur **2 118 760**'
         self.assertEqual(normalize_numbers(strip_markdown(t)), normalize_numbers(t))
 

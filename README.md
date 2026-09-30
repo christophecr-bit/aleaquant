@@ -66,10 +66,10 @@ faits calculés. Trois modes, dont un seul est retenu :
 |---|---|---|
 | template déterministe | `agent/draw_report.py draft` | sans LLM, base de référence |
 | reformulation | `agent/llm_rewrite_*.py`, `agent/llm_batch_*.py` | abandonné : le modèle ne voit que les claims déjà choisies, le résultat est cosmétique |
-| **compose** | `agent/llm_compose_test.py` | **mode retenu** : le modèle reçoit les ~26 faits annotés et compose |
+| **compose** | `agent/compose_draw_report.py` | **mode retenu** : le modèle reçoit les ~26 faits annotés et compose |
 
 ```sh
-python3 agent/llm_compose_test.py EM-26077 --write
+python3 agent/compose_draw_report.py EM-26077 --write
 python3 agent/draw_report.py show runs-llm-compose/EM-26077/draft.json
 python3 agent/draw_report.py approve runs-llm-compose/EM-26077/draft.json --reviewer "Christophe"
 npx wrangler deploy

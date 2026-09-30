@@ -17,7 +17,7 @@
           "mise_en_forme": []
         }
       },
-      "draft_sha256": "04fdd99d6874fa5bfb09c7b0599e267e84d832e42ed7f5b170208c26e0d97287",
+      "draft_sha256": "ea1f2ae0c05538cc7e257b981b6a6e6b4d316079ec43c65a9f1df6222af8fa4e",
       "draft": {
         "title": "EuroMillions — tirage du 6 septembre 2011",
         "body": "Le 6 septembre 2011, la combinaison 35 · 42 · 47 · 48 · 50 ★ 08 · 09 avait une probabilité de 1 sur 116 531 800 sous la règle alors en vigueur, avec 5 numéros sur 50 et 2 étoiles sur 11. À ce niveau de lecture, 35-42-47-48-50 + étoiles 8-9 n’était ni plus ni moins probable qu’une autre combinaison complète.\n\nSur la géométrie des cinq numéros principaux, la répartition par dizaines 0-0-0-1-4 indique que tout se situe dans les tranches 31-40 et 41-50, avec 4 numéros en 41-50 et 1 numéro en 31-40. Les numéros occupent donc 2 dizaines, et la moitié basse 1-25 est vide. C’est une lecture de position sur l’échelle 1-50 : ici, les valeurs sont toutes dans le haut de la grille, sans pour autant qu’on confonde cela avec la dispersion.\n\nLa dispersion proprement dite est donnée par l’étendue : 15, c’est-à-dire la différence entre le plus grand et le plus petit numéro. Dans le même ensemble, les écarts ordonnés sont 1-2-5-7, ce qui montre qu’un couple de numéros est très proche, mais que l’écartement global reste porté par les valeurs les plus éloignées. Pour l’angle combinatoire, c’est la mesure exacte des écarts qui parle, tandis que l’étendue en donne un résumé plus simple.\n\nCôté signaux statistiques, la somme vaut 222, une mesure rare. Elle n’est pas à lire comme une prédiction, mais comme un indice descriptif de la forme numérique du tirage. À côté de cela, l’écart minimal de 1 et le nombre d’impairs de 2 restent dans la normale, donc sans caractère particulier à signaler.\n\nL’historique apporte deux repères précis. D’abord, ces cinq numéros n’étaient jamais sortis ensemble auparavant, et aucun de leurs 5 quadruplets n’avait été tiré. Ensuite, la signature de cette forme de tirage, définie par une suite consécutive maximale de 2, un maximum de 4 numéros dans une même dizaine et 2 dizaines occupées, avait déjà été observée 7 fois sur 412 tirages antérieurs.\n\nNote de méthode — ces mesures décrivent la forme d'un tirage déjà réalisé et ne portent que sur lui. Le modèle probabiliste employé ici suppose des tirages indépendants et équiprobables : c'est une hypothèse sur le mécanisme de tirage, pas un résultat démontré par ces mesures. Sous cette hypothèse, aucune d'entre elles n'aide à anticiper un tirage futur.",
@@ -25,7 +25,9 @@
           {
             "claim_id": "C1",
             "text": "Le 6 septembre 2011, la combinaison 35 · 42 · 47 · 48 · 50 ★ 08 · 09 avait une probabilité de 1 sur 116 531 800 sous la règle alors en vigueur, avec 5 numéros sur 50 et 2 étoiles sur 11. À ce niveau de lecture, 35-42-47-48-50 + étoiles 8-9 n’était ni plus ni moins probable qu’une autre combinaison complète.",
-            "evidence_ids": []
+            "evidence_ids": [
+              "F.grid.probability"
+            ]
           },
           {
             "claim_id": "C2",
@@ -56,12 +58,66 @@
             "claim_id": "C5",
             "text": "L’historique apporte deux repères précis. D’abord, ces cinq numéros n’étaient jamais sortis ensemble auparavant, et aucun de leurs 5 quadruplets n’avait été tiré. Ensuite, la signature de cette forme de tirage, définie par une suite consécutive maximale de 2, un maximum de 4 numéros dans une même dizaine et 2 dizaines occupées, avait déjà été observée 7 fois sur 412 tirages antérieurs.",
             "evidence_ids": [
-              "F.main.occupied_decades"
+              "F.main.occupied_decades",
+              "F.history.exact_main",
+              "F.signature"
             ]
           }
         ],
+        "badges": [
+          {
+            "fact_id": "F.main.decade_counts",
+            "metric": "main.decade_counts",
+            "nom": "Répartition par dizaines",
+            "valeur": "0-0-0-1-4",
+            "niveau": "VERY_RARE",
+            "libelle": "classe très rare",
+            "reference": "RARE",
+            "part_au_dessus": 0.0202
+          },
+          {
+            "fact_id": "F.main.sum",
+            "metric": "main.sum",
+            "nom": "Somme",
+            "valeur": 222,
+            "niveau": "VERY_RARE",
+            "libelle": "classe très rare",
+            "reference": "UNCOMMON",
+            "part_au_dessus": 0.4688
+          },
+          {
+            "fact_id": "F.main.span",
+            "metric": "main.span",
+            "nom": "Étendue",
+            "valeur": 15,
+            "niveau": "RARE",
+            "libelle": "classe rare",
+            "reference": "UNCOMMON",
+            "part_au_dessus": 0.0459
+          },
+          {
+            "fact_id": "F.main.low_count",
+            "metric": "main.low_count",
+            "nom": "Moitié basse",
+            "valeur": 0,
+            "niveau": "UNCOMMON",
+            "libelle": "classe peu courante",
+            "reference": "COMMON",
+            "part_au_dessus": 0.0444
+          },
+          {
+            "fact_id": "F.main.max_same_decade",
+            "metric": "main.max_same_decade",
+            "nom": "Concentration par dizaine",
+            "valeur": 4,
+            "niveau": "UNCOMMON",
+            "libelle": "classe peu courante",
+            "reference": "COMMON",
+            "part_au_dessus": 0.0655
+          }
+        ],
         "writer": "aleaquant-draw-report-compose-v1-gpt-5.4-mini",
-        "research_pack_sha256": "4e12acc377d0e320d15e512127f2ea2196047d42a56838c4f859e17d602fa290"
+        "research_pack_sha256": "046c9e27fca2583d8ad25930bba9f73f0d81e22f4e58e4d2c90338446506e5fd"
       },
       "research_pack": {
         "question": "Que dit la forme du tirage EM-2011053, sans prétendre prédire le suivant ?",
@@ -75,7 +131,7 @@
             "claim": "Sous la règle en vigueur à la date du tirage — 5 numéros sur 50 et 2 étoiles sur 11 —, chaque combinaison complète a la même probabilité, 1 sur 116 531 800 : 35-42-47-48-50 + étoiles 8-9 n’était ni plus ni moins probable qu’une autre.",
             "method": "combinatoire exacte",
             "category": "exact_grid",
-            "cited": false
+            "cited": true
           },
           {
             "evidence_id": "F.editorial.expectation",
@@ -243,14 +299,14 @@
             "claim": "Ces cinq numéros n’étaient jamais sortis ensemble auparavant. Aucun de ses 5 quadruplets n’avait été tiré.",
             "method": "historique antérieur",
             "category": "historical",
-            "cited": false
+            "cited": true
           },
           {
             "evidence_id": "F.signature",
             "claim": "Forme du tirage (suite consécutive maximale de 2, maximum de 4 numéros dans une même dizaine, 2 dizaines occupées) déjà observée 7 fois sur 412 tirages antérieurs.",
             "method": "signature patterns.py",
             "category": "historical",
-            "cited": false
+            "cited": true
           }
         ]
       },
@@ -258,14 +314,14 @@
         "approved": true,
         "reviewer": "Christophe",
         "comment": "",
-        "draft_sha256": "04fdd99d6874fa5bfb09c7b0599e267e84d832e42ed7f5b170208c26e0d97287",
-        "decided_at": "2026-09-30T02:38:44+02:00"
+        "draft_sha256": "ea1f2ae0c05538cc7e257b981b6a6e6b4d316079ec43c65a9f1df6222af8fa4e",
+        "decided_at": "2026-09-30T09:06:23+02:00"
       },
       "provenance": {
         "writer": "aleaquant-draw-report-compose-v1-gpt-5.4-mini",
         "model": "gpt-5.4-mini",
-        "created_at": "2026-09-30T02:38:44+02:00",
-        "facts_path": "/Users/chris/aleaquant-web/dist/data/facts/EM-2011053.json"
+        "created_at": "2026-09-30T06:45:46+00:00",
+        "facts_path": "/sessions/rcw-012rqjj93ywofaq6rda7ia8l/mnt/chris/aleaquant-web/dist/data/facts/EM-2011053.json"
       }
     }
   ]
