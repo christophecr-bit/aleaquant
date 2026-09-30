@@ -1,5 +1,11 @@
 # Journal de développement
 
+## 2026-09-30 — piste de recherche sur la covariance
+
+| Fichier | Changement | Vérification |
+|---|---|---|
+| `docs/TECHNICAL-DEBT.md`, `docs/HANDOFF.md`, `docs/CHANGELOG.md` | Source Coronel-Brizio et al. référencée ; covariance des positions d'un tirage distinguée de l'autocovariance temporelle ; audit par régime, rapport à l'étendue et article de fond inscrits comme travaux à qualifier. | Lecture de l'article arXiv 0806.4595 ; documentation seule, aucun calcul ou contenu publié. |
+
 ## 2026-09-30 — article associé à chaque page de tirage
 
 | Fichier | Changement | Vérification |

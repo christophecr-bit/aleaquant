@@ -26,6 +26,11 @@
 > `EM-2011053` correspond au **6 septembre 2011**, pas au 5. L'import du site
 > vérifie l'empreinte des faits et actualise seulement cette page. Les autres
 > tirages restent sans récit jusqu'à approbation ; le batch doit constituer ce fonds.
+> Piste scientifique en dette : Coronel-Brizio et al. (2008,
+> https://arxiv.org/abs/0806.4595) donnent la covariance théorique des positions
+> ordonnées d'un tirage k/N. Ce n'est pas une autocovariance temporelle. Étudier son
+> lien avec l'étendue et un audit historique par régime avant d'en faire un indicateur
+> ou un article ; tâche détaillée dans `docs/TECHNICAL-DEBT.md`.
 
 Écrit le 30/09/2026 au matin, après une session de nuit intense sur l'agent éditorial.
 **À lire en entier avant de toucher au code si vous reprenez le projet sans son

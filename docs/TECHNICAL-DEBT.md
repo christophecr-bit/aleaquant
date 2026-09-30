@@ -33,6 +33,20 @@ deux documents pertinents avant le commit.
 
 ## Actif
 
+- Étudier Coronel-Brizio et al., « Statistical auditing and randomness test of lotto
+  k/N-type games » (2008, https://arxiv.org/abs/0806.4595), comme piste d'audit
+  AleaQuant et d'article de fond. Leur covariance porte sur les **positions ordonnées
+  d'un même tirage** ; elle n'est pas une autocovariance entre tirages. Pour chaque
+  régime k/N, vérifier la moyenne et la matrice de covariance théoriques, puis
+  comparer prudemment aux estimations historiques par période homogène (taille,
+  changement de règle, données manquantes, multiplicité des tests, Monte-Carlo).
+  Étudier le lien exact avec `span = Y(k) - Y(1)` et les autres métriques de géométrie,
+  en évitant de compter des grandeurs dépendantes comme preuves indépendantes.
+  Tester séparément une éventuelle autocovariance à décalage temporel si l'on veut
+  auditer l'indépendance entre tirages. Décider ensuite si un indicateur agrégé
+  d'audit mérite le dictionnaire ; ne pas ajouter une « rareté de covariance » à
+  chaque tirage. Préparer un article sur covariance, étendue et contrôle du hasard,
+  sans interprétation prédictive. Aucun calcul ni article n'est encore réalisé.
 - Produire puis relire les articles manquants, par lots quotidiens, pour arriver à
   un récit approuvé par tirage. Aujourd'hui l'association est possible mais le fonds
   d'articles est incomplet ; ne jamais afficher un brouillon comme article.
