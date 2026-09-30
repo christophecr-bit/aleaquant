@@ -1,5 +1,13 @@
 # AleaQuant — document de reprise (handoff)
 
+> Décision Atlas du 01/10/2026 : `docs/ATLAS-GEOMETRIES-ARCHITECTURE.md`
+> définit un contrat de géométrie commun et des cohortes séparées par jeu,
+> règle, format, taille et budget. Tailles repères proposées : 6 et 30 grilles ;
+> Keno v1 reste à 10 numéros par grille en 16/56. Le Loto affiché est encore
+> composé de cinq démonstrations à 6 grilles, sans évaluation exacte publiée.
+> Aucun calcul massif ni changement de l'Atlas en ligne n'a été lancé. Les tâches
+> d'implémentation sont dans `docs/TECHNICAL-DEBT.md`.
+
 > Mise à jour du 30/09/2026 : la collecte des trois jeux enchaîne maintenant avec
 > les calculs locaux. `bash tools/refresh_draws.sh --check` inspecte sans réseau ;
 > `bash tools/refresh_draws.sh` importe depuis `../aleaquant-data`, calcule les faits

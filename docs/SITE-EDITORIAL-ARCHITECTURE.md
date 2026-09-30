@@ -16,7 +16,7 @@ et le choix d’un éventuel portage Astro viennent après validation visuelle e
 |---|---|---|---|
 | Tirages | Que montre ce résultat ? | Fiche par tirage, analyse, article approuvé | `/tirages/` puis jeu et identifiant/date |
 | Comprendre | Que signifie cette mesure ? | Explication, expérience, brève pédagogique | Mini-expérience et dictionnaire de l’accueil actuel |
-| Atlas & géométries | Quelle forme ont les tirages et les portefeuilles ? | Atlas, visualisation, article de fond | Atlas actuel ; portefeuilles à construire |
+| Atlas & géométries | Quelle forme ont les tirages et les portefeuilles ? | Atlas, visualisation, article de fond | Aperçu hétérogène ; contrat et cohortes dans `ATLAS-GEOMETRIES-ARCHITECTURE.md` |
 | Recherche & méthode | Comment le sait-on ? | Note de recherche, veille, méthode, limites | Méthode actuelle ; notes à qualifier |
 
 Le **Journal** est un fil transversal de publications approuvées, pas une cinquième
@@ -66,11 +66,11 @@ regroupement visuel si la loi est plus longue. Ce regroupement ne change aucun
 calcul ni verdict de rareté. Les lois catégorielles et les métriques dépourvues de
 loi n'ont pas de mini-histogramme ; leur carte textuelle reste visible.
 
-Les mesures retenues pour ce petit repère visuel sont la somme, l'étendue, la
-concentration par décade, les paires proches, la plus longue suite et, pour
-EuroMillions, la somme des étoiles. La vérification de régime doit précéder le
-rendu ; une loi absente ou discordante conduit à omettre le graphe, pas à afficher
-un dessin trompeur.
+Depuis la correction locale du 30 septembre, chaque métrique scalaire dont la loi
+est disponible pour le bon régime peut recevoir ce repère ; le Loto
+`LO-20260928` en affiche 18. Les signatures non ordonnées restent textuelles.
+La vérification de régime doit précéder le rendu ; une loi absente ou
+discordante conduit à omettre le graphe, pas à afficher un dessin trompeur.
 
 ## Frontières d'architecture
 
@@ -94,7 +94,9 @@ un dessin trompeur.
    supprimer le snapshot daté de la maquette.
 4. Décider du portage de ce gabarit dans le site actuel ou dans Astro après mesure
    du coût de génération, du nombre d'assets et du rendu mobile.
-5. Qualifier le premier Atlas de portefeuilles et ses articles d'introduction.
+5. Qualifier le premier Atlas de portefeuilles et ses articles d'introduction selon
+   `ATLAS-GEOMETRIES-ARCHITECTURE.md` : tailles repères 6 et 30 grilles, Loto à
+   construire au-delà de ses démonstrations et autres formats Keno séparés.
 
 Ni cette maquette ni les mini-histogrammes ne changent la chaîne d'approbation,
 les faits ou le sens des probabilités. Comprendre le hasard n'est pas prédire le

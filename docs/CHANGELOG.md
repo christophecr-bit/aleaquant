@@ -1,5 +1,12 @@
 # Journal de développement
 
+## 2026-10-01 — architecture de l'Atlas des géométries
+
+| Fichier | Changement | Vérification |
+|---|---|---|
+| `docs/ATLAS-GEOMETRIES-ARCHITECTURE.md` | Contrat commun, cohortes par règle/format/budget, tailles repères 6 et 30, Loto à qualifier, Keno 10-numéros d'abord, géométrie à la demande et évaluations hors ligne. | Inventaire de `dist/data/atlas.json`, des catalogues et du dictionnaire du laboratoire ; relecture des liens et du diff. |
+| `README.md`, `docs/SITE-EDITORIAL-ARCHITECTURE.md`, `docs/TECHNICAL-DEBT.md`, `docs/HANDOFF.md` | Pointeurs d'architecture et tâches ouvertes alignés ; ancienne limite documentaire des histogrammes corrigée ; aucune modification des calculs ni du Worker. | Contrôle documentaire. |
+
 ## 2026-09-30 — cohérence des histogrammes de tirage
 
 | Fichier | Changement | Vérification |

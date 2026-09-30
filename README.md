@@ -291,7 +291,10 @@ python3 agent/draw_report.py approve runs/EM-26077/draft.json --reviewer "Christ
 - Les facts n'utilisent que les tirages antérieurs au tirage analysé (pas de look-ahead).
 - L'agent n'a accès qu'au JSON de facts. Chaque phrase cite ses facts ; un garde bloque
   tout nombre absent des facts cités. Le brouillon n'entre dans le journal qu'après `approve`.
-- Géométries de portefeuilles : génération 1 (recherche HPC, Monte-Carlo puis exact).
+- Géométries de portefeuilles : aperçu de génération 1 hétérogène (EuroMillions et
+  Keno à 30 grilles, Loto démonstratif à 6). La politique des cohortes, familles,
+  tailles repères et calculs à la demande est dans
+  [`docs/ATLAS-GEOMETRIES-ARCHITECTURE.md`](docs/ATLAS-GEOMETRIES-ARCHITECTURE.md).
   Les générations suivantes s'ajoutent comme nouvelles entrées dans `atlas.json`.
 
 Sections ajoutées au site : `#tirages`, `#atlas`, `#geometries`, `#lab` (fichiers `draws.js`, `atlas.css`).

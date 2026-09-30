@@ -140,11 +140,15 @@ deux documents pertinents avant le commit.
   des changements produits et contrôle du budget d'assets Wrangler. Le correctif
   fonctionne localement et passe les tests, mais le Worker sert encore l'ancienne
   version tant qu'un déploiement n'a pas été décidé.
-- Remettre l'Atlas dans la feuille de route produit : définir une première version de
-  portefeuilles, ses familles et leurs limites, puis écrire des articles de fond AleaQuant
-  qui introduisent la géométrie des grilles avant de présenter les outils. Les articles
-  doivent expliquer couverture, recouvrement et dispersion sans promesse de gain ni
-  confusion entre organisation d'un portefeuille et probabilité du tirage.
+- Construire l'Atlas de portefeuilles selon `docs/ATLAS-GEOMETRIES-ARCHITECTURE.md`.
+  Le contrat, les familles et la politique de calcul sont définis ; restent à faire :
+  schéma de cohorte et affichage du niveau de preuve, Loto qualifié à 6 et 30
+  grilles avec `RANDOM` à budget égal, petites cohortes EuroMillions/Keno à 6,
+  séparation index/fiches, puis articles de fond sur couverture, recouvrement et
+  limites. Garder Keno 10-numéros pour cette première étape ; les grilles de 4 à 9
+  numéros et les autres régimes requièrent des cohortes et barèmes distincts.
+  Ne pas lancer l'évaluation exhaustive de toutes les tailles ni présenter les
+  cinq démonstrations Loto comme une comparaison de performances.
 - Vérifier le lien de déploiement GitHub–Cloudflare : le flux documenté actuellement
   reste `wrangler deploy` manuel, puis `git push`. Ne pas annoncer de CI non vérifiée.
 - Surveiller la disponibilité des archives FDJ et renouveler les URL dans
