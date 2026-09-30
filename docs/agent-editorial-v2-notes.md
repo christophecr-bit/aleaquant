@@ -364,3 +364,41 @@ Reste à faire pour publier : générer avec `--write`, relire, approuver (déci
 humaine, jamais automatisée), puis `wrangler deploy`. Le mode compose n'a pas encore
 de version batch : `llm_batch_submit.py` / `llm_batch_collect.py` portent encore
 l'approche par reformulation.
+
+## À faire : puces de rareté dans l'article (noté le 30/09/2026 au matin)
+
+Demande : afficher les puces de rareté — le label « rare », « très rare », « peu
+courante » — dans l'article lui-même, **quand c'est nécessaire**.
+
+Ce « quand nécessaire » a maintenant une définition exploitable, issue de l'audit de la
+nuit : une puce ne s'affiche que si la mesure est AU-DESSUS de sa propre référence
+(`notable_level()` non nul, cf. `dist/data/rarity_profiles.json`). Sinon elle est
+trompeuse — `main.sorted_gaps` serait « très rare » sur les 1984 tirages, et
+`main.decade_counts` l'est sur 98 % d'entre eux. Sur les 486 tirages ordinaires
+(24,5 %), un article n'affichera donc AUCUNE puce, et c'est le comportement correct.
+
+Contrainte technique à respecter : `dist/app.js` rend le corps avec `textContent` et
+jamais `innerHTML`, parce que le texte vient d'un LLM. On ne peut donc pas obtenir une
+puce en insérant du HTML ou du markdown dans le corps (c'est déjà ce qui a produit les
+« ** » visibles en ligne). Il faut passer par une structure validée :
+
+1. Ajouter au brouillon un champ dédié, par exemple `draft.badges` : liste de
+   `{fact_id, label_fr, niveau, part_au_dessus}` calculée DÉTERMINISTEMENT côté Python
+   à partir de `notable_level()` — jamais rédigée par le modèle.
+2. `app.js` rend ces puces dans leur propre élément, avec les classes CSS des badges
+   existants (mini-fiches du dictionnaire de métriques), en `textContent` pour chaque
+   libellé. Aucune ouverture de `innerHTML`.
+3. Les puces peuvent être placées par paragraphe : `draft.claims[].evidence_ids` donne
+   déjà les faits cités dans chaque paragraphe (`paragraph_evidence()`), il suffit de
+   croiser avec la liste des faits notables.
+4. Le garde reste inchangé : les puces sont des données calculées, donc rien de neuf à
+   vérifier côté texte — mais un test doit s'assurer qu'aucune puce n'est émise pour un
+   fait dans sa normale ou à rareté constante.
+
+Ça rejoint la piste A des notes précédentes (puces de signature), avec la précision qui
+manquait alors : le critère d'affichage n'est pas le badge brut, c'est le dépassement de
+la référence. La piste B (radar) reste après, sur les mêmes axes.
+
+Lié : la même structure validée ouvrirait la mise en forme de l'article (intertitres,
+listes) sans jamais passer `innerHTML` sur du texte de LLM — paragraphes typés rendus
+par `app.js`, plutôt que du markdown dans le corps.
