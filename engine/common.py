@@ -40,6 +40,14 @@ def rule_star_total(rule_id):
     return comb(int(m.group(2)), 2)
 
 
+def rule_domains(rule_id):
+    """(nombre de numéros du domaine, nombre d'étoiles) de la règle du tirage."""
+    m = RULE_RE.match(rule_id or '')
+    if not m:
+        raise ValueError('règle de tirage inconnue : %r' % (rule_id,))
+    return int(m.group(1)), int(m.group(2))
+
+
 def rule_main_total(rule_id):
     """Nombre de combinaisons de numéros principaux sous la règle du tirage."""
     m = RULE_RE.match(rule_id or '')

@@ -58,6 +58,19 @@ class RuleTests(unittest.TestCase):
         normalise = re.sub(r'[\s\u00a0\u202f]+', ' ', fact['statement'])
         self.assertIn('116 531 800', normalise)
         self.assertNotIn('139 838 160', normalise)
+        # la règle doit être nommée : un dénominateur de 2011 est sinon incompréhensible
+        self.assertIn('2 étoiles sur 11', normalise)
+        self.assertEqual(fact['value']['stars_domain'], 11)
+
+    def test_signature_traduite(self):
+        """La signature brute (run=...;decade_max=...) est opaque : le libellé doit
+        être en français, le code restant disponible dans value."""
+        d = json.loads((ROOT / 'dist' / 'data' / 'facts' / 'EM-2011053.json').read_text(encoding='utf-8'))
+        fact = next(f for f in d['facts'] if f['fact_id'] == 'F.signature')
+        self.assertNotIn('run=', fact['statement'])
+        self.assertNotIn('decade_max', fact['statement'])
+        self.assertIn('dizaines occupées', fact['statement'])
+        self.assertEqual(fact['value']['signature'], 'run=2;decade_max=4;decades=2')
 
 
 if __name__ == '__main__':

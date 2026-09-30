@@ -11,7 +11,7 @@ from itertools import combinations
 from math import comb
 
 from common import (CURRENT_RULE, ENGINE_VERSION, MAIN_CAT, MAIN_FIELDS, STAR_FIELDS,
-                    rule_star_total,
+                    rule_domains, rule_star_total,
                     key, rarity)
 
 LABELS = {
@@ -131,12 +131,18 @@ def build_draw_facts(draw, prior_rows, laws, idx, patterns, pascal_prior):
     # tirages antérieurs à septembre 2016.
     total_main = laws['main_total']
     total_stars = rule_star_total(draw['rule'])
+    main_domain, stars_domain = rule_domains(draw['rule'])
     facts = [{
         'fact_id': 'F.grid.probability', 'category': 'exact_grid', 'method': 'combinatoire exacte',
-        'value': {'full_combinations': total_main * total_stars},
-        'statement': ('Chaque combinaison complète a la même probabilité, 1 sur %s : '
-                      '%s + étoiles %s n’était ni plus ni moins probable qu’une autre.') % (
-            nb(total_main * total_stars),
+        'value': {'full_combinations': total_main * total_stars, 'rule_id': draw['rule'],
+                  'main_domain': main_domain, 'stars_domain': stars_domain},
+        # la règle est nommée dans le libellé : sans elle, un dénominateur de 2011
+        # (11 étoiles) est incompréhensible pour qui connaît la règle actuelle.
+        'statement': ('Sous la règle en vigueur à la date du tirage — 5 numéros sur %d et '
+                      '2 étoiles sur %d —, chaque combinaison complète a la même '
+                      'probabilité, 1 sur %s : %s + étoiles %s n’était ni plus ni moins '
+                      'probable qu’une autre.') % (
+            main_domain, stars_domain, nb(total_main * total_stars),
             '-'.join(map(str, main)), '-'.join(map(str, stars)))
     }, {
         'fact_id': 'F.editorial.expectation', 'category': 'interpretation',
@@ -191,10 +197,16 @@ def build_draw_facts(draw, prior_rows, laws, idx, patterns, pascal_prior):
 
     signature = patterns.main_signature(mp)
     sig_prior = sum(1 for r in prior_rows if r['signature'] == signature)
+    # le code brut (run=2;decade_max=4;decades=2) reste dans value pour les
+    # comparaisons machine, mais le libellé le traduit : tel quel il est opaque.
+    signature_fr = ('suite consécutive maximale de %s, maximum de %s numéros dans une même '
+                    'dizaine, %s dizaines occupées') % (
+        mp['longest_consecutive_run'], mp['max_same_decade'], mp['occupied_decades'])
     facts.append({'fact_id': 'F.signature', 'category': 'historical', 'method': 'signature patterns.py',
-                  'value': {'signature': signature, 'prior': sig_prior, 'draws': n_prior},
-                  'statement': 'Signature de forme %s, déjà observée %d fois sur %d tirages antérieurs.' % (
-                      signature, sig_prior, n_prior)})
+                  'value': {'signature': signature, 'signature_fr': signature_fr,
+                            'prior': sig_prior, 'draws': n_prior},
+                  'statement': 'Forme du tirage (%s) déjà observée %d fois sur %d tirages antérieurs.' % (
+                      signature_fr, sig_prior, n_prior)})
 
     return {
         'schema': 'aleaquant-draw-facts-v1', 'engine': ENGINE_VERSION,
