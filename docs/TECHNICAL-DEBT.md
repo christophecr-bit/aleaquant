@@ -1,5 +1,13 @@
 # Dette technique et décisions — 1er octobre 2026
 
+## Domaine propre — suivi du 01/10/2026
+
+- Réalisé : raccordement de `aleaquant.org` au Worker public et vérification HTTPS.
+- À faire : migration cohérente des URL canoniques, sitemap/RSS vers le domaine
+  propre, choix des redirections workers.dev et www avant indexation.
+- À faire : accès SSH distant protégé par Access/Tunnel, indépendant du site.
+
+
 Ce fichier suit la dette **active**. Une tâche réalisée est retirée de la liste active
 et reportée dans `CHANGELOG.md`. Toute modification de code doit mettre à jour les
 deux documents pertinents avant le commit.

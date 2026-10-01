@@ -1,5 +1,11 @@
 # AleaQuant — document de reprise (handoff)
 
+Domaine raccordé le 01/10/2026 : https://aleaquant.org/ et
+https://aleaquant.org/maquette/. HTTPS et trois pages vérifiés ; pas de nouveau
+déploiement des assets. Configuration persistée dans `wrangler.jsonc`.
+Accès terminal distant encore à configurer.
+
+
 > Déploiement du 01/10/2026 effectué : maquette publique sous `/maquette/` et
 > graphes des pages de tirage en ligne. Worker
 > `18285622-994a-42cc-9e0f-937b28c67f7a`, assets du commit `deedfc645`.

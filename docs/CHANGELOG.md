@@ -1,5 +1,15 @@
 # Journal de développement
 
+## 1er octobre 2026 — domaine aleaquant.org
+
+Domaine actif chez Cloudflare, raccordé par Custom Domain au Worker `aleaquant`.
+Site : https://aleaquant.org/ ; maquette : https://aleaquant.org/maquette/.
+Aucun asset redéployé : version existante conservée. HTTPS vérifié (HTTP 200),
+accueil, maquette et `/tirages/loto/LO-20260928/` identiques octet pour octet
+à workers.dev. Route persistée dans `wrangler.jsonc`, workers.dev conservé.
+Le terminal distant Cloudflare Access/Tunnel n’est pas encore configuré.
+
+
 ## 2026-10-01 — mise en ligne vérifiée de la maquette et des graphes
 
 Worker `18285622-994a-42cc-9e0f-937b28c67f7a`, 9 691 assets issus du commit
