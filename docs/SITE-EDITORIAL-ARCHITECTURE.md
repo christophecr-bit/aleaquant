@@ -1,12 +1,13 @@
 # Architecture éditoriale du site — maquette locale v0.2
 
-Date : 30 septembre 2026 · Auteur : AleaQuant · Statut : **proposition locale, non déployée**
+Date : 1er octobre 2026 · Auteur : AleaQuant · Statut : **maquette publique sous /maquette/, accueil non remplacé**
 
 ## Décision : le prochain chantier
 
 Le prochain sujet à développer est **le gabarit éditorial de l’accueil et des rubriques,
 alimenté par des contenus approuvés**. La maquette locale est dans
 `prototypes/editorial-home/index.html`. Elle montre la hiérarchie et les cartes ;
+Sa copie est consultable sur [le Worker](https://aleaquant.aleaquant.workers.dev/maquette/) ;
 elle ne remplace pas encore l’accueil du Worker. Le raccordement aux données réelles
 et le choix d’un éventuel portage Astro viennent après validation visuelle et éditoriale.
 

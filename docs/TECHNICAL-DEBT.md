@@ -32,7 +32,7 @@ deux documents pertinents avant le commit.
   disponible (18 sur `LO-20260928`), chacun lié à la loi de son régime. Les queues
   non nulles conservent un pixel visible ; les signatures catégorielles restent
   textuelles. La légende distingue regroupement graphique et rareté de la
-  classe exacte. Rien de cela n'a encore été déployé sur le Worker.
+  classe exacte. Déployé le 01/10/2026 ; contrôles distants dans `DEPLOYMENTS.md`.
 - Le gabarit de l'accueil éditorial est défini dans
   `docs/SITE-EDITORIAL-ARCHITECTURE.md` et illustré par la maquette locale : quatre
   rubriques avec cartes d'article, d'analyse, d'expérience, de référence ou de
@@ -150,10 +150,10 @@ deux documents pertinents avant le commit.
   choisir entre un portage Astro et une adaptation du site actuel. Le calendrier
   doit rester propre à chaque jeu ; le Journal est un fil transversal. Examiner
   Hostinger et Semnal comme références visuelles seulement.
-- Publier la régénération des pages de tirage avec mini-histogrammes après revue
-  des changements produits et contrôle du budget d'assets Wrangler. Le correctif
-  fonctionne localement et passe les tests, mais le Worker sert encore l'ancienne
-  version tant qu'un déploiement n'a pas été décidé.
+- Terminer la sauvegarde Git distante : le push HTTPS du 01/10 a échoué faute
+  d'accès au trousseau macOS dans cette session. Le déploiement Cloudflare a
+  réussi. Procédure et version dans `DEPLOYMENTS.md`. Le laboratoire HPC n'a
+  pas encore de remote configuré.
 - Construire l'Atlas de portefeuilles selon `docs/ATLAS-GEOMETRIES-ARCHITECTURE.md`.
   Le contrat est défini ; restent à faire : schéma de cohorte et niveaux de
   preuve, sélection puis qualification de portefeuilles Loto représentatifs

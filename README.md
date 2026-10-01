@@ -64,15 +64,17 @@ exact** de toute probabilité de gain d'une grille jouée. Une génération cibl
 `dist/`. Le prototype de groupes mensuels est dans `prototypes/keno-on-demand/` ;
 il ne contient encore que les tirages bruts, pas les faits ni l'analyse publiable.
 
-La maquette éditoriale locale est dans `prototypes/editorial-home/index.html`.
+La maquette éditoriale est dans `prototypes/editorial-home/index.html` et consultable
+à distance sur [le Worker, sous /maquette/](https://aleaquant.aleaquant.workers.dev/maquette/).
 Elle distingue quatre rubriques (Tirages, Comprendre, Atlas & géométries,
 Recherche & méthode) et utilise des cartes communes pour les contenus en ligne
 et les sujets explicitement à préparer. Son fil des derniers tirages est encore
 un snapshot. Le gabarit, les sources de données futures et les critères
 d'intégration sont détaillés dans `docs/SITE-EDITORIAL-ARCHITECTURE.md`.
-Les pages statiques de tirage régénérées **localement** affichent à nouveau des
+Les pages statiques de tirage régénérées affichent à nouveau des
 mini-histogrammes issus des lois du régime concerné ; le trait orange situe la
-valeur observée. Ce correctif n'est pas encore déployé sur le Worker.
+valeur observée. Ce correctif et la maquette sont déployés depuis le 01/10/2026 ;
+version, contrôles distants et statut du push Git dans `docs/DEPLOYMENTS.md`.
 
 Un **prototype local isolé** permet de tester un choix d'angle A/B/C et une relecture
 de fluidité sur un rapport EuroMillions. Il sert à préparer la future chaîne

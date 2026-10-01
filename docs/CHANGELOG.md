@@ -1,5 +1,13 @@
 # Journal de développement
 
+## 2026-10-01 — mise en ligne vérifiée de la maquette et des graphes
+
+Worker `18285622-994a-42cc-9e0f-937b28c67f7a`, 9 691 assets issus du commit
+`deedfc645`. Maquette sous `/maquette/` ; trois pages contrôlées avec 18/21/18
+mini-histogrammes et comparaison des réponses à l'export Git. Quatre tests de
+pages réussis. README, architecture, dette et handoff actualisés. Le push Git
+reste bloqué par l'accès au trousseau macOS ; détails dans `DEPLOYMENTS.md`.
+
 ## 2026-10-01 — préparation de la maquette consultable à distance
 
 `prototypes/editorial-home/index.html` et sa copie `dist/maquette/` exposent un

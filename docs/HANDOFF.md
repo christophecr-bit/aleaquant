@@ -1,5 +1,12 @@
 # AleaQuant — document de reprise (handoff)
 
+> Déploiement du 01/10/2026 effectué : maquette publique sous `/maquette/` et
+> graphes des pages de tirage en ligne. Worker
+> `18285622-994a-42cc-9e0f-937b28c67f7a`, assets du commit `deedfc645`.
+> Contrôles distants réussis. Le push Git a échoué sur l'accès au trousseau ;
+> voir `DEPLOYMENTS.md`. Les statuts de déploiement historiques ci-dessous
+> sont remplacés par cette entrée.
+
 > Sujet éditorial à préparer : `research/sujet-editorial-hpc-combinatoire.md`,
 > petit article technique sur revolving-door, bitplanes et popcount. Angle
 > proposé : « Trente grilles dans quatre mots ». Brief seulement, non publié.
@@ -44,8 +51,8 @@
 > Maquette locale : `prototypes/editorial-home/index.html`, maintenant organisée en
 > quatre rubriques et cartes de contenus. Gabarit, frontières et prochain chantier
 > dans `docs/SITE-EDITORIAL-ARCHITECTURE.md`. Les 9 658 pages de tirage ont été
-> régénérées **localement** avec leurs mini-histogrammes ; aucun déploiement de ce
-> correctif n'a été effectué. Le fil de l'accueil reste un snapshot.
+> régénérées avec leurs mini-histogrammes et publiées le 01/10/2026.
+> La maquette distante garde un snapshot ; voir `DEPLOYMENTS.md`.
 > Pages Loto et sélecteur de jeu publiés le 30/09/2026 sur
 > `https://aleaquant.aleaquant.workers.dev`, version Worker
 > `27128adb-e8e6-4ec5-95a3-63d98370b445`. 9 687 assets actifs ; deux URL Loto
