@@ -1,5 +1,13 @@
 # Journal de développement
 
+## 2026-10-01 — proposition CI et environnement de recette
+
+Ajout de `docs/CI-STAGING-PRODUCTION.md` après vérification de la documentation
+Cloudflare Workers actuelle. Recommande un Worker persistant de recette protégé
+par Access, une promotion production soumise à approbation, et distingue jeton
+du tunnel, identité d’accès et clé API CI. Dette et handoff reliés. Proposition
+documentaire uniquement : aucun workflow ou Worker de recette activé.
+
 ## 1er octobre 2026 — domaine aleaquant.org
 
 Domaine actif chez Cloudflare, raccordé par Custom Domain au Worker `aleaquant`.

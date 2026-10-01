@@ -1,5 +1,11 @@
 # AleaQuant — document de reprise (handoff)
 
+Politique proposée pour CI, recette et production : `CI-STAGING-PRODUCTION.md`.
+Recommandation : Worker `aleaquant-recette` sur `recette.aleaquant.org`, protégé
+par Access ; garder `private.aleaquant.org` pour le tunnel Mac. Le jeton du
+tunnel, l’API Token CI et l’identité Access ont des rôles distincts. Aucun
+pipeline ni recette isolée n’est encore activé.
+
 Domaine raccordé le 01/10/2026 : https://aleaquant.org/ et
 https://aleaquant.org/maquette/. HTTPS et trois pages vérifiés ; pas de nouveau
 déploiement des assets. Configuration persistée dans `wrangler.jsonc`.

@@ -14,6 +14,12 @@ deux documents pertinents avant le commit.
 
 ## Réalisé dans cette livraison
 
+- Proposition CI/recette/production dans `CI-STAGING-PRODUCTION.md` : Workers
+  séparés, Access pour recette, CI contrôlée et secrets distincts (tunnel,
+  accès humain, déploiement). Il s’agit d’un plan ; rien n’est activé par ce
+  document. Prérequis restant : accès GitHub et création/configuration du Worker
+  de recette.
+
 - Sujet éditorial HPC cadré dans `docs/research/sujet-editorial-hpc-combinatoire.md` :
   petit article technique pour Recherche & méthode, trois titres, trame,
   preuves sources et figure à produire. Rédaction et approbation restent à faire.
