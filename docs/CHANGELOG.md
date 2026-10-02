@@ -1,5 +1,17 @@
 # Journal de développement
 
+## 2026-10-02 — recalcul intégral des fiches des trois jeux
+
+- 29 124 fiches recalculées : EuroMillions 1 985, Loto 7 673, Keno 19 466.
+- 650 775 anciens faits et métadonnées inchangés ; seuls les sous-totaux par dizaine
+  s'ajoutent. 29 120 fichiers remplacés, 3 déjà conformes.
+- EM-2011053 recalculé mais nouvelle version retenue à part jusqu'à revalidation
+  de son article approuvé ; l'article reste reconnu. Aucun déploiement.
+- `tests/test_facts_generic.py` : distinguer profil descriptif sans historique et
+  métrique historique, sans affaiblir le test anti look-ahead du Loto 2008.
+- Tests : 129 web +28 sous-tests, 119 agents réussis.
+- [Rapport et sauvegardes](RECALCUL-FAITS-TROIS-JEUX-20261002.md).
+
 ## 2026-10-02 — recalcul de trois fiches et essai réel du pipeline
 
 - EM-26078, EM-26077 et EM-2004010 : ajout de `F.main.decade_sums`, 88 faits

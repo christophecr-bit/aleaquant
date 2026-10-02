@@ -448,3 +448,11 @@ Trois fiches recalculées, 88 anciens faits inchangés, sommes par dizaine ajout
 EM-26078 et EM-2004010 attendent l'approbation dans la review ; EM-26077 est bloqué
 pour rareté injustifiée dans sa prose (sa fiche est valide). 129 tests web +28
 sous-tests et 119 agents passent. Aucun déploiement. Voir VALIDATION-RECALCUL-20261002.md.
+
+### Dernière opération — recalcul global des trois jeux
+
+29 124 fiches recalculées (1 985 EM, 7 673 Loto, 19 466 Keno), anciennes métriques
+et métadonnées identiques. 29 120 mises à jour installées ; les trois témoins étaient
+déjà à jour. Seule EM-2011053 conserve sa fiche approuvée, nouvelle version prête
+à part. Rapport RECALCUL-FAITS-TROIS-JEUX-20261002.md. Tests : 129 +28 sous-tests
+web, 119 agents. Aucun article généré ni publié pendant ce recalcul global.

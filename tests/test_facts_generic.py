@@ -62,7 +62,12 @@ class LotoTests(unittest.TestCase):
         self.assertEqual(corps['rule_id'], 'loto-49-5-chance-v1')
         self.assertEqual(corps['prior_draws'], 0)
         for f in corps['facts']:
-            if f.get('metric', '').startswith('main.'):
+            # AleaQuant · 2026-10-02 : un profil descriptif n'a ni loi ni historique.
+            if f.get('category') == 'descriptive_profile':
+                self.assertNotIn('historical_prior', f)
+                self.assertNotIn('rarity', f)
+                self.assertNotIn('p_class', f)
+            elif f.get('metric', '').startswith('main.'):
                 self.assertEqual(f['historical_prior']['draws'], 0, f['fact_id'])
 
     def test_pas_de_fait_de_forme_sur_un_numero_seul(self):

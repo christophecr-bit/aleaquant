@@ -77,6 +77,27 @@
    "statement": "L’espérance de gain d’une mise est négative. Ces mesures décrivent la forme du tirage ; elles ne permettent pas de prédire le suivant."
   },
   {
+   "fact_id": "F.main.arithmetic_triples",
+   "metric": "main.arithmetic_triples",
+   "label": "triplets arithmétiques",
+   "value": 14,
+   "class_size": 4592504654299,
+   "domain_size": 41648951840265,
+   "p_class": 0.11026699235823505,
+   "rarity": "COMMON",
+   "category": "class_metric",
+   "method": "récurrences exactes, aucun échantillonnage",
+   "p_le": 0.4393612499393591,
+   "p_ge": 0.6709057424188759,
+   "tail": 0.4393612499393591,
+   "historical_prior": {
+    "count": 32,
+    "draws": 306,
+    "expected": 33.74
+   },
+   "statement": "Triplets arithmétiques = 14 ; classe de 4 592 504 654 299 combinaisons sur 41 648 951 840 265 (11,0 %) ; observée 32 fois sur 306 tirages antérieurs (attendu 33,7)."
+  },
+  {
    "fact_id": "F.main.clusteredness_close_pairs_5",
    "metric": "main.clusteredness_close_pairs_5",
    "label": "paires distantes d’au plus 5",
@@ -156,6 +177,27 @@
     "expected": 306.0
    },
    "statement": "Progression arithmétique complète = 0 ; classe de 41 648 951 840 187 combinaisons sur 41 648 951 840 265 (100,0 %) ; observée 306 fois sur 306 tirages antérieurs (attendu 306)."
+  },
+  {
+   "fact_id": "F.main.longest_arithmetic_progression",
+   "metric": "main.longest_arithmetic_progression",
+   "label": "plus longue progression arithmétique",
+   "value": 4,
+   "class_size": 25234590410791,
+   "domain_size": 41648951840265,
+   "p_class": 0.6058877665774756,
+   "rarity": "COMMON",
+   "category": "class_metric",
+   "method": "récurrences exactes, aucun échantillonnage",
+   "p_le": 0.7085319982423653,
+   "p_ge": 0.8973557683351102,
+   "tail": 0.7085319982423653,
+   "historical_prior": {
+    "count": 194,
+    "draws": 306,
+    "expected": 185.4
+   },
+   "statement": "Plus longue progression arithmétique = 4 ; classe de 25 234 590 410 791 combinaisons sur 41 648 951 840 265 (60,6 %) ; observée 194 fois sur 306 tirages antérieurs (attendu 185,4)."
   },
   {
    "fact_id": "F.main.longest_consecutive_run",
@@ -368,6 +410,24 @@
    "statement": "Suites d’au moins deux = 1 ; classe de 1 818 762 204 652 combinaisons sur 41 648 951 840 265 (4,4 %) ; queue basse : 4,6 % des combinaisons sont à ce niveau ou au-delà ; observée 15 fois sur 306 tirages antérieurs (attendu 13,4)."
   },
   {
+   "fact_id": "F.main.sorted_gaps",
+   "metric": "main.sorted_gaps",
+   "label": "écarts ordonnés",
+   "value": "1-2-2-2-2-2-2-3-3-3-4-4-6-8-11",
+   "class_size": 151351200,
+   "domain_size": 41648951840265,
+   "p_class": 3.6339738051625596e-06,
+   "rarity": "VERY_RARE",
+   "category": "class_metric",
+   "method": "récurrences exactes, aucun échantillonnage",
+   "historical_prior": {
+    "count": 0,
+    "draws": 306,
+    "expected": 0.0
+   },
+   "statement": "Écarts ordonnés = 1·2·2·2·2·2·2·3·3·3·4·4·6·8·11 ; classe de 151 351 200 combinaisons sur 41 648 951 840 265 (moins de 0,01 %) ; observée 0 fois sur 306 tirages antérieurs (attendu 0)."
+  },
+  {
    "fact_id": "F.main.span",
    "metric": "main.span",
    "label": "étendue",
@@ -429,6 +489,60 @@
     "expected": 6.53
    },
    "statement": "Paires de même finale = 6 ; classe de 889 209 140 625 combinaisons sur 41 648 951 840 265 (2,1 %) ; queue basse : 2,1 % des combinaisons sont à ce niveau ou au-delà ; observée 7 fois sur 306 tirages antérieurs (attendu 6,5)."
+  },
+  {
+   "fact_id": "F.main.decade_sums",
+   "metric": "main.decade_sums",
+   "label": "Somme par dizaine",
+   "value": {
+    "profile": [
+     {
+      "decade": 1,
+      "start": 1,
+      "end": 10,
+      "count": 4,
+      "sum": 18
+     },
+     {
+      "decade": 2,
+      "start": 11,
+      "end": 20,
+      "count": 2,
+      "sum": 30
+     },
+     {
+      "decade": 3,
+      "start": 21,
+      "end": 30,
+      "count": 2,
+      "sum": 46
+     },
+     {
+      "decade": 4,
+      "start": 31,
+      "end": 40,
+      "count": 3,
+      "sum": 112
+     },
+     {
+      "decade": 5,
+      "start": 41,
+      "end": 50,
+      "count": 2,
+      "sum": 94
+     },
+     {
+      "decade": 6,
+      "start": 51,
+      "end": 56,
+      "count": 3,
+      "sum": 161
+     }
+    ]
+   },
+   "category": "descriptive_profile",
+   "method": "somme déterministe des valeurs par tranche de dix",
+   "statement": "Sommes et effectifs par dizaine : D1 : somme 18 pour 4 numéros ; D2 : somme 30 pour 2 numéros ; D3 : somme 46 pour 2 numéros ; D4 : somme 112 pour 3 numéros ; D5 : somme 94 pour 2 numéros ; D6 : somme 161 pour 3 numéros."
   },
   {
    "fact_id": "F.signature",

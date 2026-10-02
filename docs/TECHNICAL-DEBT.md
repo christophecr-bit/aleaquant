@@ -122,3 +122,12 @@ singulier est corrigé et testé (voir VALIDATION-RECALCUL-20261002.md).
 Reste à généraliser le rattrapage, puis à décider du lancement de la campagne.
 Fiches, puces et textes ont des validations distinctes : aucune puce n'est exigée.
 La reprise automatique des remarques humaines par le Writer reste ouverte.
+
+### Rattrapage global qualifié — 2 octobre 2026
+
+Le recalcul des faits des trois jeux est terminé et comparé intégralement :
+29 124 fiches, 650 775 faits antérieurs inchangés. Le point « généraliser le
+rattrapage » est réalisé. Une seule bascule reste suspendue : EM-2011053 jusqu'à
+revalidation de son article approuvé. Sa nouvelle fiche est déjà calculée.
+Reste à rendre pérenne la sélection de snapshots de faits par version approuvée,
+pour qu'un futur recalcul ne retire pas silencieusement un article du rendu.

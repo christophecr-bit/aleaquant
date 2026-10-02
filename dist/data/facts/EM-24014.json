@@ -1,648 +1,695 @@
 {
-  "schema": "aleaquant-draw-facts-v1",
-  "engine": "aleaquant-engine-v0.1",
-  "game_id": "euromillions",
-  "draw_id": "EM-24014",
-  "date": "2024-02-16",
-  "rule_id": "euromillions-50-12-v1",
-  "main": [
-    8,
-    13,
-    14,
-    24,
-    26
-  ],
-  "stars": [
-    1,
-    2
-  ],
-  "source": {
-    "publisher": "FDJ",
-    "source_id": "fdj-202002-202609",
-    "revision": 1,
-    "revision_sha256": "ca27ff8517135a6a80c9749ccbf7af978b78f34275802ecaa8183710c943ceea"
+ "schema": "aleaquant-draw-facts-v1",
+ "engine": "aleaquant-engine-v0.1",
+ "game_id": "euromillions",
+ "draw_id": "EM-24014",
+ "date": "2024-02-16",
+ "rule_id": "euromillions-50-12-v1",
+ "main": [
+  8,
+  13,
+  14,
+  24,
+  26
+ ],
+ "stars": [
+  1,
+  2
+ ],
+ "source": {
+  "publisher": "FDJ",
+  "source_id": "fdj-202002-202609",
+  "revision": 1,
+  "revision_sha256": "ca27ff8517135a6a80c9749ccbf7af978b78f34275802ecaa8183710c943ceea"
+ },
+ "laws_patterns_sha256": "b1f14becdee94adc790f27e7332a4983196e4c1ea9b1676f0db053188a4f4c64",
+ "prior_draws": 1711,
+ "no_look_ahead": true,
+ "facts": [
+  {
+   "fact_id": "F.grid.probability",
+   "category": "exact_grid",
+   "method": "combinatoire exacte",
+   "value": {
+    "full_combinations": 139838160,
+    "rule_id": "euromillions-50-12-v1",
+    "main_domain": 50,
+    "stars_domain": 12
+   },
+   "statement": "Sous la règle en vigueur à la date du tirage — 5 numéros sur 50 et 2 étoiles sur 12 —, chaque combinaison complète a la même probabilité, 1 sur 139 838 160 : 8-13-14-24-26 + étoiles 1-2 n’était ni plus ni moins probable qu’une autre."
   },
-  "laws_patterns_sha256": "b1f14becdee94adc790f27e7332a4983196e4c1ea9b1676f0db053188a4f4c64",
-  "prior_draws": 1711,
-  "no_look_ahead": true,
-  "facts": [
-    {
-      "fact_id": "F.grid.probability",
-      "category": "exact_grid",
-      "method": "combinatoire exacte",
-      "value": {
-        "full_combinations": 139838160,
-        "rule_id": "euromillions-50-12-v1",
-        "main_domain": 50,
-        "stars_domain": 12
-      },
-      "statement": "Sous la règle en vigueur à la date du tirage — 5 numéros sur 50 et 2 étoiles sur 12 —, chaque combinaison complète a la même probabilité, 1 sur 139 838 160 : 8-13-14-24-26 + étoiles 1-2 n’était ni plus ni moins probable qu’une autre."
+  {
+   "fact_id": "F.editorial.expectation",
+   "category": "interpretation",
+   "method": "principe éditorial AleaQuant",
+   "statement": "L’espérance de gain d’une mise est négative. Ces mesures décrivent la forme du tirage ; elles ne permettent pas de prédire le suivant."
+  },
+  {
+   "fact_id": "F.main.sum",
+   "metric": "main.sum",
+   "label": "somme",
+   "value": 85,
+   "class_size": 11178,
+   "domain_size": 2118760,
+   "p_class": 0.0052757273122014765,
+   "rarity": "RARE",
+   "category": "class_metric",
+   "method": "loi exacte par énumération complète",
+   "p_le": 0.09004040098925786,
+   "p_ge": 0.9152353263229436,
+   "tail": 0.09004040098925786,
+   "historical_prior": {
+    "count": 10,
+    "draws": 1711,
+    "expected": 9.03
+   },
+   "statement": "Somme = 85 ; classe de 11 178 combinaisons sur 2 118 760 (0,53 %) ; observée 10 fois sur 1711 tirages antérieurs (attendu 9)."
+  },
+  {
+   "fact_id": "F.main.span",
+   "metric": "main.span",
+   "label": "étendue",
+   "value": 18,
+   "class_size": 21760,
+   "domain_size": 2118760,
+   "p_class": 0.010270158016953312,
+   "rarity": "UNCOMMON",
+   "category": "class_metric",
+   "method": "loi exacte par énumération complète",
+   "p_le": 0.05025958579546527,
+   "p_ge": 0.960010572221488,
+   "tail": 0.05025958579546527,
+   "historical_prior": {
+    "count": 14,
+    "draws": 1711,
+    "expected": 17.57
+   },
+   "statement": "Étendue = 18 ; classe de 21 760 combinaisons sur 2 118 760 (1,0 %) ; observée 14 fois sur 1711 tirages antérieurs (attendu 17,6)."
+  },
+  {
+   "fact_id": "F.main.min_gap",
+   "metric": "main.min_gap",
+   "label": "écart minimal",
+   "value": 1,
+   "class_size": 748006,
+   "domain_size": 2118760,
+   "p_class": 0.35303951367781156,
+   "rarity": "COMMON",
+   "category": "class_metric",
+   "method": "loi exacte par énumération complète",
+   "p_le": 0.35303951367781156,
+   "p_ge": 1.0,
+   "tail": 0.35303951367781156,
+   "historical_prior": {
+    "count": 583,
+    "draws": 1711,
+    "expected": 604.05
+   },
+   "statement": "Écart minimal = 1 ; classe de 748 006 combinaisons sur 2 118 760 (35,3 %) ; observée 583 fois sur 1711 tirages antérieurs (attendu 604,1)."
+  },
+  {
+   "fact_id": "F.main.max_gap",
+   "metric": "main.max_gap",
+   "label": "écart maximal",
+   "value": 10,
+   "class_size": 83170,
+   "domain_size": 2118760,
+   "p_class": 0.03925409201608488,
+   "rarity": "UNCOMMON",
+   "category": "class_metric",
+   "method": "loi exacte par énumération complète",
+   "p_le": 0.13215276860050218,
+   "p_ge": 0.9071013234155827,
+   "tail": 0.13215276860050218,
+   "historical_prior": {
+    "count": 73,
+    "draws": 1711,
+    "expected": 67.16
+   },
+   "statement": "Écart maximal = 10 ; classe de 83 170 combinaisons sur 2 118 760 (3,9 %) ; observée 73 fois sur 1711 tirages antérieurs (attendu 67,2)."
+  },
+  {
+   "fact_id": "F.main.mean_gap",
+   "metric": "main.mean_gap",
+   "label": "écart moyen",
+   "value": 4.5,
+   "class_size": 21760,
+   "domain_size": 2118760,
+   "p_class": 0.010270158016953312,
+   "rarity": "UNCOMMON",
+   "category": "class_metric",
+   "method": "loi exacte par énumération complète",
+   "p_le": 0.05025958579546527,
+   "p_ge": 0.960010572221488,
+   "tail": 0.05025958579546527,
+   "historical_prior": {
+    "count": 14,
+    "draws": 1711,
+    "expected": 17.57
+   },
+   "statement": "Écart moyen = 4,5 ; classe de 21 760 combinaisons sur 2 118 760 (1,0 %) ; observée 14 fois sur 1711 tirages antérieurs (attendu 17,6)."
+  },
+  {
+   "fact_id": "F.main.longest_consecutive_run",
+   "metric": "main.longest_consecutive_run",
+   "label": "plus longue suite consécutive",
+   "value": 2,
+   "class_size": 698280,
+   "domain_size": 2118760,
+   "p_class": 0.3295701259227095,
+   "rarity": "COMMON",
+   "category": "class_metric",
+   "method": "loi exacte par énumération complète",
+   "p_le": 0.976530612244898,
+   "p_ge": 0.3530395136778115,
+   "tail": 0.3530395136778115,
+   "historical_prior": {
+    "count": 544,
+    "draws": 1711,
+    "expected": 563.89
+   },
+   "statement": "Plus longue suite consécutive = 2 ; classe de 698 280 combinaisons sur 2 118 760 (33,0 %) ; observée 544 fois sur 1711 tirages antérieurs (attendu 563,9)."
+  },
+  {
+   "fact_id": "F.main.consecutive_pairs",
+   "metric": "main.consecutive_pairs",
+   "label": "paires consécutives",
+   "value": 1,
+   "class_size": 652740,
+   "domain_size": 2118760,
+   "p_class": 0.308076422058185,
+   "rarity": "COMMON",
+   "category": "class_metric",
+   "method": "loi exacte par énumération complète",
+   "p_le": 0.9550369083803735,
+   "p_ge": 0.3530395136778115,
+   "tail": 0.3530395136778115,
+   "historical_prior": {
+    "count": 511,
+    "draws": 1711,
+    "expected": 527.12
+   },
+   "statement": "Paires consécutives = 1 ; classe de 652 740 combinaisons sur 2 118 760 (30,8 %) ; observée 511 fois sur 1711 tirages antérieurs (attendu 527,1)."
+  },
+  {
+   "fact_id": "F.main.runs_ge2",
+   "metric": "main.runs_ge2",
+   "label": "suites d’au moins deux",
+   "value": 1,
+   "class_size": 700396,
+   "domain_size": 2118760,
+   "p_class": 0.33056882327399045,
+   "rarity": "COMMON",
+   "category": "class_metric",
+   "method": "loi exacte par énumération complète",
+   "p_le": 0.9775293095961789,
+   "p_ge": 0.35303951367781156,
+   "tail": 0.35303951367781156,
+   "historical_prior": {
+    "count": 549,
+    "draws": 1711,
+    "expected": 565.6
+   },
+   "statement": "Suites d’au moins deux = 1 ; classe de 700 396 combinaisons sur 2 118 760 (33,1 %) ; observée 549 fois sur 1711 tirages antérieurs (attendu 565,6)."
+  },
+  {
+   "fact_id": "F.main.max_same_decade",
+   "metric": "main.max_same_decade",
+   "label": "maximum dans une même dizaine",
+   "value": 2,
+   "class_size": 1507500,
+   "domain_size": 2118760,
+   "p_class": 0.7115010666616323,
+   "rarity": "COMMON",
+   "category": "class_metric",
+   "method": "loi exacte par énumération complète",
+   "p_le": 0.7586984840189545,
+   "p_ge": 0.9528025826426778,
+   "tail": 0.7586984840189545,
+   "historical_prior": {
+    "count": 1243,
+    "draws": 1711,
+    "expected": 1217.38
+   },
+   "statement": "Maximum dans une même dizaine = 2 ; classe de 1 507 500 combinaisons sur 2 118 760 (71,2 %) ; observée 1243 fois sur 1711 tirages antérieurs (attendu 1217,4)."
+  },
+  {
+   "fact_id": "F.main.occupied_decades",
+   "metric": "main.occupied_decades",
+   "label": "dizaines occupées",
+   "value": 3,
+   "class_size": 967500,
+   "domain_size": 2118760,
+   "p_class": 0.45663501293209235,
+   "rarity": "COMMON",
+   "category": "class_metric",
+   "method": "loi exacte par énumération complète",
+   "p_le": 0.528025826426778,
+   "p_ge": 0.9286091865053143,
+   "tail": 0.528025826426778,
+   "historical_prior": {
+    "count": 786,
+    "draws": 1711,
+    "expected": 781.3
+   },
+   "statement": "Dizaines occupées = 3 ; classe de 967 500 combinaisons sur 2 118 760 (45,7 %) ; observée 786 fois sur 1711 tirages antérieurs (attendu 781,3)."
+  },
+  {
+   "fact_id": "F.main.odd_count",
+   "metric": "main.odd_count",
+   "label": "nombre d’impairs",
+   "value": 1,
+   "class_size": 316250,
+   "domain_size": 2118760,
+   "p_class": 0.1492618323925315,
+   "rarity": "COMMON",
+   "category": "class_metric",
+   "method": "loi exacte par énumération complète",
+   "p_le": 0.17433782023447678,
+   "p_ge": 0.9749240121580547,
+   "tail": 0.17433782023447678,
+   "historical_prior": {
+    "count": 259,
+    "draws": 1711,
+    "expected": 255.39
+   },
+   "statement": "Nombre d’impairs = 1 ; classe de 316 250 combinaisons sur 2 118 760 (14,9 %) ; observée 259 fois sur 1711 tirages antérieurs (attendu 255,4)."
+  },
+  {
+   "fact_id": "F.main.low_count",
+   "metric": "main.low_count",
+   "label": "nombre de numéros bas (1–25)",
+   "value": 4,
+   "class_size": 316250,
+   "domain_size": 2118760,
+   "p_class": 0.1492618323925315,
+   "rarity": "COMMON",
+   "category": "class_metric",
+   "method": "loi exacte par énumération complète",
+   "p_le": 0.9749240121580547,
+   "p_ge": 0.1743378202344768,
+   "tail": 0.1743378202344768,
+   "historical_prior": {
+    "count": 249,
+    "draws": 1711,
+    "expected": 255.39
+   },
+   "statement": "Nombre de numéros bas (1–25) = 4 ; classe de 316 250 combinaisons sur 2 118 760 (14,9 %) ; observée 249 fois sur 1711 tirages antérieurs (attendu 255,4)."
+  },
+  {
+   "fact_id": "F.main.repeated_terminal_digits",
+   "metric": "main.repeated_terminal_digits",
+   "label": "finales répétées",
+   "value": 1,
+   "class_size": 1050000,
+   "domain_size": 2118760,
+   "p_class": 0.4955728822518832,
+   "rarity": "COMMON",
+   "category": "class_metric",
+   "method": "loi exacte par énumération complète",
+   "p_le": 0.8672525439407955,
+   "p_ge": 0.6283203383110876,
+   "tail": 0.6283203383110876,
+   "historical_prior": {
+    "count": 857,
+    "draws": 1711,
+    "expected": 847.93
+   },
+   "statement": "Finales répétées = 1 ; classe de 1 050 000 combinaisons sur 2 118 760 (49,6 %) ; observée 857 fois sur 1711 tirages antérieurs (attendu 847,9)."
+  },
+  {
+   "fact_id": "F.main.terminal_pair_collisions",
+   "metric": "main.terminal_pair_collisions",
+   "label": "paires de même finale",
+   "value": 1,
+   "class_size": 1050000,
+   "domain_size": 2118760,
+   "p_class": 0.4955728822518832,
+   "rarity": "COMMON",
+   "category": "class_metric",
+   "method": "loi exacte par énumération complète",
+   "p_le": 0.8672525439407955,
+   "p_ge": 0.6283203383110876,
+   "tail": 0.6283203383110876,
+   "historical_prior": {
+    "count": 857,
+    "draws": 1711,
+    "expected": 847.93
+   },
+   "statement": "Paires de même finale = 1 ; classe de 1 050 000 combinaisons sur 2 118 760 (49,6 %) ; observée 857 fois sur 1711 tirages antérieurs (attendu 847,9)."
+  },
+  {
+   "fact_id": "F.main.is_arithmetic_progression",
+   "metric": "main.is_arithmetic_progression",
+   "label": "progression arithmétique complète",
+   "value": 0,
+   "class_size": 2118472,
+   "domain_size": 2118760,
+   "p_class": 0.9998640714380109,
+   "rarity": "COMMON",
+   "category": "class_metric",
+   "method": "loi exacte par énumération complète",
+   "p_le": 0.9998640714380109,
+   "p_ge": 1.0,
+   "tail": 0.9998640714380109,
+   "historical_prior": {
+    "count": 1711,
+    "draws": 1711,
+    "expected": 1710.77
+   },
+   "statement": "Progression arithmétique complète = 0 ; classe de 2 118 472 combinaisons sur 2 118 760 (100,0 %) ; observée 1711 fois sur 1711 tirages antérieurs (attendu 1710,8)."
+  },
+  {
+   "fact_id": "F.main.longest_arithmetic_progression",
+   "metric": "main.longest_arithmetic_progression",
+   "label": "plus longue progression arithmétique",
+   "value": 2,
+   "class_size": 1541850,
+   "domain_size": 2118760,
+   "p_class": 0.7277133795238725,
+   "rarity": "COMMON",
+   "category": "class_metric",
+   "method": "loi exacte par énumération complète",
+   "p_le": 0.7277133795238725,
+   "p_ge": 1.0,
+   "tail": 0.7277133795238725,
+   "historical_prior": {
+    "count": 1266,
+    "draws": 1711,
+    "expected": 1245.12
+   },
+   "statement": "Plus longue progression arithmétique = 2 ; classe de 1 541 850 combinaisons sur 2 118 760 (72,8 %) ; observée 1266 fois sur 1711 tirages antérieurs (attendu 1245,1)."
+  },
+  {
+   "fact_id": "F.main.arithmetic_triples",
+   "metric": "main.arithmetic_triples",
+   "label": "triplets arithmétiques",
+   "value": 0,
+   "class_size": 1541850,
+   "domain_size": 2118760,
+   "p_class": 0.7277133795238725,
+   "rarity": "COMMON",
+   "category": "class_metric",
+   "method": "loi exacte par énumération complète",
+   "p_le": 0.7277133795238725,
+   "p_ge": 1.0,
+   "tail": 0.7277133795238725,
+   "historical_prior": {
+    "count": 1266,
+    "draws": 1711,
+    "expected": 1245.12
+   },
+   "statement": "Triplets arithmétiques = 0 ; classe de 1 541 850 combinaisons sur 2 118 760 (72,8 %) ; observée 1266 fois sur 1711 tirages antérieurs (attendu 1245,1)."
+  },
+  {
+   "fact_id": "F.main.clusteredness_close_pairs_5",
+   "metric": "main.clusteredness_close_pairs_5",
+   "label": "paires distantes d’au plus 5",
+   "value": 3,
+   "class_size": 364392,
+   "domain_size": 2118760,
+   "p_class": 0.17198361305669355,
+   "rarity": "COMMON",
+   "category": "class_metric",
+   "method": "loi exacte par énumération complète",
+   "p_le": 0.9100483301553739,
+   "p_ge": 0.2619352829013196,
+   "tail": 0.2619352829013196,
+   "historical_prior": {
+    "count": 266,
+    "draws": 1711,
+    "expected": 294.26
+   },
+   "statement": "Paires distantes d’au plus 5 = 3 ; classe de 364 392 combinaisons sur 2 118 760 (17,2 %) ; observée 266 fois sur 1711 tirages antérieurs (attendu 294,3)."
+  },
+  {
+   "fact_id": "F.main.sorted_gaps",
+   "metric": "main.sorted_gaps",
+   "label": "écarts ordonnés",
+   "value": "1-2-5-10",
+   "class_size": 768,
+   "domain_size": 2118760,
+   "p_class": 0.0003624761653042346,
+   "rarity": "VERY_RARE",
+   "category": "class_metric",
+   "method": "loi exacte par énumération complète",
+   "historical_prior": {
+    "count": 0,
+    "draws": 1711,
+    "expected": 0.62
+   },
+   "statement": "Écarts ordonnés = 1·2·5·10 ; classe de 768 combinaisons sur 2 118 760 (0,04 %) ; observée 0 fois sur 1711 tirages antérieurs (attendu 0,6)."
+  },
+  {
+   "fact_id": "F.main.decade_counts",
+   "metric": "main.decade_counts",
+   "label": "répartition par dizaines",
+   "value": "1-2-2-0-0",
+   "class_size": 20250,
+   "domain_size": 2118760,
+   "p_class": 0.009557477014857747,
+   "rarity": "RARE",
+   "category": "class_metric",
+   "method": "loi exacte par énumération complète",
+   "historical_prior": {
+    "count": 17,
+    "draws": 1711,
+    "expected": 16.35
+   },
+   "statement": "Répartition par dizaines = 1·2·2·0·0 ; classe de 20 250 combinaisons sur 2 118 760 (0,96 %) ; observée 17 fois sur 1711 tirages antérieurs (attendu 16,4)."
+  },
+  {
+   "fact_id": "F.main.decade_sums",
+   "metric": "main.decade_sums",
+   "label": "Somme par dizaine",
+   "value": {
+    "profile": [
+     {
+      "decade": 1,
+      "start": 1,
+      "end": 10,
+      "count": 1,
+      "sum": 8
+     },
+     {
+      "decade": 2,
+      "start": 11,
+      "end": 20,
+      "count": 2,
+      "sum": 27
+     },
+     {
+      "decade": 3,
+      "start": 21,
+      "end": 30,
+      "count": 2,
+      "sum": 50
+     },
+     {
+      "decade": 4,
+      "start": 31,
+      "end": 40,
+      "count": 0,
+      "sum": 0
+     },
+     {
+      "decade": 5,
+      "start": 41,
+      "end": 50,
+      "count": 0,
+      "sum": 0
+     }
+    ]
+   },
+   "category": "descriptive_profile",
+   "method": "somme déterministe des valeurs par tranche de dix",
+   "statement": "Sommes et effectifs par dizaine : D1 : somme 8 pour 1 numéro ; D2 : somme 27 pour 2 numéros ; D3 : somme 50 pour 2 numéros ; D4 : somme 0 pour 0 numéros ; D5 : somme 0 pour 0 numéros."
+  },
+  {
+   "fact_id": "F.stars.gap",
+   "metric": "stars.gap",
+   "label": "écart des étoiles",
+   "value": 1,
+   "class_size": 11,
+   "domain_size": 66,
+   "p_class": 0.16666666666666666,
+   "rarity": "COMMON",
+   "category": "class_metric",
+   "method": "loi exacte par énumération complète",
+   "p_le": 0.16666666666666666,
+   "p_ge": 1.0,
+   "tail": 0.16666666666666666,
+   "historical_prior": {
+    "count": 123,
+    "draws": 771,
+    "expected": 128.5
+   },
+   "statement": "Écart des étoiles = 1 ; classe de 11 combinaisons sur 66 (16,7 %) ; observée 123 fois sur 771 tirages antérieurs (attendu 128,5)."
+  },
+  {
+   "fact_id": "F.stars.consecutive",
+   "metric": "stars.consecutive",
+   "label": "étoiles consécutives",
+   "value": 1,
+   "class_size": 11,
+   "domain_size": 66,
+   "p_class": 0.16666666666666666,
+   "rarity": "COMMON",
+   "category": "class_metric",
+   "method": "loi exacte par énumération complète",
+   "p_le": 1.0,
+   "p_ge": 0.16666666666666666,
+   "tail": 0.16666666666666666,
+   "historical_prior": {
+    "count": 123,
+    "draws": 771,
+    "expected": 128.5
+   },
+   "statement": "Étoiles consécutives = 1 ; classe de 11 combinaisons sur 66 (16,7 %) ; observée 123 fois sur 771 tirages antérieurs (attendu 128,5)."
+  },
+  {
+   "fact_id": "F.stars.odd_count",
+   "metric": "stars.odd_count",
+   "label": "étoiles impaires",
+   "value": 1,
+   "class_size": 36,
+   "domain_size": 66,
+   "p_class": 0.5454545454545454,
+   "rarity": "COMMON",
+   "category": "class_metric",
+   "method": "loi exacte par énumération complète",
+   "p_le": 0.7727272727272727,
+   "p_ge": 0.7727272727272727,
+   "tail": 0.7727272727272727,
+   "historical_prior": {
+    "count": 414,
+    "draws": 771,
+    "expected": 420.55
+   },
+   "statement": "Étoiles impaires = 1 ; classe de 36 combinaisons sur 66 (54,5 %) ; observée 414 fois sur 771 tirages antérieurs (attendu 420,5)."
+  },
+  {
+   "fact_id": "F.stars.low_count",
+   "metric": "stars.low_count",
+   "label": "étoiles basses (1–6)",
+   "value": 2,
+   "class_size": 15,
+   "domain_size": 66,
+   "p_class": 0.22727272727272727,
+   "rarity": "COMMON",
+   "category": "class_metric",
+   "method": "loi exacte par énumération complète",
+   "p_le": 1.0,
+   "p_ge": 0.22727272727272727,
+   "tail": 0.22727272727272727,
+   "historical_prior": {
+    "count": 178,
+    "draws": 771,
+    "expected": 175.23
+   },
+   "statement": "Étoiles basses (1–6) = 2 ; classe de 15 combinaisons sur 66 (22,7 %) ; observée 178 fois sur 771 tirages antérieurs (attendu 175,2)."
+  },
+  {
+   "fact_id": "F.stars.sum",
+   "metric": "stars.sum",
+   "label": "somme des étoiles",
+   "value": 3,
+   "class_size": 1,
+   "domain_size": 66,
+   "p_class": 0.015151515151515152,
+   "rarity": "UNCOMMON",
+   "category": "class_metric",
+   "method": "loi exacte par énumération complète",
+   "p_le": 0.015151515151515152,
+   "p_ge": 1.0,
+   "tail": 0.015151515151515152,
+   "historical_prior": {
+    "count": 4,
+    "draws": 771,
+    "expected": 11.68
+   },
+   "statement": "Somme des étoiles = 3 ; classe de 1 combinaison sur 66 (1,5 %) ; queue basse : 1,5 % des combinaisons sont à ce niveau ou au-delà ; observée 4 fois sur 771 tirages antérieurs (attendu 11,7)."
+  },
+  {
+   "fact_id": "F.stars.terminal_coincidence",
+   "metric": "stars.terminal_coincidence",
+   "label": "étoiles de même finale",
+   "value": 0,
+   "class_size": 64,
+   "domain_size": 66,
+   "p_class": 0.9696969696969697,
+   "rarity": "COMMON",
+   "category": "class_metric",
+   "method": "loi exacte par énumération complète",
+   "p_le": 0.9696969696969697,
+   "p_ge": 1.0,
+   "tail": 0.9696969696969697,
+   "historical_prior": {
+    "count": 743,
+    "draws": 771,
+    "expected": 747.64
+   },
+   "statement": "Étoiles de même finale = 0 ; classe de 64 combinaisons sur 66 (97,0 %) ; observée 743 fois sur 771 tirages antérieurs (attendu 747,6)."
+  },
+  {
+   "fact_id": "F.pascal.subsets",
+   "category": "exhaustive",
+   "method": "combinatoire + historique antérieur",
+   "value": {
+    "2": {
+     "in_draw": 10,
+     "domain": 1225,
+     "already_seen": 10,
+     "most_seen": [
+      "24-26",
+      25
+     ],
+     "expected_seen_per_subset": 13.967
     },
-    {
-      "fact_id": "F.editorial.expectation",
-      "category": "interpretation",
-      "method": "principe éditorial AleaQuant",
-      "statement": "L’espérance de gain d’une mise est négative. Ces mesures décrivent la forme du tirage ; elles ne permettent pas de prédire le suivant."
+    "3": {
+     "in_draw": 10,
+     "domain": 19600,
+     "already_seen": 9,
+     "most_seen": [
+      "8-13-26",
+      2
+     ],
+     "expected_seen_per_subset": 0.873
     },
-    {
-      "fact_id": "F.main.sum",
-      "metric": "main.sum",
-      "label": "somme",
-      "value": 85,
-      "class_size": 11178,
-      "domain_size": 2118760,
-      "p_class": 0.0052757273122014765,
-      "rarity": "RARE",
-      "category": "class_metric",
-      "method": "loi exacte par énumération complète",
-      "p_le": 0.09004040098925786,
-      "p_ge": 0.9152353263229436,
-      "tail": 0.09004040098925786,
-      "historical_prior": {
-        "count": 10,
-        "draws": 1711,
-        "expected": 9.03
-      },
-      "statement": "Somme = 85 ; classe de 11 178 combinaisons sur 2 118 760 (0,53 %) ; observée 10 fois sur 1711 tirages antérieurs (attendu 9)."
-    },
-    {
-      "fact_id": "F.main.span",
-      "metric": "main.span",
-      "label": "étendue",
-      "value": 18,
-      "class_size": 21760,
-      "domain_size": 2118760,
-      "p_class": 0.010270158016953312,
-      "rarity": "UNCOMMON",
-      "category": "class_metric",
-      "method": "loi exacte par énumération complète",
-      "p_le": 0.05025958579546527,
-      "p_ge": 0.960010572221488,
-      "tail": 0.05025958579546527,
-      "historical_prior": {
-        "count": 14,
-        "draws": 1711,
-        "expected": 17.57
-      },
-      "statement": "Étendue = 18 ; classe de 21 760 combinaisons sur 2 118 760 (1,0 %) ; observée 14 fois sur 1711 tirages antérieurs (attendu 17,6)."
-    },
-    {
-      "fact_id": "F.main.min_gap",
-      "metric": "main.min_gap",
-      "label": "écart minimal",
-      "value": 1,
-      "class_size": 748006,
-      "domain_size": 2118760,
-      "p_class": 0.35303951367781156,
-      "rarity": "COMMON",
-      "category": "class_metric",
-      "method": "loi exacte par énumération complète",
-      "p_le": 0.35303951367781156,
-      "p_ge": 1.0,
-      "tail": 0.35303951367781156,
-      "historical_prior": {
-        "count": 583,
-        "draws": 1711,
-        "expected": 604.05
-      },
-      "statement": "Écart minimal = 1 ; classe de 748 006 combinaisons sur 2 118 760 (35,3 %) ; observée 583 fois sur 1711 tirages antérieurs (attendu 604,1)."
-    },
-    {
-      "fact_id": "F.main.max_gap",
-      "metric": "main.max_gap",
-      "label": "écart maximal",
-      "value": 10,
-      "class_size": 83170,
-      "domain_size": 2118760,
-      "p_class": 0.03925409201608488,
-      "rarity": "UNCOMMON",
-      "category": "class_metric",
-      "method": "loi exacte par énumération complète",
-      "p_le": 0.13215276860050218,
-      "p_ge": 0.9071013234155827,
-      "tail": 0.13215276860050218,
-      "historical_prior": {
-        "count": 73,
-        "draws": 1711,
-        "expected": 67.16
-      },
-      "statement": "Écart maximal = 10 ; classe de 83 170 combinaisons sur 2 118 760 (3,9 %) ; observée 73 fois sur 1711 tirages antérieurs (attendu 67,2)."
-    },
-    {
-      "fact_id": "F.main.mean_gap",
-      "metric": "main.mean_gap",
-      "label": "écart moyen",
-      "value": 4.5,
-      "class_size": 21760,
-      "domain_size": 2118760,
-      "p_class": 0.010270158016953312,
-      "rarity": "UNCOMMON",
-      "category": "class_metric",
-      "method": "loi exacte par énumération complète",
-      "p_le": 0.05025958579546527,
-      "p_ge": 0.960010572221488,
-      "tail": 0.05025958579546527,
-      "historical_prior": {
-        "count": 14,
-        "draws": 1711,
-        "expected": 17.57
-      },
-      "statement": "Écart moyen = 4,5 ; classe de 21 760 combinaisons sur 2 118 760 (1,0 %) ; observée 14 fois sur 1711 tirages antérieurs (attendu 17,6)."
-    },
-    {
-      "fact_id": "F.main.longest_consecutive_run",
-      "metric": "main.longest_consecutive_run",
-      "label": "plus longue suite consécutive",
-      "value": 2,
-      "class_size": 698280,
-      "domain_size": 2118760,
-      "p_class": 0.3295701259227095,
-      "rarity": "COMMON",
-      "category": "class_metric",
-      "method": "loi exacte par énumération complète",
-      "p_le": 0.976530612244898,
-      "p_ge": 0.3530395136778115,
-      "tail": 0.3530395136778115,
-      "historical_prior": {
-        "count": 544,
-        "draws": 1711,
-        "expected": 563.89
-      },
-      "statement": "Plus longue suite consécutive = 2 ; classe de 698 280 combinaisons sur 2 118 760 (33,0 %) ; observée 544 fois sur 1711 tirages antérieurs (attendu 563,9)."
-    },
-    {
-      "fact_id": "F.main.consecutive_pairs",
-      "metric": "main.consecutive_pairs",
-      "label": "paires consécutives",
-      "value": 1,
-      "class_size": 652740,
-      "domain_size": 2118760,
-      "p_class": 0.308076422058185,
-      "rarity": "COMMON",
-      "category": "class_metric",
-      "method": "loi exacte par énumération complète",
-      "p_le": 0.9550369083803735,
-      "p_ge": 0.3530395136778115,
-      "tail": 0.3530395136778115,
-      "historical_prior": {
-        "count": 511,
-        "draws": 1711,
-        "expected": 527.12
-      },
-      "statement": "Paires consécutives = 1 ; classe de 652 740 combinaisons sur 2 118 760 (30,8 %) ; observée 511 fois sur 1711 tirages antérieurs (attendu 527,1)."
-    },
-    {
-      "fact_id": "F.main.runs_ge2",
-      "metric": "main.runs_ge2",
-      "label": "suites d’au moins deux",
-      "value": 1,
-      "class_size": 700396,
-      "domain_size": 2118760,
-      "p_class": 0.33056882327399045,
-      "rarity": "COMMON",
-      "category": "class_metric",
-      "method": "loi exacte par énumération complète",
-      "p_le": 0.9775293095961789,
-      "p_ge": 0.35303951367781156,
-      "tail": 0.35303951367781156,
-      "historical_prior": {
-        "count": 549,
-        "draws": 1711,
-        "expected": 565.6
-      },
-      "statement": "Suites d’au moins deux = 1 ; classe de 700 396 combinaisons sur 2 118 760 (33,1 %) ; observée 549 fois sur 1711 tirages antérieurs (attendu 565,6)."
-    },
-    {
-      "fact_id": "F.main.max_same_decade",
-      "metric": "main.max_same_decade",
-      "label": "maximum dans une même dizaine",
-      "value": 2,
-      "class_size": 1507500,
-      "domain_size": 2118760,
-      "p_class": 0.7115010666616323,
-      "rarity": "COMMON",
-      "category": "class_metric",
-      "method": "loi exacte par énumération complète",
-      "p_le": 0.7586984840189545,
-      "p_ge": 0.9528025826426778,
-      "tail": 0.7586984840189545,
-      "historical_prior": {
-        "count": 1243,
-        "draws": 1711,
-        "expected": 1217.38
-      },
-      "statement": "Maximum dans une même dizaine = 2 ; classe de 1 507 500 combinaisons sur 2 118 760 (71,2 %) ; observée 1243 fois sur 1711 tirages antérieurs (attendu 1217,4)."
-    },
-    {
-      "fact_id": "F.main.occupied_decades",
-      "metric": "main.occupied_decades",
-      "label": "dizaines occupées",
-      "value": 3,
-      "class_size": 967500,
-      "domain_size": 2118760,
-      "p_class": 0.45663501293209235,
-      "rarity": "COMMON",
-      "category": "class_metric",
-      "method": "loi exacte par énumération complète",
-      "p_le": 0.528025826426778,
-      "p_ge": 0.9286091865053143,
-      "tail": 0.528025826426778,
-      "historical_prior": {
-        "count": 786,
-        "draws": 1711,
-        "expected": 781.3
-      },
-      "statement": "Dizaines occupées = 3 ; classe de 967 500 combinaisons sur 2 118 760 (45,7 %) ; observée 786 fois sur 1711 tirages antérieurs (attendu 781,3)."
-    },
-    {
-      "fact_id": "F.main.odd_count",
-      "metric": "main.odd_count",
-      "label": "nombre d’impairs",
-      "value": 1,
-      "class_size": 316250,
-      "domain_size": 2118760,
-      "p_class": 0.1492618323925315,
-      "rarity": "COMMON",
-      "category": "class_metric",
-      "method": "loi exacte par énumération complète",
-      "p_le": 0.17433782023447678,
-      "p_ge": 0.9749240121580547,
-      "tail": 0.17433782023447678,
-      "historical_prior": {
-        "count": 259,
-        "draws": 1711,
-        "expected": 255.39
-      },
-      "statement": "Nombre d’impairs = 1 ; classe de 316 250 combinaisons sur 2 118 760 (14,9 %) ; observée 259 fois sur 1711 tirages antérieurs (attendu 255,4)."
-    },
-    {
-      "fact_id": "F.main.low_count",
-      "metric": "main.low_count",
-      "label": "nombre de numéros bas (1–25)",
-      "value": 4,
-      "class_size": 316250,
-      "domain_size": 2118760,
-      "p_class": 0.1492618323925315,
-      "rarity": "COMMON",
-      "category": "class_metric",
-      "method": "loi exacte par énumération complète",
-      "p_le": 0.9749240121580547,
-      "p_ge": 0.1743378202344768,
-      "tail": 0.1743378202344768,
-      "historical_prior": {
-        "count": 249,
-        "draws": 1711,
-        "expected": 255.39
-      },
-      "statement": "Nombre de numéros bas (1–25) = 4 ; classe de 316 250 combinaisons sur 2 118 760 (14,9 %) ; observée 249 fois sur 1711 tirages antérieurs (attendu 255,4)."
-    },
-    {
-      "fact_id": "F.main.repeated_terminal_digits",
-      "metric": "main.repeated_terminal_digits",
-      "label": "finales répétées",
-      "value": 1,
-      "class_size": 1050000,
-      "domain_size": 2118760,
-      "p_class": 0.4955728822518832,
-      "rarity": "COMMON",
-      "category": "class_metric",
-      "method": "loi exacte par énumération complète",
-      "p_le": 0.8672525439407955,
-      "p_ge": 0.6283203383110876,
-      "tail": 0.6283203383110876,
-      "historical_prior": {
-        "count": 857,
-        "draws": 1711,
-        "expected": 847.93
-      },
-      "statement": "Finales répétées = 1 ; classe de 1 050 000 combinaisons sur 2 118 760 (49,6 %) ; observée 857 fois sur 1711 tirages antérieurs (attendu 847,9)."
-    },
-    {
-      "fact_id": "F.main.terminal_pair_collisions",
-      "metric": "main.terminal_pair_collisions",
-      "label": "paires de même finale",
-      "value": 1,
-      "class_size": 1050000,
-      "domain_size": 2118760,
-      "p_class": 0.4955728822518832,
-      "rarity": "COMMON",
-      "category": "class_metric",
-      "method": "loi exacte par énumération complète",
-      "p_le": 0.8672525439407955,
-      "p_ge": 0.6283203383110876,
-      "tail": 0.6283203383110876,
-      "historical_prior": {
-        "count": 857,
-        "draws": 1711,
-        "expected": 847.93
-      },
-      "statement": "Paires de même finale = 1 ; classe de 1 050 000 combinaisons sur 2 118 760 (49,6 %) ; observée 857 fois sur 1711 tirages antérieurs (attendu 847,9)."
-    },
-    {
-      "fact_id": "F.main.is_arithmetic_progression",
-      "metric": "main.is_arithmetic_progression",
-      "label": "progression arithmétique complète",
-      "value": 0,
-      "class_size": 2118472,
-      "domain_size": 2118760,
-      "p_class": 0.9998640714380109,
-      "rarity": "COMMON",
-      "category": "class_metric",
-      "method": "loi exacte par énumération complète",
-      "p_le": 0.9998640714380109,
-      "p_ge": 1.0,
-      "tail": 0.9998640714380109,
-      "historical_prior": {
-        "count": 1711,
-        "draws": 1711,
-        "expected": 1710.77
-      },
-      "statement": "Progression arithmétique complète = 0 ; classe de 2 118 472 combinaisons sur 2 118 760 (100,0 %) ; observée 1711 fois sur 1711 tirages antérieurs (attendu 1710,8)."
-    },
-    {
-      "fact_id": "F.main.longest_arithmetic_progression",
-      "metric": "main.longest_arithmetic_progression",
-      "label": "plus longue progression arithmétique",
-      "value": 2,
-      "class_size": 1541850,
-      "domain_size": 2118760,
-      "p_class": 0.7277133795238725,
-      "rarity": "COMMON",
-      "category": "class_metric",
-      "method": "loi exacte par énumération complète",
-      "p_le": 0.7277133795238725,
-      "p_ge": 1.0,
-      "tail": 0.7277133795238725,
-      "historical_prior": {
-        "count": 1266,
-        "draws": 1711,
-        "expected": 1245.12
-      },
-      "statement": "Plus longue progression arithmétique = 2 ; classe de 1 541 850 combinaisons sur 2 118 760 (72,8 %) ; observée 1266 fois sur 1711 tirages antérieurs (attendu 1245,1)."
-    },
-    {
-      "fact_id": "F.main.arithmetic_triples",
-      "metric": "main.arithmetic_triples",
-      "label": "triplets arithmétiques",
-      "value": 0,
-      "class_size": 1541850,
-      "domain_size": 2118760,
-      "p_class": 0.7277133795238725,
-      "rarity": "COMMON",
-      "category": "class_metric",
-      "method": "loi exacte par énumération complète",
-      "p_le": 0.7277133795238725,
-      "p_ge": 1.0,
-      "tail": 0.7277133795238725,
-      "historical_prior": {
-        "count": 1266,
-        "draws": 1711,
-        "expected": 1245.12
-      },
-      "statement": "Triplets arithmétiques = 0 ; classe de 1 541 850 combinaisons sur 2 118 760 (72,8 %) ; observée 1266 fois sur 1711 tirages antérieurs (attendu 1245,1)."
-    },
-    {
-      "fact_id": "F.main.clusteredness_close_pairs_5",
-      "metric": "main.clusteredness_close_pairs_5",
-      "label": "paires distantes d’au plus 5",
-      "value": 3,
-      "class_size": 364392,
-      "domain_size": 2118760,
-      "p_class": 0.17198361305669355,
-      "rarity": "COMMON",
-      "category": "class_metric",
-      "method": "loi exacte par énumération complète",
-      "p_le": 0.9100483301553739,
-      "p_ge": 0.2619352829013196,
-      "tail": 0.2619352829013196,
-      "historical_prior": {
-        "count": 266,
-        "draws": 1711,
-        "expected": 294.26
-      },
-      "statement": "Paires distantes d’au plus 5 = 3 ; classe de 364 392 combinaisons sur 2 118 760 (17,2 %) ; observée 266 fois sur 1711 tirages antérieurs (attendu 294,3)."
-    },
-    {
-      "fact_id": "F.main.sorted_gaps",
-      "metric": "main.sorted_gaps",
-      "label": "écarts ordonnés",
-      "value": "1-2-5-10",
-      "class_size": 768,
-      "domain_size": 2118760,
-      "p_class": 0.0003624761653042346,
-      "rarity": "VERY_RARE",
-      "category": "class_metric",
-      "method": "loi exacte par énumération complète",
-      "historical_prior": {
-        "count": 0,
-        "draws": 1711,
-        "expected": 0.62
-      },
-      "statement": "Écarts ordonnés = 1·2·5·10 ; classe de 768 combinaisons sur 2 118 760 (0,04 %) ; observée 0 fois sur 1711 tirages antérieurs (attendu 0,6)."
-    },
-    {
-      "fact_id": "F.main.decade_counts",
-      "metric": "main.decade_counts",
-      "label": "répartition par dizaines",
-      "value": "1-2-2-0-0",
-      "class_size": 20250,
-      "domain_size": 2118760,
-      "p_class": 0.009557477014857747,
-      "rarity": "RARE",
-      "category": "class_metric",
-      "method": "loi exacte par énumération complète",
-      "historical_prior": {
-        "count": 17,
-        "draws": 1711,
-        "expected": 16.35
-      },
-      "statement": "Répartition par dizaines = 1·2·2·0·0 ; classe de 20 250 combinaisons sur 2 118 760 (0,96 %) ; observée 17 fois sur 1711 tirages antérieurs (attendu 16,4)."
-    },
-    {
-      "fact_id": "F.stars.gap",
-      "metric": "stars.gap",
-      "label": "écart des étoiles",
-      "value": 1,
-      "class_size": 11,
-      "domain_size": 66,
-      "p_class": 0.16666666666666666,
-      "rarity": "COMMON",
-      "category": "class_metric",
-      "method": "loi exacte par énumération complète",
-      "p_le": 0.16666666666666666,
-      "p_ge": 1.0,
-      "tail": 0.16666666666666666,
-      "historical_prior": {
-        "count": 123,
-        "draws": 771,
-        "expected": 128.5
-      },
-      "statement": "Écart des étoiles = 1 ; classe de 11 combinaisons sur 66 (16,7 %) ; observée 123 fois sur 771 tirages antérieurs (attendu 128,5)."
-    },
-    {
-      "fact_id": "F.stars.consecutive",
-      "metric": "stars.consecutive",
-      "label": "étoiles consécutives",
-      "value": 1,
-      "class_size": 11,
-      "domain_size": 66,
-      "p_class": 0.16666666666666666,
-      "rarity": "COMMON",
-      "category": "class_metric",
-      "method": "loi exacte par énumération complète",
-      "p_le": 1.0,
-      "p_ge": 0.16666666666666666,
-      "tail": 0.16666666666666666,
-      "historical_prior": {
-        "count": 123,
-        "draws": 771,
-        "expected": 128.5
-      },
-      "statement": "Étoiles consécutives = 1 ; classe de 11 combinaisons sur 66 (16,7 %) ; observée 123 fois sur 771 tirages antérieurs (attendu 128,5)."
-    },
-    {
-      "fact_id": "F.stars.odd_count",
-      "metric": "stars.odd_count",
-      "label": "étoiles impaires",
-      "value": 1,
-      "class_size": 36,
-      "domain_size": 66,
-      "p_class": 0.5454545454545454,
-      "rarity": "COMMON",
-      "category": "class_metric",
-      "method": "loi exacte par énumération complète",
-      "p_le": 0.7727272727272727,
-      "p_ge": 0.7727272727272727,
-      "tail": 0.7727272727272727,
-      "historical_prior": {
-        "count": 414,
-        "draws": 771,
-        "expected": 420.55
-      },
-      "statement": "Étoiles impaires = 1 ; classe de 36 combinaisons sur 66 (54,5 %) ; observée 414 fois sur 771 tirages antérieurs (attendu 420,5)."
-    },
-    {
-      "fact_id": "F.stars.low_count",
-      "metric": "stars.low_count",
-      "label": "étoiles basses (1–6)",
-      "value": 2,
-      "class_size": 15,
-      "domain_size": 66,
-      "p_class": 0.22727272727272727,
-      "rarity": "COMMON",
-      "category": "class_metric",
-      "method": "loi exacte par énumération complète",
-      "p_le": 1.0,
-      "p_ge": 0.22727272727272727,
-      "tail": 0.22727272727272727,
-      "historical_prior": {
-        "count": 178,
-        "draws": 771,
-        "expected": 175.23
-      },
-      "statement": "Étoiles basses (1–6) = 2 ; classe de 15 combinaisons sur 66 (22,7 %) ; observée 178 fois sur 771 tirages antérieurs (attendu 175,2)."
-    },
-    {
-      "fact_id": "F.stars.sum",
-      "metric": "stars.sum",
-      "label": "somme des étoiles",
-      "value": 3,
-      "class_size": 1,
-      "domain_size": 66,
-      "p_class": 0.015151515151515152,
-      "rarity": "UNCOMMON",
-      "category": "class_metric",
-      "method": "loi exacte par énumération complète",
-      "p_le": 0.015151515151515152,
-      "p_ge": 1.0,
-      "tail": 0.015151515151515152,
-      "historical_prior": {
-        "count": 4,
-        "draws": 771,
-        "expected": 11.68
-      },
-      "statement": "Somme des étoiles = 3 ; classe de 1 combinaison sur 66 (1,5 %) ; queue basse : 1,5 % des combinaisons sont à ce niveau ou au-delà ; observée 4 fois sur 771 tirages antérieurs (attendu 11,7)."
-    },
-    {
-      "fact_id": "F.stars.terminal_coincidence",
-      "metric": "stars.terminal_coincidence",
-      "label": "étoiles de même finale",
-      "value": 0,
-      "class_size": 64,
-      "domain_size": 66,
-      "p_class": 0.9696969696969697,
-      "rarity": "COMMON",
-      "category": "class_metric",
-      "method": "loi exacte par énumération complète",
-      "p_le": 0.9696969696969697,
-      "p_ge": 1.0,
-      "tail": 0.9696969696969697,
-      "historical_prior": {
-        "count": 743,
-        "draws": 771,
-        "expected": 747.64
-      },
-      "statement": "Étoiles de même finale = 0 ; classe de 64 combinaisons sur 66 (97,0 %) ; observée 743 fois sur 771 tirages antérieurs (attendu 747,6)."
-    },
-    {
-      "fact_id": "F.pascal.subsets",
-      "category": "exhaustive",
-      "method": "combinatoire + historique antérieur",
-      "value": {
-        "2": {
-          "in_draw": 10,
-          "domain": 1225,
-          "already_seen": 10,
-          "most_seen": [
-            "24-26",
-            25
-          ],
-          "expected_seen_per_subset": 13.967
-        },
-        "3": {
-          "in_draw": 10,
-          "domain": 19600,
-          "already_seen": 9,
-          "most_seen": [
-            "8-13-26",
-            2
-          ],
-          "expected_seen_per_subset": 0.873
-        },
-        "4": {
-          "in_draw": 5,
-          "domain": 230300,
-          "already_seen": 0,
-          "most_seen": [
-            "8-13-14-24",
-            0
-          ],
-          "expected_seen_per_subset": 0.037
-        }
-      },
-      "statement": "Cinq numéros contiennent 10 paires et 10 triplets : C(5,2) = C(5,3), symétrie du triangle de Pascal. Mais le domaine compte 1 225 paires contre 19 600 triplets. Avant ce tirage, 10 de ses 10 paires étaient déjà sorties ensemble (la plus fréquente, 24–26, 25 fois), contre 9 de ses 10 triplets."
-    },
-    {
-      "fact_id": "F.history.exact_main",
-      "category": "historical",
-      "method": "historique antérieur",
-      "value": {
-        "count": 0,
-        "quadruplets_seen": 0
-      },
-      "statement": "Ces cinq numéros n’étaient jamais sortis ensemble auparavant. Aucun de ses 5 quadruplets n’avait été tiré."
-    },
-    {
-      "fact_id": "F.signature",
-      "category": "historical",
-      "method": "signature patterns.py",
-      "value": {
-        "signature": "run=2;decade_max=2;decades=3",
-        "signature_fr": "suite consécutive maximale de 2, maximum de 2 numéros dans une même dizaine, 3 dizaines occupées",
-        "prior": 193,
-        "draws": 1711
-      },
-      "statement": "Forme du tirage (suite consécutive maximale de 2, maximum de 2 numéros dans une même dizaine, 3 dizaines occupées) déjà observée 193 fois sur 1711 tirages antérieurs."
+    "4": {
+     "in_draw": 5,
+     "domain": 230300,
+     "already_seen": 0,
+     "most_seen": [
+      "8-13-14-24",
+      0
+     ],
+     "expected_seen_per_subset": 0.037
     }
-  ]
+   },
+   "statement": "Cinq numéros contiennent 10 paires et 10 triplets : C(5,2) = C(5,3), symétrie du triangle de Pascal. Mais le domaine compte 1 225 paires contre 19 600 triplets. Avant ce tirage, 10 de ses 10 paires étaient déjà sorties ensemble (la plus fréquente, 24–26, 25 fois), contre 9 de ses 10 triplets."
+  },
+  {
+   "fact_id": "F.history.exact_main",
+   "category": "historical",
+   "method": "historique antérieur",
+   "value": {
+    "count": 0,
+    "quadruplets_seen": 0
+   },
+   "statement": "Ces cinq numéros n’étaient jamais sortis ensemble auparavant. Aucun de ses 5 quadruplets n’avait été tiré."
+  },
+  {
+   "fact_id": "F.signature",
+   "category": "historical",
+   "method": "signature patterns.py",
+   "value": {
+    "signature": "run=2;decade_max=2;decades=3",
+    "signature_fr": "suite consécutive maximale de 2, maximum de 2 numéros dans une même dizaine, 3 dizaines occupées",
+    "prior": 193,
+    "draws": 1711
+   },
+   "statement": "Forme du tirage (suite consécutive maximale de 2, maximum de 2 numéros dans une même dizaine, 3 dizaines occupées) déjà observée 193 fois sur 1711 tirages antérieurs."
+  }
+ ]
 }

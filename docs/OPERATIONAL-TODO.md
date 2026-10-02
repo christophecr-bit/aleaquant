@@ -30,7 +30,7 @@ d'exploitation plutôt que supprimées du processus.
 - [x] Distinguer provenance directe/batch, sans falsifier les anciens dossiers.
 - [x] Tester la transmission des sommes par dizaine lorsqu'elles sont disponibles.
 - [ ] Relire et décider du nouveau témoin EM-26078 avant toute publication.
-- [ ] Planifier le rattrapage explicite des anciennes fiches (voir dette technique).
+- [x] Recalcul global exécuté et comparé ; exception de bascule EM-2011053 documentée ci-dessous.
 
 ## Validation du lot recalcul-20261002
 
@@ -39,3 +39,11 @@ d'exploitation plutôt que supprimées du processus.
 - [x] Exercer l'entrée LangGraph : deux prêts à relire, un bloqué légitimement.
 - [ ] Relire EM-26078 et EM-2004010 dans la file privée ; aucune approbation automatique.
 - [ ] Reprendre le texte EM-26077, sans changer ses faits ni les critères des puces.
+
+## Rattrapage global des faits — 2 octobre 2026
+
+- [x] Recalculer et comparer les 29 124 fiches des trois jeux.
+- [x] Installer 29 120 mises à jour et préserver les 3 témoins déjà conformes.
+- [ ] Revalider l'article EM-2011053 avant de remplacer son unique fiche protégée.
+- [ ] Étendre la conservation des snapshots approuvés pour les futures évolutions.
+Rapport : RECALCUL-FAITS-TROIS-JEUX-20261002.md. Aucun nouvel article ni déploiement.
