@@ -1,5 +1,14 @@
 # Journal de développement
 
+## 2026-10-02 — publication des pages après recalcul
+
+- 9 991 pages reconstruites et build figé au commit `c1aa6639b`.
+- Worker `054bb2da-c9d1-4788-9213-a3090e243637` publié sur les deux domaines.
+- 129 tests + 28 sous-tests ; 20 contrôles HTTP distants conformes.
+- Article approuvé préservé, aucun nouveau texte publié ; attente EM-2011053 maintenue.
+- Dette de publication des histogrammes clôturée ; Keno 16/56 publié, archives
+  20/70 à la demande toujours en dette. Voir DEPLOYMENTS.md et ses manifestes.
+
 ## 2026-10-02 — demande de module d’administration des calculs
 
 - Backlog PB-014 : lancer et suivre les batchs depuis une interface privée, sans

@@ -47,3 +47,11 @@ d'exploitation plutôt que supprimées du processus.
 - [ ] Revalider l'article EM-2011053 avant de remplacer son unique fiche protégée.
 - [ ] Étendre la conservation des snapshots approuvés pour les futures évolutions.
 Rapport : RECALCUL-FAITS-TROIS-JEUX-20261002.md. Aucun nouvel article ni déploiement.
+
+## Publication du recalcul — 2 octobre 2026
+
+- [x] Reconstruire les 9 991 pages et rejouer les tests web : 129 + 28 sous-tests.
+- [x] Publier le snapshot validé sur les deux domaines du Worker aleaquant.
+- [x] Vérifier les trois jeux, les histogrammes et l’article approuvé inchangé.
+- [x] Consigner version Worker, empreintes et contrôles HTTP dans DEPLOYMENTS.md.
+- [ ] Revalider séparément l’article EM-2011053 avant bascule de sa nouvelle fiche.

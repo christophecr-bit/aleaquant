@@ -456,3 +456,12 @@ et métadonnées identiques. 29 120 mises à jour installées ; les trois témoi
 déjà à jour. Seule EM-2011053 conserve sa fiche approuvée, nouvelle version prête
 à part. Rapport RECALCUL-FAITS-TROIS-JEUX-20261002.md. Tests : 129 +28 sous-tests
 web, 119 agents. Aucun article généré ni publié pendant ce recalcul global.
+
+## Publication après recalcul — 2 octobre 2026
+
+Les pages recalculées sont publiées sur https://aleaquant.org/ et workers.dev :
+version `054bb2da-c9d1-4788-9213-a3090e243637`, build `c1aa6639b`.
+9 991 pages (dont 333 Keno actif), tests web 129 +28 sous-tests, contrôles distants
+conformes sur les deux domaines. L’article EM-2011053 et sa source approuvée sont
+préservés ; sa nouvelle source reste à revalider. Aucun nouveau texte approuvé.
+Détails et manifeste : aleaquant-web/docs/DEPLOYMENTS.md.

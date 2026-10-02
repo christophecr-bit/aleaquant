@@ -14,9 +14,6 @@ entrée terminée quitte cette liste et rejoint `CHANGELOG.md`.
   versionné de `aleaquant-data/docs/MODEL-CHANGELOG.md` une page indexée et un
   résumé de dernière version ; conserver liens vers preuves, commits et portée
   des recalculs. Toute note publique demande une revue humaine.
-- [ ] **Publier l'alignement des histogrammes** : les pages locales ont été
-  régénérées avec une barre par classe, comme l'accueil. Déployer puis vérifier une
-  page Loto et une page EuroMillions ; aucun calcul de loi ne doit changer.
 - [ ] **Relier la console éditoriale au site** : après approbation du SHA exact,
   enregistrer la rubrique choisie dans le manifeste de publications, produire une
   prévisualisation, puis importer le contenu dans le générateur du site. Tester les
@@ -29,8 +26,9 @@ entrée terminée quitte cette liste et rejoint `CHANGELOG.md`.
   snapshot des derniers tirages, empêcher l'exposition des brouillons et valider
   les vues mobile/desktop. Appliquer le gabarit décidé dans
   [`SITE-EDITORIAL-ARCHITECTURE.md`](SITE-EDITORIAL-ARCHITECTURE.md).
-- [ ] **Terminer la publication Keno** : publier et vérifier les 333 fiches locales du
-  régime actif 16/56 ; servir ensuite les 19 133 anciens tirages 20/70 avec un index
+- [ ] **Publier les archives Keno 20/70 à la demande** : les 333 pages du régime
+  actif 16/56 sont publiées et vérifiées (DEPLOYMENTS.md, 2 octobre). Servir les
+  19 133 anciens tirages 20/70 avec un index
   compact et une résolution d'URL à la demande, sans fabriquer des milliers de pages
   statiques. Vérifier accès direct, séparation des régimes, faits, SEO, latence et
   budget d'assets. Référence : [`SCALING.md`](SCALING.md).
