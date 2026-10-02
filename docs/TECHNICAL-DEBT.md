@@ -1,6 +1,6 @@
 # Dette technique active — 2 octobre 2026
 
-Auteur : AleaQuant · v2.3
+Auteur : AleaQuant · v2.4
 
 Ce registre ne contient que des composants d'ingénierie, des validations techniques
 et des tâches d'exploitation encore nécessaires. Les fonctions attendues sont dans
@@ -67,6 +67,25 @@ entrée terminée quitte cette liste et rejoint `CHANGELOG.md`.
 
 ## Livraison et exploitation
 
+- [ ] **Outiller l’exploitation autonome des batchs (PB-014)** : raccorder un
+  module d’administration privé à la console existante, en complément du suivi
+  PB-011. Réutiliser les commandes et configurations canoniques ; ne pas dupliquer
+  les calculs. Premier périmètre : récupération des trois jeux, faits, profils et
+  reconstruction locale des pages, avec filtres jeu/régime/période/tirages.
+  Prévoir une file persistante exécutée sur le Mac, un identifiant par exécution,
+  paramètres et versions journalisés, états/progression, logs et rapport final.
+  Distinguer reprise depuis un checkpoint et relance idempotente ; exposer les
+  capacités réelles de chaque batch, sans promettre une reprise universelle.
+  Partager les verrous avec launchd, empêcher les doubles lancements, prévoir
+  arrêt propre et récupération après veille/redémarrage. Le navigateur ne doit
+  pas porter la durée de vie du calcul ; afficher si le Mac est indisponible.
+  Avant remplacement : contrôles, comparaison, sauvegarde et impact sur les SHA
+  approuvés. Accès authentifié, actions prédéfinies avec paramètres validés et
+  secrets côté serveur ; aucun terminal arbitraire exposé. Lancement des longs
+  calculs HPC et campagnes LLM (budget explicite) à cadrer dans un second lot.
+  Validation attendue : lancer un lot témoin de chaque jeu sans terminal, simuler
+  échec/interruption/double lancement et vérifier la protection d’un article
+  approuvé. Déploiement et approbation éditoriale restent des actions distinctes.
 - [ ] **Rendre le déploiement reproductible** : vérifier le lien GitHub–Cloudflare,
   créer les environnements recette/production prévus dans
   [`CI-STAGING-PRODUCTION.md`](CI-STAGING-PRODUCTION.md), séparer les secrets et

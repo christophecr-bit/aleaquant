@@ -1,5 +1,13 @@
 # Journal de développement
 
+## 2026-10-02 — demande de module d’administration des calculs
+
+- Backlog PB-014 : lancer et suivre les batchs depuis une interface privée, sans
+  terminal ni intervention de Codex ; complément de la vue de suivi PB-011.
+- Dette associée : file persistante locale, reprise adaptée aux batchs, verrous
+  partagés avec launchd, logs, comparaisons et protection des faits approuvés.
+- Cadrage uniquement ; aucune interface ni exécution supplémentaire réalisée.
+
 ## 2026-10-02 — recalcul intégral des fiches des trois jeux
 
 - 29 124 fiches recalculées : EuroMillions 1 985, Loto 7 673, Keno 19 466.
