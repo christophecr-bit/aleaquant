@@ -31,3 +31,11 @@ d'exploitation plutôt que supprimées du processus.
 - [x] Tester la transmission des sommes par dizaine lorsqu'elles sont disponibles.
 - [ ] Relire et décider du nouveau témoin EM-26078 avant toute publication.
 - [ ] Planifier le rattrapage explicite des anciennes fiches (voir dette technique).
+
+## Validation du lot recalcul-20261002
+
+- [x] Recalculer trois fiches sur régimes actuel/ancien et comparer tous les anciens faits.
+- [x] Vérifier que les sommes par dizaine arrivent au LLM et dans les preuves citées.
+- [x] Exercer l'entrée LangGraph : deux prêts à relire, un bloqué légitimement.
+- [ ] Relire EM-26078 et EM-2004010 dans la file privée ; aucune approbation automatique.
+- [ ] Reprendre le texte EM-26077, sans changer ses faits ni les critères des puces.

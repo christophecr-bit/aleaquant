@@ -1,6 +1,7 @@
 """Préparation des faits, gardes déterministes et construction du brouillon.
 
-Version : 0.8 · Date : 2026-10-02 · Auteur : AleaQuant
+Version : 0.9 · Date : 2026-10-02 · Auteur : AleaQuant
+Historique : 0.9 reconnaît aussi « sous-total » au singulier dans les sommes par dizaine.
 Historique : 0.8 ajoute la traçabilité partagée et supprime les appariements numériques seuls.
 Historique : expose le profil de sommes par dizaine sans le classer en rareté.
 TODO : étendre le contrôle à tous les exports hérités avant publication.
@@ -518,7 +519,7 @@ METRIC_ALIASES = {
     "main.occupied_decades": ("dizaines occupees", "decades occupees", "4 dizaines", "quatre dizaines", "2 dizaines", "deux dizaines", "3 dizaines", "trois dizaines"),
     "main.max_same_decade": ("meme dizaine", "meme decade"),
     "main.longest_consecutive_run": ("suite consecutive maximale", "suite maximale", "plus longue suite"),
-    "main.decade_sums": ("sommes par dizaine", "somme par dizaine", "sous-totaux", "sommes par decade"),
+    "main.decade_sums": ("sommes par dizaine", "somme par dizaine", "sous-totaux", "sous-total", "sommes par decade"),
     "stars.gap": ("ecart des etoiles", "ecart entre les etoiles"),
 }
 

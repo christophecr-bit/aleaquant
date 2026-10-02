@@ -123,6 +123,15 @@ class TraceabilityTests(unittest.TestCase):
         self.assertNotIn('rareté=', row)
         self.assertIn('F.main.decade_sums', paragraph_evidence('Les sommes par dizaine décrivent le profil.', facts))
 
+    def test_sous_total_singulier_du_temoin_ancien_est_rattache(self):
+        path = ROOT / 'dist/data/facts/EM-2004010.json'
+        facts = json.loads(path.read_text())
+        text = ('La décade 2 compte 2 numéros pour un sous-total de 29 ; '
+                'la décade 4 en compte 2 pour un sous-total de 75.')
+        self.assertIn('F.main.decade_sums', paragraph_evidence(text, facts))
+        article = build_compose_article(path, facts, text, {})
+        self.assertEqual(article['status'], 'PENDING_HUMAN', article['guard']['problems'])
+
     def test_fuite_consigne_declenche_reparation(self):
         text = 'La somme se place au-dessus de sa référence classe peu courante.'
         self.assertTrue(run_all_guards(text, self.facts)['interpretation'])

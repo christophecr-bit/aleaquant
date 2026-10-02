@@ -441,3 +441,10 @@ Voir ARTICLE-TRACEABILITY.md et l'entrée CHANGELOG correspondante. Les témoins
 originaux sont préservés ; nouveau draft dans runs-traceability/EM-26078-v2/.
 128 tests web (+28 sous-tests), 119 agents passent. Aucune publication. Relire le
 nouveau témoin et traiter les dates/URL manquantes avant de généraliser le rattrapage.
+
+### Dernier lot — recalcul-20261002
+
+Trois fiches recalculées, 88 anciens faits inchangés, sommes par dizaine ajoutées.
+EM-26078 et EM-2004010 attendent l'approbation dans la review ; EM-26077 est bloqué
+pour rareté injustifiée dans sa prose (sa fiche est valide). 129 tests web +28
+sous-tests et 119 agents passent. Aucun déploiement. Voir VALIDATION-RECALCUL-20261002.md.

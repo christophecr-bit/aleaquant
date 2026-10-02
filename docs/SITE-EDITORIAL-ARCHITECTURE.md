@@ -255,3 +255,10 @@ Le contrat [Sources et méthode](ARTICLE-TRACEABILITY.md) ajoute une projection
 publique déterministe dans le draft approuvé : note courte et preuves dépliables.
 Le batch/direct et la review LangGraph partagent les mêmes gardes. La prose reste
 distincte du registre. Aucun article existant n'est approuvé ou republié par migration.
+
+### Préférence de présentation des notes — 2 octobre 2026
+
+Prévoir une police distincte à empattements, légèrement plus petite que le corps,
+avec contraste suffisant. Réserver l'italique au court rappel méthodologique ;
+sources et chiffres restent droits. Préférence enregistrée, CSS non modifié dans
+le lot de recalcul des faits.

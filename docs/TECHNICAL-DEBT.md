@@ -113,3 +113,12 @@ réalisées, voir CHANGELOG.md et ARTICLE-TRACEABILITY.md.
   l'appariement lexical n'est pas une certification exhaustive du texte.
 - [ ] Distribuer le contrat partagé comme paquet pour retirer le couplage local
   au dépôt voisin ; adapter la projection publique aux articles de fond.
+
+### Qualification du rattrapage — 2 octobre 2026
+
+Le rattrapage a été exécuté sur trois fiches : anciennes valeurs inchangées,
+seule la métrique sommes par dizaine s'ajoute. Le faux positif « sous-total »
+singulier est corrigé et testé (voir VALIDATION-RECALCUL-20261002.md).
+Reste à généraliser le rattrapage, puis à décider du lancement de la campagne.
+Fiches, puces et textes ont des validations distinctes : aucune puce n'est exigée.
+La reprise automatique des remarques humaines par le Writer reste ouverte.

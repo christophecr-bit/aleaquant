@@ -1,5 +1,16 @@
 # Journal de développement
 
+## 2026-10-02 — recalcul de trois fiches et essai réel du pipeline
+
+- EM-26078, EM-26077 et EM-2004010 : ajout de `F.main.decade_sums`, 88 faits
+  précédents et toutes les métadonnées inchangés. Alias latest synchronisé.
+- Trois articles générés : deux atteignent READY_FOR_HUMAN ; un refus justifié
+  pour raretés abusives. Aucun article approuvé, aucun déploiement.
+- `agent/guards.py` : reconnaît « sous-total » au singulier ; régression réelle
+  ajoutée dans `tests/test_article_traceability.py`, sans modifier la prose.
+- Tests : **129 web (+28 sous-tests), 119 agents** réussis.
+- Rapport : [validation du recalcul](VALIDATION-RECALCUL-20261002.md).
+
 ## 2026-10-02 — traçabilité publique et témoins de review
 
 - Spécification : [Sources et méthode](ARTICLE-TRACEABILITY.md).
