@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<!-- AleaQuant · org.aleaquant.web-preview · v0.1 · 2026-10-02
+Auteur : AleaQuant. Historique : prévisualisation persistante après redémarrage.
+TODO : ajouter un contrôle de santé à la future console admin. -->
+<dict>
+	<key>KeepAlive</key>
+	<true/>
+	<key>Label</key>
+	<string>org.aleaquant.web-preview</string>
+	<key>ProgramArguments</key>
+	<array>
+		<string>/Users/chris/.local/share/aleaquant-pipeline-venv/bin/python</string>
+		<string>-m</string>
+		<string>http.server</string>
+		<string>4173</string>
+		<string>--bind</string>
+		<string>127.0.0.1</string>
+		<string>--directory</string>
+		<string>/Users/chris/aleaquant/aleaquant-web/dist</string>
+	</array>
+	<key>RunAtLoad</key>
+	<true/>
+	<key>StandardErrorPath</key>
+	<string>/Users/chris/Library/Logs/AleaQuantPreview/preview-error.log</string>
+	<key>StandardOutPath</key>
+	<string>/Users/chris/Library/Logs/AleaQuantPreview/preview.log</string>
+	<key>ThrottleInterval</key>
+	<integer>10</integer>
+	<key>WorkingDirectory</key>
+	<string>/Users/chris/aleaquant/aleaquant-web</string>
+</dict>
+</plist>

@@ -465,3 +465,12 @@ version `054bb2da-c9d1-4788-9213-a3090e243637`, build `c1aa6639b`.
 conformes sur les deux domaines. L’article EM-2011053 et sa source approuvée sont
 préservés ; sa nouvelle source reste à revalider. Aucun nouveau texte approuvé.
 Détails et manifeste : aleaquant-web/docs/DEPLOYMENTS.md.
+
+## Services après redémarrage — 2 octobre 2026, vers 21 h 37
+
+Review 8787, tunnel Cloudflare et SSH 22 sont opérationnels localement. Site local
+restauré via LaunchAgent sur http://127.0.0.1:4173/ (maquette : /maquette/).
+Chemins de tools/refresh.conf corrigés ; préflight et 9 tests passent. Collecte
+programmée à 08:12 et 13:12, à observer au prochain déclenchement. Ancien cloudflared
+système à qualifier ; SSH authentifié depuis extérieur encore à tester.
+Rapport détaillé : aleaquant-web/docs/SERVICES-POST-RESTART-20261002.md.

@@ -146,3 +146,19 @@ rattrapage » est réalisé. Une seule bascule reste suspendue : EM-2011053 jusq
 revalidation de son article approuvé. Sa nouvelle fiche est déjà calculée.
 Reste à rendre pérenne la sélection de snapshots de faits par version approuvée,
 pour qu'un futur recalcul ne retire pas silencieusement un article du rendu.
+
+## Exploitation après redémarrage — 2 octobre 2026
+
+- [ ] Qualifier puis supprimer si inutile l’ancien LaunchDaemon système
+  `com.cloudflare.cloudflared`, distinct du tunnel AleaQuant utilisateur sain.
+  Inspection administrateur requise ; ne pas toucher au connecteur actif par défaut.
+- [ ] Tester une session SSH distante authentifiée via Access/Tunnel. Le port 22,
+  la route et les quatre connexions du tunnel sont validés ; l’accès extérieur
+  de bout en bout ne l’est pas encore.
+- [ ] Définir le rattrapage de collecte après un arrêt complet du Mac ou une
+  échéance manquée (sans doublon ni publication automatique), puis l’exposer
+  dans la console d’exploitation PB-014.
+- [ ] Vérifier le prochain déclenchement 08:12/13:12 après correction de refresh.conf.
+
+Chemins du refresh corrigés et prévisualisation locale persistante livrée ; rapport
+et contrôles dans SERVICES-POST-RESTART-20261002.md.

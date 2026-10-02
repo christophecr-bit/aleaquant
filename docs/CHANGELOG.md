@@ -1,5 +1,17 @@
 # Journal de développement
 
+## 2026-10-02 — services après redémarrage du Mac
+
+- `tools/refresh.conf` v0.3 : chemins dérivés du dépôt, correction du fichier
+  introuvable après déplacement sous ~/aleaquant/ ; surcharges conservées.
+- `ops/launchd/org.aleaquant.web-preview.plist` : service de preview installé et
+  chargé, 127.0.0.1:4173, maquette incluse, démarrage au login et maintien actif.
+- Review et tunnel utilisateur opérationnels ; SSH répond sur 22. Ancien service
+  cloudflared système conservé en attente de diagnostic administrateur.
+- Validation : syntaxe bash/plist, préflight complet, 9 tests pipeline, cinq pages
+  locales HTTP 200 et contrôle Access/public. Aucun nouveau déploiement.
+- Inventaire, TODO, dette et rapport SERVICES-POST-RESTART-20261002.md mis à jour.
+
 ## 2026-10-02 — administration dans la console de review
 
 - PB-014 précisé : six onglets dans le même outil privé, journal commun et

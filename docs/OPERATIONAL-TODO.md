@@ -66,3 +66,13 @@ Rapport : RECALCUL-FAITS-TROIS-JEUX-20261002.md. Aucun nouvel article ni déploi
   comparaison → rapport, sans terminal et sans publication implicite.
 - [ ] Vérifier que tous les services/onglets affichent leur état réel et la date du
   dernier contrôle ; signaler les capacités non raccordées.
+
+## Contrôle après redémarrage — 2 octobre 2026
+
+- [x] Vérifier Review, tunnel, Access, écoute SSH et planification de collecte.
+- [x] Réparer les anciens chemins de collecte ; préflight et 9 tests conformes.
+- [x] Restaurer une preview unique sur 4173 via LaunchAgent utilisateur.
+- [ ] Contrôler le prochain refresh planifié et une connexion SSH externe complète.
+- [ ] Clarifier le rôle de l’ancien cloudflared système avant nettoyage.
+
+Rapport : SERVICES-POST-RESTART-20261002.md. Aucun déploiement ou calcul massif.
