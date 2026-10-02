@@ -55,3 +55,14 @@ Rapport : RECALCUL-FAITS-TROIS-JEUX-20261002.md. Aucun nouvel article ni déploi
 - [x] Vérifier les trois jeux, les histogrammes et l’article approuvé inchangé.
 - [x] Consigner version Worker, empreintes et contrôles HTTP dans DEPLOYMENTS.md.
 - [ ] Revalider séparément l’article EM-2011053 avant bascule de sa nouvelle fiche.
+
+## Préparer l’exploitation depuis la console — PB-014
+
+- [x] Cadrer un outil privé unique avec Review et consigner les tâches récurrentes
+  dans [l’architecture commune](../../aleaquant-editorial-agents/docs/ADMIN-CONSOLE-ARCHITECTURE.md).
+- [ ] Qualifier chaque action existante : paramètres, entrées/sorties, verrou,
+  idempotence, coût, reprise et effets sur les approbations.
+- [ ] Valider un parcours depuis téléphone : état des trois jeux → recalcul ciblé →
+  comparaison → rapport, sans terminal et sans publication implicite.
+- [ ] Vérifier que tous les services/onglets affichent leur état réel et la date du
+  dernier contrôle ; signaler les capacités non raccordées.

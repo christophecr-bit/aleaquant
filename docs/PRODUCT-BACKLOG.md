@@ -1,6 +1,6 @@
 # Backlog produit AleaQuant
 
-Auteur : AleaQuant · v0.6 · 2 octobre 2026
+Auteur : AleaQuant · v0.7 · 2 octobre 2026
 
 Ce registre ordonne les résultats produit à construire. La priorité est une
 proposition de travail, pas une échéance promise. Les capacités du produit sont
@@ -29,7 +29,7 @@ TODO opérationnelle, avec un lien vers l'ID produit concerné.
 | PB-011 | P1 | À cadrer | Suivre depuis la console privée l'état des opérations AleaQuant et recevoir chaque matin un courriel personnel des changements, retards et points à traiter. | Une vue « Suivi » présente la fraîcheur et le dernier succès de chaque pipeline de tirages, les retards par jeu, l'état des faits/pages/déploiements, la santé des flux de veille, les recherches et leur coût si disponible, ainsi que les articles par étape jusqu'à la file d'approbation. Un digest déterministe, daté, idempotent et consultable dans la console est envoyé chaque matin à l'adresse privée configurée ; les métriques de fréquentation et d'exécution Cloudflare indiquent source, période et fraîcheur. Le fournisseur d'envoi et le comportement quand le Mac dort (rattrapage au réveil ou agrégat cloud limité) sont décidés ; les secrets restent côté serveur, les échecs sont visibles et relançables. Aucune publication ou action automatique n'est déclenchée. |
 | PB-012 | P1 | À cadrer | S'abonner aux nouvelles publications AleaQuant dans un lecteur de flux RSS. | Un flux public valide recense les publications réellement publiées, avec URL canonique, titre, date, rubrique et résumé ; aucun brouillon ou contenu privé n'y apparaît. Le flux est vérifié avec un lecteur RSS et les pages restent accessibles sans abonnement. |
 | PB-013 | P2 | À cadrer | Recevoir chaque semaine une sélection éditoriale AleaQuant, distincte du flux exhaustif des publications. | Une newsletter périodique assemble une sélection de contenus publiés et approuvés, avec liens canoniques et un court éditorial ; inscription explicite, désinscription fonctionnelle et gestion minimale des données d'abonnés sont vérifiées avant tout envoi. Le service d'envoi et l'archivage web sont choisis avant implémentation. |
-| PB-014 | P1 | À concevoir | Piloter les batchs depuis un module privé d’administration, sans terminal ni intervention de Codex. | Choisir le jeu, le régime, la période ou les tirages ; lancer la récupération, le recalcul des faits et la reconstruction des profils/pages via les outils existants ; suivre progression, logs, résultats et erreurs. Prévisualiser le périmètre et les conséquences avant un recalcul forcé, comparer les sorties avant installation et signaler les articles à revalider. Les tâches persistent après fermeture du navigateur ; reprise ou relance après interruption selon les capacités du batch. Les lancements concurrents avec launchd sont maîtrisés. Aucune publication automatique ; les snapshots approuvés restent protégés. |
+| PB-014 | P1 | À concevoir | Piloter les opérations dans la même console privée que Review, avec plusieurs onglets, sans terminal ni intervention de Codex. | Navigation commune : Suivi, Tirages & calculs, Lots & agents, Review, Publication, Système ; journal transversal. Voir le [cadrage canonique](../../aleaquant-editorial-agents/docs/ADMIN-CONSOLE-ARCHITECTURE.md). Choisir le jeu, le régime, la période ou les tirages ; lancer la récupération, le recalcul des faits et la reconstruction des profils/pages via les outils existants ; suivre progression, logs, résultats et erreurs. Prévisualiser le périmètre et les conséquences avant un recalcul forcé, comparer les sorties avant installation et signaler les articles à revalider. Les tâches persistent après fermeture du navigateur ; reprise ou relance après interruption selon les capacités du batch. Les lancements concurrents avec launchd sont maîtrisés. Aucune publication automatique ; les snapshots approuvés restent protégés. |
 
 ## Historique
 
@@ -45,3 +45,6 @@ TODO opérationnelle, avec un lien vers l'ID produit concerné.
 
 - v0.6 (2026-10-02) — ajoute PB-014 : administration des calculs, complément
   actionnable de la vue de suivi PB-011. Module demandé, pas encore implémenté.
+
+- v0.7 (2026-10-02) — précise PB-014 : même outil que Review, six onglets cibles,
+  catalogue des tâches récurrentes et livraison progressive.

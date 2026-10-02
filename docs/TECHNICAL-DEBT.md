@@ -66,8 +66,10 @@ entrée terminée quitte cette liste et rejoint `CHANGELOG.md`.
 ## Livraison et exploitation
 
 - [ ] **Outiller l’exploitation autonome des batchs (PB-014)** : raccorder un
-  module d’administration privé à la console existante, en complément du suivi
-  PB-011. Réutiliser les commandes et configurations canoniques ; ne pas dupliquer
+  module d’administration privé dans le même outil que Review, en complément du
+  suivi PB-011. Les six onglets et opérations récurrentes suivent le
+  [contrat canonique](../../aleaquant-editorial-agents/docs/ADMIN-CONSOLE-ARCHITECTURE.md) ;
+  pas de portail supplémentaire. Réutiliser les commandes et configurations canoniques ; ne pas dupliquer
   les calculs. Premier périmètre : récupération des trois jeux, faits, profils et
   reconstruction locale des pages, avec filtres jeu/régime/période/tirages.
   Prévoir une file persistante exécutée sur le Mac, un identifiant par exécution,

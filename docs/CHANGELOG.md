@@ -1,5 +1,16 @@
 # Journal de développement
 
+## 2026-10-02 — administration dans la console de review
+
+- PB-014 précisé : six onglets dans le même outil privé, journal commun et
+  catalogue des opérations récurrentes sur données, calculs, batchs, revue,
+  publication et services locaux. Contrat canonique dans le dépôt agents :
+  `docs/ADMIN-CONSOLE-ARCHITECTURE.md`.
+- Roadmap, architecture, TODO et dettes reliées à cette note ; séparation des
+  validations scientifiques, éditoriales et de déploiement conservée.
+- Documentation uniquement ; aucune interface, tâche planifiée ou action payante
+  ajoutée. Vérification des liens locaux et des différences Markdown.
+
 ## 2026-10-02 — publication des pages après recalcul
 
 - 9 991 pages reconstruites et build figé au commit `c1aa6639b`.

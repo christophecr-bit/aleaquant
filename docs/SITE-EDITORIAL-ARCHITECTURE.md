@@ -262,3 +262,11 @@ Prévoir une police distincte à empattements, légèrement plus petite que le c
 avec contraste suffisant. Réserver l'italique au court rappel méthodologique ;
 sources et chiffres restent droits. Préférence enregistrée, CSS non modifié dans
 le lot de recalcul des faits.
+
+## Console privée commune — cadrage du 2 octobre 2026
+
+L’administration des batchs partage l’outil et l’accès privé de Review ; elle ne
+constitue pas un second site ni un CMS public. Onglets cibles : Suivi, Tirages &
+calculs, Lots & agents, Review, Publication, Système ; journal commun des exécutions.
+Le [contrat canonique](../../aleaquant-editorial-agents/docs/ADMIN-CONSOLE-ARCHITECTURE.md)
+définit les tâches, frontières, validations et lots. Cette navigation est à réaliser.
