@@ -65,9 +65,13 @@ pages de tirage identiques octet pour octet à l'export Git. `LO-20260928` expos
 18 graphes, `EM-26078` 21, `EM-2011053` 18. Les fiches sources renvoient 404.
 Les quatre tests de pages Loto/EuroMillions passent avant déploiement.
 
-## Synchronisation Git à terminer
+## Incident de synchronisation Git — état historique
 
-Le push vers `origin/main` a échoué : l'identifiant HTTPS du trousseau macOS
+**Résolu pour le dépôt web le 2 octobre 2026** : push vers `origin/main` réussi
+jusqu’au commit `7d8baab82`, incluant le build et le compte rendu de cette livraison.
+Le constat ci-dessous décrit l’échec précédent ; le laboratoire reste un cas distinct.
+
+Le push vers `origin/main` avait échoué : l'identifiant HTTPS du trousseau macOS
 n'est pas accessible depuis cette session (`failed to get: -25320`). Les
 commits sont locaux ; Cloudflare a bien reçu l'export décrit ci-dessus.
 Depuis un Terminal du Mac disposant de l'accès GitHub :

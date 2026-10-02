@@ -89,10 +89,6 @@ entrée terminée quitte cette liste et rejoint `CHANGELOG.md`.
   [`CI-STAGING-PRODUCTION.md`](CI-STAGING-PRODUCTION.md), séparer les secrets et
   exécuter les contrôles/tests avant déploiement. Le flux actuellement vérifié
   reste manuel (`wrangler deploy`, puis `git push`).
-- [ ] **Rétablir une sauvegarde Git distante vérifiable** : résoudre l'accès HTTPS
-  au trousseau macOS et pousser les commits locaux ; ne pas considérer un
-  déploiement Worker comme une sauvegarde du dépôt. État et procédure dans
-  [`DEPLOYMENTS.md`](DEPLOYMENTS.md).
 - [ ] **Contrôler automatiquement le budget Wrangler** : compter les assets du
   build et échouer avant déploiement si la limite configurée approche ; documenter
   les exclusions et les fichiers servis à la demande.

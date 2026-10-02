@@ -6,6 +6,7 @@
 - Worker `054bb2da-c9d1-4788-9213-a3090e243637` publié sur les deux domaines.
 - 129 tests + 28 sous-tests ; 20 contrôles HTTP distants conformes.
 - Article approuvé préservé, aucun nouveau texte publié ; attente EM-2011053 maintenue.
+- Sauvegarde Git distante rétablie pour le dépôt web : push réussi de la livraison.
 - Dette de publication des histogrammes clôturée ; Keno 16/56 publié, archives
   20/70 à la demande toujours en dette. Voir DEPLOYMENTS.md et ses manifestes.
 
