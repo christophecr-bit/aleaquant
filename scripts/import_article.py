@@ -1,11 +1,39 @@
-"""Import a trusted local editorial export; never contact or publish to a host."""
+"""Import a trusted local editorial export; never contact or publish to a host.
+
+Auteur : AleaQuant · 2026-10-02 · Révision traçabilité : note publique, preuves et SHA de la version relue.
+
+Version : 0.2 · Date : 2026-10-02 · Auteur : AleaQuant
+Historique : impose jeu et date complète dans les titres d'analyse de tirage.
+TODO : ajouter Keno lorsque ses exports de publication sont intégrés.
+"""
 import argparse
+from datetime import date as Date
 from hashlib import sha256
 import json
 from pathlib import Path
 import re
 
 ROOT = Path(__file__).resolve().parents[1]
+MONTHS = ('janvier', 'février', 'mars', 'avril', 'mai', 'juin', 'juillet',
+          'août', 'septembre', 'octobre', 'novembre', 'décembre')
+GAME_NAMES = {'euromillions': 'EuroMillions', 'loto': 'Loto'}
+
+
+def check_draw_title(title, draw_id):
+    facts_path = ROOT / 'dist' / 'data' / 'facts' / f'{draw_id}.json'
+    if not facts_path.is_file():
+        raise ValueError(f'Faits absents : impossible de vérifier le titre de {draw_id}')
+    facts = json.loads(facts_path.read_text(encoding='utf-8'))
+    game = GAME_NAMES.get(facts.get('game_id'))
+    if not game or game.casefold() not in title.casefold():
+        raise ValueError('Le titre de tirage doit nommer explicitement le jeu')
+    try:
+        value = Date.fromisoformat(facts['date'])
+        date_label = f'{value.day} {MONTHS[value.month - 1]} {value.year}'
+    except (KeyError, TypeError, ValueError) as exc:
+        raise ValueError('Date source absente ou invalide pour vérifier le titre') from exc
+    if date_label.casefold() not in title.casefold():
+        raise ValueError('Le titre de tirage doit contenir la date complète')
 
 def digest(value):
     return sha256(json.dumps(value, sort_keys=True, ensure_ascii=False, separators=(',', ':')).encode()).hexdigest()
@@ -33,6 +61,14 @@ def validate(article):
             raise ValueError('Identifiant de tirage absent ou invalide')
         if article['article_id'] != f'tirage-{draw_id}':
             raise ValueError('Article et tirage non concordants')
+        check_draw_title(article['draft']['title'], draw_id)
+        if article.get('guard', {}).get('mode') == 'compose':
+            _sys.path.insert(0, str(ROOT / 'agent'))
+            from article_traceability import validate_traceability
+            facts = json.loads((ROOT / 'dist/data/facts' / f'{draw_id}.json').read_text())
+            issues = validate_traceability(article, facts)
+            if issues:
+                raise ValueError('Traçabilité refusée : ' + '; '.join(issues))
     if not draft['body'].strip() or not draft['claims']:
         raise ValueError('Empty article')
     # chantier D3 : la ligne éditoriale est un test qui échoue, pas une consigne.

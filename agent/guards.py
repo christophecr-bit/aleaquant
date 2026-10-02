@@ -1,5 +1,10 @@
 """Préparation des faits, gardes déterministes et construction du brouillon.
 
+Version : 0.8 · Date : 2026-10-02 · Auteur : AleaQuant
+Historique : 0.8 ajoute la traçabilité partagée et supprime les appariements numériques seuls.
+Historique : expose le profil de sommes par dizaine sans le classer en rareté.
+TODO : étendre le contrôle à tous les exports hérités avant publication.
+
 Module SANS appel réseau ni LLM : tout ici est déterministe et testable hors ligne.
 Extrait de compose_draw_report.py pour être la brique commune aux deux chaînes
 éditoriales — le pipeline LangGraph d'aleaquant-editorial-agents doit l'IMPORTER, pas
@@ -28,6 +33,7 @@ import unicodedata
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
+ENV_PATH = ROOT.parent / "aleaquant-editorial-agents" / ".env"
 sys.path.insert(0, str(ROOT / "agent"))
 sys.path.insert(0, str(ROOT / "tools"))
 from draw_report import normalize_numbers, pct, date_fr  # noqa: E402,F401
@@ -130,7 +136,13 @@ def evidence_block(facts):
     lines = []
     for f in facts["facts"]:
         if f.get("metric") is not None:
-            bits = [f"{f['fact_id']} — {f.get('label', f['metric'])} : {f['value']}"]
+            value = f['value']
+            if isinstance(value, dict) and isinstance(value.get('profile'), list):
+                value = ' ; '.join(
+                    f"D{b['decade']} : {b['count']} "
+                    f"{'numéro' if b['count'] == 1 else 'numéros'}, somme {b['sum']}"
+                    for b in value['profile'])
+            bits = [f"{f['fact_id']} — {f.get('label', f['metric'])} : {value}"]
             if "p_class" in f:
                 bits.append(
                     f"classe de {f['class_size']} sur {f['domain_size']} ({pct(f['p_class'])})"
@@ -150,10 +162,8 @@ def evidence_block(facts):
                                 f"« {RARITY_FR.get(prof['baseline'], prof['baseline'])} ») "
                                 f"— PAS notable")
                 elif prof:
-                    bits.append(f"AU-DESSUS de sa référence "
-                                f"« {RARITY_FR.get(prof['baseline'], prof['baseline'])} » : "
-                                f"seuls {100 * prof['share_above_baseline']:.1f} % des tirages "
-                                f"y parviennent — c'est ici que se trouve l'information")
+                    bits.append("Consigne interne : qualificatif du champ rareté autorisé pour cette mesure. "
+                                "Ne pas commenter le seuil éditorial ni comparer la valeur à un libellé de classe.")
             name, definition = METRIC_DICT.get(f["metric"], ("", ""))
             if name:
                 bits.append(f'nom officiel="{name}"')
@@ -200,6 +210,15 @@ def redundancy_note(facts):
 # apparaissent comme une plage explicite ("1-10", "11–20", ...), jamais en liste blanche
 # globale — sinon un "20" ou "41" isolé ailleurs dans le texte ne serait plus signalé.
 DECADE_RANGE_RE = re.compile(r'\b(1|11|21|31|41)\s*[-–—]\s*(10|20|30|40|50)\b')
+DECADE_NARRATIVE_RANGE_RE = re.compile(
+    r'\b(?:1\s*[-–—]\s*10|11\s*[-–—]\s*20|21\s*[-–—]\s*30|'
+    r'31\s*[-–—]\s*40|41\s*[-–—]\s*(?:49|50))\b'
+)
+
+
+def guard_decade_ranges(text):
+    """Les articles nomment les décades par rang, sans énumérer leurs bornes."""
+    return [m.group(0) for m in DECADE_NARRATIVE_RANGE_RE.finditer(text)]
 
 
 def decade_range_numbers(text):
@@ -369,7 +388,7 @@ def warn_redundant_closing(text):
 
 
 def _sans_accent(s):
-    return unicodedata.normalize("NFD", s.lower()).encode("ascii", "ignore").decode()
+    return unicodedata.normalize("NFD", s.lower().replace("’", "'")).encode("ascii", "ignore").decode()
 
 
 # Le corps de l'article est affiché par dist/app.js avec textContent, jamais
@@ -397,11 +416,14 @@ def guard_markdown(text):
     return sorted({m for m in ("**", "__", "`") if m in text})
 
 
-def run_all_guards(text, facts):
-    """Les quatre contrôles, en un seul appel, pour pouvoir les rejouer après réparation."""
+def run_all_guards(text, facts, editorial_style=False):
+    """Contrôles partagés ; la règle de style sur les décades reste hors du batch."""
+    from article_traceability import interpretation_issues, scoped_rarity_issues
     word_problems = guard_interpretive_words(text, facts)
     return {
+        "interpretation": interpretation_issues(text) + scoped_rarity_issues(text, facts),
         "vocabulaire": [f"{nom} — {extrait}" for nom, extrait, _ in lint_language(text)],
+        **({"plages_de_decades": guard_decade_ranges(text)} if editorial_style else {}),
         "mise_en_forme": guard_markdown(text),
         "nombres": sorted(guard_full_text(text, facts)),
         "mots_de_rarete": [w for w, _ in word_problems],
@@ -440,6 +462,11 @@ def repair_prompt(text, guards, facts):
     if guards.get("mise_en_forme"):
         violations.append("Marqueurs de mise en forme à retirer : "
                           + ", ".join(guards["mise_en_forme"]))
+    if guards.get("interpretation"):
+        violations.append("Retirer la comparaison au seuil éditorial : " + "; ".join(guards["interpretation"]))
+    if guards.get("plages_de_decades"):
+        violations.append("Plages de décades à remplacer par leur rang : "
+                          + ", ".join(guards["plages_de_decades"]))
 
     return f"""Ton texte a été refusé par un contrôle automatique. Corrige-le de façon MINIMALE.
 
@@ -466,8 +493,8 @@ TEXTE À CORRIGER :
 # qu'un « 2 » attribue n'importe quoi) ou, pour ceux qui n'en contiennent pas, par une
 # expression caractéristique de leur énoncé.
 NON_METRIC_KEYWORDS = {
-    "F.grid.probability": ("probabilite", "combinaison complete"),
-    "F.signature": ("forme du tirage", "suite consecutive maximale", "signature"),
+    "F.grid.probability": ("probabilite",),
+    "F.signature": ("forme du tirage", "signature"),
     "F.history.exact_main": ("jamais sorti", "quadruplet"),
     "F.pascal.subsets": ("paires", "triplets"),
     "F.stars.rule": ("ancienne regle",),
@@ -476,37 +503,58 @@ NON_METRIC_KEYWORDS = {
 
 
 def non_metric_evidence(fact, nums, texte):
-    grands = {n for n in normalize_numbers(json.dumps(fact, ensure_ascii=False))
-              if "." not in n and len(n) >= 4}
-    if grands & nums:
-        return True
+    if fact['fact_id'] == 'F.grid.probability':
+        value = fact.get('value', {})
+        domains = [value.get('main_domain'), value.get('stars_domain')] if isinstance(value, dict) else []
+        if any(d and re.search(r"\b1\s*(?:a|[-–])\s*" + str(d) + r"\b", texte) for d in domains):
+            return True  # le fait de règle justifie aussi le domaine de numéros
     return any(kw in texte for kw in NON_METRIC_KEYWORDS.get(fact["fact_id"], ()))
 
 
-def paragraph_evidence(paragraph, facts):
-    """Faits effectivement cités dans ce paragraphe, par appariement déterministe.
+# Noms métier et paraphrases usuelles. Un effectif seul n'identifie jamais une
+# métrique : « 3 » peut désigner une décade, un écart ou une classe d'étoiles.
+METRIC_ALIASES = {
+    "main.decade_counts": ("repartition par dizaines", "repartition par decades", "decade 1", "decade 2", "decade 3", "decade 4", "decade 5"),
+    "main.occupied_decades": ("dizaines occupees", "decades occupees", "4 dizaines", "quatre dizaines", "2 dizaines", "deux dizaines", "3 dizaines", "trois dizaines"),
+    "main.max_same_decade": ("meme dizaine", "meme decade"),
+    "main.longest_consecutive_run": ("suite consecutive maximale", "suite maximale", "plus longue suite"),
+    "main.decade_sums": ("sommes par dizaine", "somme par dizaine", "sous-totaux", "sommes par decade"),
+    "stars.gap": ("ecart des etoiles", "ecart entre les etoiles"),
+}
 
-    Deux voies seulement, pour éviter une attribution qui désigne tout et donc rien :
-      - l'effectif de classe du fait apparaît (un nombre distinctif, ex. 141) ;
-      - la valeur du fait ET le nom de la mesure apparaissent (ex. « étendue » + 15).
-    Le domaine (2 118 760) est exclu : commun à tous les faits, il ne distingue rien.
-    Une valeur seule ne suffit pas non plus : « 2 » ou « 4 » se retrouve partout.
+
+def paragraph_evidence(paragraph, facts):
+    """Rattachement lexical conservateur par mesure et composante, jamais par nombre seul.
+
+    Ce détecteur aide la review ; il ne certifie pas toutes les paraphrases possibles.
+    Les nouvelles métriques utilisent automatiquement leur libellé et le dictionnaire.
     """
-    nums = normalize_numbers(paragraph)
     texte = _sans_accent(paragraph)
+    sentences = re.split(r"[.!?;]\s+", texte)
     used = []
     for f in facts["facts"]:
-        if f.get("metric") is None:
-            if non_metric_evidence(f, nums, texte):
+        metric = f.get("metric")
+        if metric is None:
+            if non_metric_evidence(f, set(), texte):
                 used.append(f["fact_id"])
             continue
-        effectif = "class_size" in f and normalize_numbers(str(f["class_size"])) & nums
-        valeur = "value" in f and not isinstance(f["value"], dict) and \
-            bool(normalize_numbers(str(f["value"])) & nums)
-        noms = [f.get("label", ""), METRIC_DICT.get(f["metric"], ("", ""))[0]]
-        nom = any(len(n) > 3 and _sans_accent(n) in texte for n in noms if n)
-        if effectif or (valeur and nom):
-            used.append(f["fact_id"])
+        names = [f.get("label", ""), METRIC_DICT.get(metric, ("", ""))[0]]
+        aliases = [_sans_accent(n) for n in names if len(n) > 3]
+        aliases += list(METRIC_ALIASES.get(metric, ()))
+        for sentence in sentences:
+            star = "etoile" in sentence
+            if metric.startswith('stars.'):
+                if not star:
+                    continue
+                if metric == 'stars.sum':
+                    aliases = ['somme']
+                elif metric == 'stars.gap':
+                    aliases = ['ecart']
+            elif metric.startswith('main.') and star and not any(w in sentence for w in ('numero', 'principa')):
+                continue
+            if any(re.search(r"(?<!\w)" + re.escape(n) + r"(?!\w)", sentence) for n in aliases):
+                used.append(f['fact_id'])
+                break
     return used
 
 
@@ -549,7 +597,7 @@ def notable_badges(facts):
     return uniques[:5]
 
 
-def build_compose_article(facts_path, facts, text, guards):
+def build_compose_article(facts_path, facts, text, guards, angle=None, *, mode="direct", model=None, generation=None):
     """Brouillon au schéma aleaquant-article-v1, identique à celui du mode template,
     pour que show / approve / reject et scripts/import_article.py fonctionnent sans
     modification. Le garde enregistré est celui du mode compose (quatre contrôles sur
@@ -558,10 +606,16 @@ def build_compose_article(facts_path, facts, text, guards):
     import datetime as dt
     from draw_report import digest
 
+    from article_traceability import build_methodology, validate_traceability
     facts_bytes = facts_path.read_bytes()
+    if json.loads(facts_bytes) != facts:
+        raise ValueError("Les faits en mémoire diffèrent du fichier source")
+    model = model or MODEL
+    writer = f"aleaquant-draw-report-compose-v1-{model}" + ("-batch" if mode == "batch" else "")
+    guards = run_all_guards(text, facts, editorial_style=bool(angle))
     paragraphs = [q.strip() for q in text.split("\n\n") if q.strip()]
     claims = [{"claim_id": "C%d" % (i + 1), "text": q, "evidence_ids": paragraph_evidence(q, facts)}
-              for i, q in enumerate(paragraphs)]
+              for i, q in enumerate(paragraphs) if paragraph_evidence(q, facts) or re.search(r"\d", q)]
     used = sorted({i for c in claims for i in c["evidence_ids"]})
     research_pack = {
         "question": "Que dit la forme du tirage %s, sans prétendre prédire le suivant ?" % facts["draw_id"],
@@ -576,15 +630,32 @@ def build_compose_article(facts_path, facts, text, guards):
     problems = []
     for nom, liste in guards.items():
         problems += [f"{nom}: {x}" for x in liste]
-    body = text.strip() + "\n\n" + METHODO_NOTE
-    d = {"title": "EuroMillions — tirage du %s" % date_fr(facts["date"]), "body": body,
-         "claims": claims, "badges": notable_badges(facts), "writer": COMPOSE_WRITER,
+    body = text.strip()
+    game_names = {"euromillions": "EuroMillions", "loto": "Loto", "keno": "Keno"}
+    game_name = game_names.get(facts.get("game_id"), facts.get("game_id", "Jeu").replace("_", " ").title())
+    draw_title = "%s — tirage du %s" % (game_name, date_fr(facts["date"]))
+    # Le hook éditorial reste libre, mais le titre final identifie toujours le jeu
+    # et la date. Cette information ne dépend donc pas du rappel du modèle.
+    final_title = "%s : %s" % (draw_title, angle["title"]) if angle else draw_title
+    d = {"title": final_title, "body": body,
+         "claims": claims, "badges": notable_badges(facts), "writer": writer,
+         "methodology": build_methodology(facts, claims),
          "research_pack_sha256": digest(research_pack)}
-    return {"schema": "aleaquant-article-v1", "article_id": "tirage-" + facts["draw_id"],
+    if angle:
+        d["editorial_angle"] = angle
+    article = {"schema": "aleaquant-article-v1", "article_id": "tirage-" + facts["draw_id"],
             "kind": "draw_report", "status": "PENDING_HUMAN" if not problems else "BLOCKED",
             "guard": {"problems": problems, "mode": "compose", "checks": guards},
             "draft_sha256": digest(d), "draft": d, "research_pack": research_pack,
             "human_decision": None,
-            "provenance": {"writer": COMPOSE_WRITER, "model": MODEL,
+            "provenance": {"writer": writer, "model": model, "mode": mode,
+                           "traceability_version": "traceability-v1",
+                           **(generation or {}),
                            "created_at": dt.datetime.now().astimezone().isoformat(timespec="seconds"),
                            "facts_path": str(facts_path)}}
+
+    issues = validate_traceability(article, facts)
+    article['guard']['checks']['traceability'] = issues
+    article['guard']['problems'] = list(dict.fromkeys(problems + issues))
+    article['status'] = 'BLOCKED' if article['guard']['problems'] else 'PENDING_HUMAN'
+    return article

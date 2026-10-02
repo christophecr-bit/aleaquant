@@ -2,9 +2,13 @@
 
 Chaque fact porte un identifiant stable, un énoncé factuel en français, la ou les
 valeurs, la méthode et une catégorie compatible avec le Research Pack
-(exact_grid, class_metric, historical, exhaustive, interpretation).
+(exact_grid, class_metric, descriptive_profile, historical, exhaustive, interpretation).
 Règle anti look-ahead : les comparaisons historiques n'utilisent que les tirages
 strictement antérieurs au tirage analysé.
+
+Version : 0.2 | Date : 2026-10-02 | Auteur : AleaQuant
+Historique : 0.2 ajoute F.main.decade_sums, descriptif et sans rareté.
+TODO : garder les métriques descriptives distinctes des class_metric munies d'une loi.
 """
 from collections import Counter
 from itertools import combinations
@@ -13,6 +17,7 @@ from math import comb
 from common import (CURRENT_RULE, ENGINE_VERSION, MAIN_CAT, MAIN_FIELDS, STAR_FIELDS,
                     rule_domains, rule_star_total,
                     key, rarity)
+from metrics import profil_dizaines
 
 LABELS = {
     'sum': 'somme', 'span': 'étendue', 'min_gap': 'écart minimal', 'max_gap': 'écart maximal',
@@ -31,6 +36,22 @@ LABELS = {
 STAR_LABELS = {'gap': 'écart des étoiles', 'consecutive': 'étoiles consécutives',
                'odd_count': 'étoiles impaires', 'low_count': 'étoiles basses (1–6)',
                'sum': 'somme des étoiles', 'terminal_coincidence': 'étoiles de même finale'}
+
+
+def decade_sums_fact(numbers, domain):
+    """Fait descriptif des sous-totaux par dizaine, sans classe de rareté."""
+    profile = profil_dizaines(numbers, domain)
+    parts = [f"D{b['decade']} : somme {b['sum']} pour {b['count']} "
+             f"{'numéro' if b['count'] == 1 else 'numéros'}" for b in profile]
+    return {
+        'fact_id': 'F.main.decade_sums',
+        'metric': 'main.decade_sums',
+        'label': 'Somme par dizaine',
+        'value': {'profile': list(profile)},
+        'category': 'descriptive_profile',
+        'method': 'somme déterministe des valeurs par tranche de dix',
+        'statement': 'Sommes et effectifs par dizaine : ' + ' ; '.join(parts) + '.',
+    }
 
 
 def fmt(x):
@@ -148,7 +169,9 @@ def build_draw_facts(draw, prior_rows, laws, idx, patterns, pascal_prior):
         'fact_id': 'F.editorial.expectation', 'category': 'interpretation',
         'method': 'principe éditorial AleaQuant',
         'statement': ('L’espérance de gain d’une mise est négative. Ces mesures décrivent '
-                      'la forme du tirage ; elles ne permettent pas de prédire le suivant.')}]
+                          'la forme du tirage ; elles ne permettent pas de prédire le suivant.')}]
+
+    facts.append(decade_sums_fact(main, main_domain))
 
     for f in MAIN_FIELDS + MAIN_CAT:
         mid = 'main.' + f

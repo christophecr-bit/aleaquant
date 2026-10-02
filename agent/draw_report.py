@@ -1,5 +1,7 @@
 """Agent de publication V0 : facts d'un tirage -> brouillon d'article -> validation humaine.
 
+Auteur : AleaQuant · 2026-10-02 · Révision traçabilité : note publique, preuves et SHA de la version relue.
+
 Le rédacteur n'a accès qu'au JSON de facts. Chaque phrase du brouillon est une
 « claim » qui cite ses facts ; un garde vérifie que tout nombre écrit figure dans
 les facts cités (aucun chiffre inventé). Rien n'est publié sans `approve`.
@@ -13,6 +15,10 @@ les facts cités (aucun chiffre inventé). Rien n'est publié sans `approve`.
 avec scripts/import_article.py (validation des SHA inchangée).
 Le mode `template` est déterministe. Un mode LLM pourra réécrire le style sous le
 même contrat (mêmes facts, mêmes claims, même garde).
+
+Version : 0.3 | Date : 2026-10-02 | Auteur : AleaQuant
+Historique : le sélecteur ignore les profils descriptifs non classés par une loi.
+TODO : rendre le rédacteur template multi-jeux avec les faits propres à chaque jeu.
 """
 import argparse
 import datetime as dt
@@ -70,7 +76,7 @@ def select(facts):
     """Facts remarquables : queues de loi (< 5 %) ou classes rares, hors classes trop fines."""
     notable, ordinary = [], []
     for f in facts['facts']:
-        if 'metric' not in f or f['metric'] in FINE_GRAINED:
+        if f.get('category') != 'class_metric' or f['metric'] in FINE_GRAINED:
             continue
         tail = f.get('tail', 1.0)
         if tail < 0.05 or f['rarity'] in ('RARE', 'VERY_RARE'):
@@ -102,7 +108,9 @@ def write(facts):
     w = Writer(facts)
     main = ' · '.join('%02d' % n for n in facts['main'])
     stars = ' · '.join('%02d' % n for n in facts['stars'])
-    title = 'Tirage du %s : %s ★ %s' % (date_fr(facts['date']), main, stars)
+    game = {'euromillions': 'EuroMillions', 'loto': 'Loto', 'keno': 'Keno'}.get(
+        facts.get('game_id'), facts.get('game_id', 'Jeu').replace('_', ' ').title())
+    title = '%s — tirage du %s : %s ★ %s' % (game, date_fr(facts['date']), main, stars)
     paras = []
 
     g = w.f('F.grid.probability')
@@ -221,6 +229,14 @@ def decide(path: Path, reviewer: str, approved: bool, comment: str):
         raise SystemExit('Brouillon bloqué par le garde : %s' % article['guard']['problems'])
     if article['draft_sha256'] != digest(article['draft']):
         raise SystemExit('Le brouillon a été modifié après génération : relancer draft.')
+    if article.get('guard', {}).get('mode') == 'compose':
+        from article_traceability import validate_traceability
+        facts_path = ROOT / 'dist/data/facts' / (article['research_pack']['draw_id'] + '.json')
+        if sha256(facts_path.read_bytes()).hexdigest() != article['research_pack']['facts_sha256']:
+            raise SystemExit('Faits modifiés : régénérer avant approbation')
+        issues = validate_traceability(article, json.loads(facts_path.read_text()))
+        if issues:
+            raise SystemExit('Traçabilité refusée : ' + '; '.join(issues))
     if not reviewer.strip():
         raise SystemExit('Nom du relecteur requis.')
     article['human_decision'] = {'approved': approved, 'reviewer': reviewer, 'comment': comment,

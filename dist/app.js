@@ -56,7 +56,21 @@ function readArticle(article){
  const proof=document.createElement("details");const summary=document.createElement("summary");summary.textContent="Voir les preuves et la traçabilité";proof.append(summary);
  const list=document.createElement("ol");article.research_pack.evidence.forEach(e=>{const li=document.createElement("li");li.textContent="["+e.evidence_id+"] "+e.claim+" — "+e.method;list.append(li);});proof.append(list);
  const hash=document.createElement("code");hash.textContent="Version approuvée : "+article.draft_sha256;proof.append(hash);
- reader.append(status,title);if(chips)reader.append(chips);reader.append(prose,proof);title.focus();reader.scrollIntoView({block:"start"});
+ reader.append(status,title);if(chips)reader.append(chips);reader.append(prose);
+ // AleaQuant · 2026-10-02 · v1 : projection publique liée au SHA approuvé.
+ const method=article.draft.methodology;
+ if(method){
+  const section=document.createElement("section");const h=document.createElement("h3");h.textContent="Sources et méthode";section.append(h);
+  String(method.note).split("\n\n").forEach(t=>{const p=document.createElement("p");p.textContent=t;section.append(p);});
+  const details=document.createElement("details");const heading=document.createElement("summary");heading.textContent="Sources et calculs";details.append(heading);
+  const meta=document.createElement("p");meta.textContent="Source : "+(method.source?.publisher||"non renseignée")+" · "+(method.source?.source_id||"identifiant non renseigné")+" · Règle : "+method.rule_id+" · Calculs : "+method.engine;details.append(meta);
+  if(method.source?.url){try{const url=new URL(method.source.url);if(["https:","http:"].includes(url.protocol)&&!url.username){const link=document.createElement("a");link.href=url.href;link.rel="noopener noreferrer";link.textContent="Archive source";details.append(link);}}catch{}}
+  (method.limitations||[]).forEach(t=>{const p=document.createElement("p");p.textContent=t;details.append(p);});
+  (method.evidence||[]).forEach(e=>{const p=document.createElement("p");p.textContent=e.id+" — "+e.statement+" · "+e.method;details.append(p);});
+  (method.claims||[]).forEach(c=>{const p=document.createElement("p");p.textContent=c.text+" — Preuves : "+c.evidence_ids.join(", ");details.append(p);});
+  section.append(details);reader.append(section);
+ }else{reader.append(proof);}
+ title.focus();reader.scrollIntoView({block:"start"});
 }
 fetch("articles.json").then(r=>{if(!r.ok)throw Error();return r.json();}).then(data=>{
  const articles=data.articles.filter(a=>a.status==="HUMAN_APPROVED"&&a.human_decision?.approved&&a.human_decision.draft_sha256===a.draft_sha256);

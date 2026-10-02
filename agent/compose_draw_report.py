@@ -1,5 +1,7 @@
 """Rapport de tirage — chaîne de production (mode « compose »).
 
+Auteur : AleaQuant · 2026-10-02 · Révision traçabilité : note publique, preuves et SHA de la version relue.
+
 Donne TOUS les faits calculés au modèle, annotés de leur niveau de rareté ET de leur
 position par rapport à la référence de leur propre mesure, puis lui demande de choisir,
 synthétiser et commenter. Ce fichier s'appelait llm_compose_test.py : ce n'est plus un
@@ -29,6 +31,10 @@ puces de rareté calculées ici, jamais rédigées par le modèle.
   python3 agent/draw_report.py approve runs-llm-compose/EM-26077/draft.json --reviewer "..."
 
 Pour tout l'historique à moitié prix, voir compose_batch_submit.py / _collect.py.
+
+Version : 0.8 · Date : 2026-10-02 · Auteur : AleaQuant
+Historique : charge la constitution SEO Writer partagée avec LangGraph ; TODO : aligner
+les métadonnées et la structure HTML du site sur le contrat éditorial publié.
 """
 import json
 import re
@@ -38,6 +44,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 ENV_PATH = ROOT.parent / "aleaquant-editorial-agents" / ".env"
+SEO_WRITER_RULES_PATH = ROOT.parent / "aleaquant-editorial-agents" / "constitution" / "seo-editorial.md"
 
 sys.path.insert(0, str(ROOT / "agent"))
 sys.path.insert(0, str(ROOT / "tools"))
@@ -49,33 +56,82 @@ from lint_language import lint as lint_language  # noqa: E402
 # Ce module-ci ne porte que le prompt de composition et le CLI.
 from guards import (  # noqa: E402
     COMPOSE_WRITER, METHODO_NOTE, MODEL, RARITY_FR, build_compose_article,
-    evidence_block, family_note, guard_class_citations, guard_enum_leak,
+    evidence_block, family_note, guard_class_citations, guard_decade_ranges, guard_enum_leak,
     guard_full_text, guard_interpretive_words, guard_markdown, lint_language,
-    load_key, notable_badges, notable_level, redundancy_note, run_all_guards,
+    load_key, notable_badges, notable_level, redundancy_note, repair_prompt, run_all_guards,
     strip_markdown, warn_global_qualifiers, warn_redundant_closing,
 )
 
 
-def compose_prompt(facts):
-    """Le prompt de composition. Extrait de main() pour que le mode direct et le
-    mode batch partagent exactement le même texte : deux copies divergeraient."""
+def compose_prompt(facts, angle=None):
+    """Prompt de base partagé avec le batch ; variantes expérimentales seulement avec angle."""
+    if not SEO_WRITER_RULES_PATH.is_file():
+        raise FileNotFoundError(f"Consignes SEO partagées introuvables : {SEO_WRITER_RULES_PATH}")
+    seo_writer_rules = SEO_WRITER_RULES_PATH.read_text(encoding="utf-8").strip()
+    traceability_rules = (SEO_WRITER_RULES_PATH.parent / "traceability.md").read_text(encoding="utf-8")
+    seo_writer_rules += "\n\n" + traceability_rules
     main_nums = ' · '.join('%02d' % n for n in facts['main'])
     stars = ' · '.join('%02d' % n for n in facts['stars'])
     redundancy = redundancy_note(facts)
     redundancy_section = f"\nMétriques redondantes à ne pas double-compter :\n{redundancy}\n" if redundancy else ""
     families = family_note(facts)
     family_section = f"\nFamilles de mesures emboîtées :\n{families}\n" if families else ""
+    angle_section = ""
+    if angle:
+        angle_section = ("\nAngle choisi par la rédaction avant l'article :\n"
+                         f"Titre : {angle['title']}\n"
+                         f"Chemin de lecture : {angle['angle']}\n"
+                         f"Faits d'appui : {', '.join(angle['evidence_ids'])}\n"
+                         "Développe cet angle dans le corps sans recopier le titre ; "
+                         "ne laisse pas l'angle effacer les autres constats nécessaires.\n")
+    opening_rule = (
+        "1. Ouvre sur le fait concret qui porte l'angle choisi, puis situe le résultat "
+        "et sa date. Intègre la probabilité de la combinaison exacte dans ce passage "
+        "ou le suivant, sans préambule générique sur toutes les grilles."
+        if angle else "1. Situe le tirage (probabilité de la combinaison exacte)."
+    )
+    geometry_rule = (
+        "2. Commente la GÉOMÉTRIE du tirage : les numéros sont-ils plutôt concentrés "
+        "(proches les uns des autres, dans peu de décades) ou dispersés sur l'étendue 1-50 ? "
+        "Nomme les décades par leur rang (décade 1, décade 2, etc.), jamais par leurs "
+        "bornes numériques. La numérotation commence à 1 pour les dix premiers numéros. "
+        "Tu peux compléter les effectifs par les sous-totaux des numéros de chaque dizaine, "
+        "mais ceux-ci sont descriptifs et n'ont pas de rareté attribuée. "
+        "Attention au SENS de la mesure : une étendue élevée (proche de 49) signifie "
+        "dispersé, une étendue faible signifie concentré — ne qualifie jamais une "
+        "grande étendue de \"resserrée\" ni l'inverse."
+        if angle else
+        '2. Commente la GÉOMÉTRIE du tirage : les numéros sont-ils plutôt concentrés '
+        '(proches les uns des autres, dans peu de dizaines) ou dispersés sur l\'étendue '
+        '1-50 ? Nomme les tranches par leur rang (décade 1, décade 2, etc.), jamais par '
+        'leurs bornes numériques. Tu peux compléter les effectifs par les sous-totaux des '
+        'numéros de chaque dizaine, mais ceux-ci sont descriptifs et n’ont pas de rareté attribuée. '
+        'Attention au SENS de la mesure : une étendue élevée (proche de 49) signifie '
+        'dispersé, une étendue faible signifie concentré — ne qualifie jamais une '
+        'grande étendue de "resserrée" ni l\'inverse.'
+    )
+    style_rule = (
+        "\nr. Écris des paragraphes reliés par une progression d'idées : une observation "
+        "ouvre une question, la mesure y répond, puis l'historique ajoute un autre point "
+        "de vue. Privilégie les phrases naturelles et varie leur longueur. Évite "
+        "l'inventaire de métriques et les transitions mécaniques du type « Côté... » "
+        "ou « Enfin... »."
+        if angle else ""
+    )
 
     prompt = f"""Tu es rédacteur scientifique pour AleaQuant, un site français de vulgarisation sur les probabilités et la combinatoire appliquées à EuroMillions. Ta ligne éditoriale : rigueur, jamais de prédiction, jamais de promesse de gain, chaque nombre cité doit venir des faits fournis ci-dessous.
+
+Consignes SEO versionnées communes au Writer LangGraph :
+{seo_writer_rules}
 
 Tirage du {date_fr(facts['date'])} : {main_nums} ★ {stars}
 
 Faits calculés disponibles (utilise ceux qui sont pertinents, pas besoin de tous les citer) :
 {evidence_block(facts)}
-{redundancy_section}{family_section}
+{redundancy_section}{family_section}{angle_section}
 Écris un article de 4 à 6 paragraphes qui :
-1. Situe le tirage (probabilité de la combinaison exacte).
-2. Commente la GÉOMÉTRIE du tirage : les numéros sont-ils plutôt concentrés (proches les uns des autres, dans peu de dizaines) ou dispersés sur l'étendue 1-50 ? Précise les tranches de dizaines que tu utilises (1-10, 11-20, etc.). Attention au SENS de la mesure : une étendue élevée (proche de 49) signifie dispersé, une étendue faible signifie concentré — ne qualifie jamais une grande étendue de "resserrée" ni l'inverse.
+{opening_rule}
+{geometry_rule}
 3. Relève ce qui est statistiquement notable (classe rare, queue de loi) s'il y en a — sinon dis-le honnêtement, une forme ordinaire est aussi une observation valide. Précise bien QUELLE mesure est en jeu, ne généralise pas.
 4. Situe l'historique EN UTILISANT le fait de signature (F.signature, qui donne une fréquence sur un nombre de tirages antérieurs précis) et le fait d'historique exact (F.history.exact_main) — c'est la référence avec échelle demandée, ne dis jamais que l'historique manque si ces faits sont fournis.
 5. NE TERMINE PAS par un rappel du type "ces mesures ne prédisent pas le prochain tirage" : cette note est ajoutée automatiquement après ton texte, ne l'écris pas toi-même.
@@ -94,10 +150,10 @@ j. Ne qualifie JAMAIS globalement le tirage, la grille, la configuration ou "l'e
 k. N'écris PAS de paragraphe de synthèse qui récapitule ce que tu viens de dire : chaque paragraphe doit apporter un constat neuf. Si tu n'as plus rien à ajouter, termine sur ton dernier constat.
 l. Emploie le nom officiel fourni pour chaque mesure (champ nom officiel=) plutôt qu'une formulation de ton invention, et donne en quelques mots la définition fournie la première fois qu'un terme n'est pas évident pour un lecteur non initié (par exemple "paires de mêmes unités : deux numéros se terminant par le même chiffre").
 m. Ne balaie pas toutes les mesures disponibles : choisis-en au plus sept, celles qui servent ton angle. Écarte les mesures secondaires de niveau courant qui n'apportent rien au propos plutôt que de les énumérer.
-n. N'emploie un mot de rareté QUE pour une mesure marquée « AU-DESSUS de sa référence ». Une mesure « dans sa normale » ou « NON INFORMATIVE » se cite sans aucun qualificatif de rareté : son niveau est celui de presque tous les tirages, le signaler comme remarquable serait trompeur.
+n. N'emploie un mot de rareté QUE lorsque la consigne interne du fait autorise son qualificatif. Ne compare jamais une valeur à un libellé tel que « classe peu courante » ; ne recopie pas les seuils de sélection éditoriaux dans le texte. Une mesure « dans sa normale » ou « NON INFORMATIVE » se cite sans aucun qualificatif de rareté : son niveau est celui de presque tous les tirages, le signaler comme remarquable serait trompeur.
 o. Pour expliquer ce que mesure une grandeur, reprends la définition officielle fournie plutôt qu'une paraphrase de ton cru (l'étendue est « l'écart entre le plus petit et le plus grand numéro », pas « le sommet de 35 à 50 »).
 p. Écris en TEXTE BRUT. Aucun markdown : pas d'astérisques pour le gras, pas de titres, pas de puces, pas d'accents graves. La page affiche ton texte tel quel, donc un « ** » s'y verrait littéralement. Pour mettre en valeur un terme, emploie les mots, pas la typographie.
-q. Varie ta structure et tes formulations d'un article à l'autre, n'utilise pas un patron figé. Style vivant mais rigoureux, pas de sensationnalisme."""
+q. Varie ta structure et tes formulations d'un article à l'autre, n'utilise pas un patron figé. Style vivant mais rigoureux, pas de sensationnalisme.{style_rule}"""
     return prompt
 
 
@@ -107,16 +163,24 @@ def main():
     ap.add_argument("draw_id")
     ap.add_argument("--write", action="store_true",
                     help="écrit le brouillon dans runs-llm-compose/<id>/draft.json")
+    ap.add_argument("--out", type=Path, help="nouveau brouillon témoin, sans écraser la review")
     ap.add_argument("--text-file", type=Path,
                     help="construit le brouillon depuis un texte existant, sans appel API")
     ap.add_argument("--no-repair", action="store_true",
                     help="n'essaie pas de faire corriger une violation par le modèle")
+    ap.add_argument("--angle", type=Path,
+                    help="sélection A/B/C issue de editorial_angle.py (selected.json)")
     args = ap.parse_args()
     draw_id = args.draw_id
     facts_path = ROOT / "dist" / "data" / "facts" / f"{draw_id}.json"
     facts = json.loads(facts_path.read_text(encoding="utf-8"))
+    if args.angle:
+        from editorial_angle import load_selected
+        angle = load_selected(args.angle, facts)
+    else:
+        angle = None
 
-    prompt = compose_prompt(facts)
+    prompt = compose_prompt(facts, angle)
 
     if args.text_file:
         text = strip_markdown(args.text_file.read_text(encoding="utf-8")).strip()
@@ -178,6 +242,10 @@ TEXTE :
     print("\n=== GARDE JARGON (noms de code d'enum dans la prose) ===")
     print("OK" if not leaks else f"NOMS DE CODE À TRADUIRE : {leaks}")
 
+    decade_ranges = guard_decade_ranges(text) if angle else []
+    print("\n=== GARDE DÉCADES (rang plutôt que plages numériques) ===")
+    print("OK" if not decade_ranges else f"PLAGES À REMPLACER : {decade_ranges}")
+
     md = guard_markdown(text)
     print("\n=== GARDE MISE EN FORME (marqueurs markdown résiduels) ===")
     print("OK" if not md else f"MARQUEURS RESTANTS : {md}")
@@ -206,8 +274,11 @@ TEXTE :
     print(f"\n=== COÛT === {cost:.5f} $ (in={in_tok} out={out_tok})")
 
     guards = {"nombres": sorted(problems), "mots_de_rarete": [w for w, _ in word_problems],
-              "noms_de_code": leaks, "effectifs": cite_problems, "mise_en_forme": md,
+              "noms_de_code": leaks, "plages_de_decades": decade_ranges,
+              "effectifs": cite_problems, "mise_en_forme": md,
               "vocabulaire": [f"{nom} — {extrait}" for nom, extrait, _ in vocab]}
+
+    guards = run_all_guards(text, facts, editorial_style=bool(angle))
 
     # --- réparation : on renvoie au modèle sa violation et on rejoue les gardes ---
     if any(guards.values()) and not args.text_file and not args.no_repair:
@@ -215,7 +286,7 @@ TEXTE :
         fix = client.responses.create(model=MODEL, input=repair_prompt(text, guards, facts),
                                       reasoning={"effort": "low"})
         repaired = fix.output_text.strip()
-        new_guards = run_all_guards(repaired, facts)
+        new_guards = run_all_guards(repaired, facts, editorial_style=bool(angle))
         # la réparation ne doit pas introduire de nombre nouveau
         sans_nouveau_nombre = not (normalize_numbers(repaired) - normalize_numbers(text))
         if not any(new_guards.values()) and sans_nouveau_nombre:
@@ -232,11 +303,15 @@ TEXTE :
         print(text)
 
     if args.write:
-        article = build_compose_article(facts_path, facts, text, guards)
-        out = ROOT / "runs-llm-compose" / draw_id / "draft.json"
+        from hashlib import sha256
+        article = build_compose_article(facts_path, facts, text, guards, angle=angle,
+            mode="text_import" if args.text_file else "direct",
+            generation={"prompt_sha256": sha256(prompt.encode()).hexdigest(), "reasoning_effort": "low"})
+        out = args.out or ROOT / "runs-llm-compose" / draw_id / "draft.json"
         out.parent.mkdir(parents=True, exist_ok=True)
         out.write_text(json.dumps(article, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         print(f"\n=== BROUILLON ÉCRIT === {out}")
+        print(article["draft"]["methodology"]["note"])
         print(f"statut : {article['status']} · {len(article['draft']['claims'])} paragraphes · "
               f"{len([c for c in article['draft']['claims'] if c['evidence_ids']])} avec faits cités")
         b = article["draft"]["badges"]

@@ -1,5 +1,40 @@
 # AleaQuant — document de reprise (handoff)
 
+Sources de vérité : fonctions dans [`ROADMAP.md`](ROADMAP.md), composants actifs dans
+[`TECHNICAL-DEBT.md`](TECHNICAL-DEBT.md), décisions dans les documents d'architecture,
+et explorations ponctuelles dans [`TASKS.md`](TASKS.md). Les états datés plus bas
+sont des instantanés de reprise et ne remplacent pas ces registres.
+
+État du pipeline données au 01/10/2026 : le rafraîchissement valide les lois des
+régimes et recalcule les profils par régime pour EuroMillions, Loto et Keno. Les
+19 465 résultats Keno déjà présents en SQLite ont maintenant tous leurs fiches locales
+et leur profil : 332 tirages 16/56, 19 133 tirages 20/70. Le prochain retard concerne
+le rendu des pages Keno, à la demande ou en groupes mensuels, puis le workflow
+rédactionnel court par nouveau tirage (faits validés → brouillon gardé → approbation
+humaine → import explicite). Carte et Mermaid :
+`../../loto-keno-lab/docs/pipelines-et-graphes.md` ; dette active :
+`docs/TECHNICAL-DEBT.md`. La revue mobile envisagée est une console locale responsive
+protégée par Cloudflare Access sur Tunnel ; SQLite reste sur le Mac et l'approbation
+ne déclenche pas de publication.
+
+> Mise à jour du 02/10/2026 : les 333 fiches Keno du régime actif 16/56 ont maintenant
+> un rendu local par identifiant, un index, un sitemap et 20 cartes métriques. Le hub
+> local inclut Keno ; les JSON de faits restent exclus du paquet Worker. Les 19 133
+> tirages 20/70 n'ont toujours pas de pages. La route publique Keno répond encore 404 :
+> aucun déploiement n'a été effectué. Voir `docs/SCALING.md` et `TECHNICAL-DEBT.md`.
+
+> Mise à jour du 01/10/2026 : mini-histogrammes harmonisés localement. Le générateur
+> des fiches de tirage dessinait des groupes de classes au-delà de 48, tandis que la
+> homepage conservait une barre par classe. Les 9 658 pages EuroMillions/Loto sont
+> régénérées avec le même principe de dessin ; 100 tests passent. Cette harmonisation
+> reste à publier. Aucun calcul de loi ni effectif n'a changé.
+
+> Rattrapage Keno du 01/10/2026 : option `bash tools/refresh_draws.sh
+> --backfill-keno-facts` ; 19 465 fiches calculées en 9 s, provenance SHA vérifiée,
+> profils EM/Loto/Keno corrigés et reconstruits. Le fichier de profil avait été vide
+> à cause d'un motif `KE--*.json` erroné ; les deux régimes Keno contiennent maintenant
+> respectivement 20 et 17 métriques. Aucun calcul massif de lois n'a été relancé.
+
 Politique proposée pour CI, recette et production : `CI-STAGING-PRODUCTION.md`.
 Recommandation : Worker `aleaquant-recette` sur `recette.aleaquant.org`, protégé
 par Access ; garder `private.aleaquant.org` pour le tunnel Mac. Le jeton du
@@ -127,7 +162,7 @@ Contraintes éditoriales non négociables, déjà inscrites dans le code :
 
 | Quoi | Où |
 |---|---|
-| Dépôt | `~/aleaquant-web` sur le Mac de Christophe, `github.com/christophecr-bit/aleaquant` |
+| Dépôt | `~/aleaquant/aleaquant-web` sur le Mac de Christophe, `github.com/christophecr-bit/aleaquant` |
 | Site en ligne | `https://aleaquant.aleaquant.workers.dev` (Cloudflare Worker, assets statiques) |
 | Déploiement | `npx wrangler deploy` depuis le poste. **Aucun CI** : GitHub ne déploie rien. |
 | Laboratoire source | `../loto-keno-lab-generic` — **lu en lecture seule** par l'engine |
@@ -326,7 +361,7 @@ Chiffres à connaître :
 - **26 tests** (`tests/test_rules.py`, `test_guards.py`, `test_import.py`), tous verts.
 - Pédagogie du site : section Atlas et notion de paire expliquées en clair.
 
-### En attente d'une action de Christophe
+### En attente à l'instantané du 30/09 — historique, pas la liste active
 
 1. **`git push`** — 5 commits locaux non poussés (`origin/main` est à `0dc23ba`,
    local à `aaba02c`).
@@ -337,35 +372,12 @@ Chiffres à connaître :
 4. Un batch OpenAI de 10 items a été validé end-to-end en mode reformulation
    (`batch_6abc41d36c28819082ad64bbb03fd9a5`, terminé, 0,0103 $).
 
-### Ancienne todolist du matin (état figé, remplacé par `docs/TECHNICAL-DEBT.md`)
+### Ancienne todolist du matin — archive
 
-1. **Portage réalisé depuis** dans `compose_batch_submit.py` /
-   `compose_batch_collect.py`. Le batch compose reste à régler avant constitution
-   du fonds ; ne pas relancer l'ancienne reformulation `llm_batch_*`.
-2. **Puces de rareté dans l'article** (demande du 30/09 matin). Critère d'affichage :
-   uniquement une mesure au-dessus de sa référence (`notable_level()`). Implémentation :
-   champ `draft.badges` calculé côté Python, rendu par `app.js` avec les classes CSS des
-   badges existants, croisable avec `claims[].evidence_ids` pour le placement par
-   paragraphe. **Jamais de markdown ni de `innerHTML`.** Détail dans
-   `docs/agent-editorial-v2-notes.md`.
-3. **Appariement mot ↔ fait** : faire taguer par le modèle chaque affirmation de rareté
-   avec son `fact_id`, et vérifier le niveau de CE fait — au lieu du « au moins une
-   mesure quelque part » actuel. `paragraph_evidence()` en est la première brique.
-4. **Radar de signature** (piste B) : mêmes axes que les puces, rayon = niveau ordinal.
-   Après stabilisation des puces. Risque à traiter : ne pas laisser croire qu'une grande
-   aire signifie quoi que ce soit sur un tirage futur.
-5. **Petit défaut connu** : `paragraph_evidence()` ignore les faits sans `metric`, donc
-   le paragraphe qui cite la probabilité de la combinaison complète
-   (`F.grid.probability`) n'a aucun fait attribué. Inclure les faits non métriques par
-   leurs nombres distinctifs.
-6. **Encadré méthodologique commun** : `METHODO_NOTE` est pour l'instant collée à la fin
-  de chaque corps d'article. Mieux vaudrait un encadré rendu une fois par la page.
-7. **Accueil éditorial et Atlas** : poursuivre la maquette locale `prototypes/editorial-home/`
-   (cartes, fil des derniers tirages, image AleaQuant originale), puis préparer un premier
-   Atlas de portefeuilles. Avant l'outil, publier des articles de fond qui présentent les
-   familles de portefeuilles et expliquent leur géométrie (couverture, recouvrement,
-   dispersion) sans promesse de gain. Le fil de tirages utilise encore un snapshot ; son
-   raccordement aux données locales actualisées par jeu reste à concevoir.
+Cette liste décrivait un état antérieur et mélangeait défauts, fonctionnalités et
+pistes d'architecture. Elle n'est plus une liste de tâches active. Consulter
+`docs/ROADMAP.md`, `docs/TECHNICAL-DEBT.md` et `docs/TASKS.md` pour l'état courant ;
+les notes historiques de l'agent restent dans `docs/agent-editorial-v2-notes.md`.
 
 ---
 
@@ -410,3 +422,22 @@ POC fonctionne, mais cette sélection A/B/C, la relecture de ton, la file matina
 et le retour humain avec remarque n'y sont pas encore branchés. La feuille de
 route autoritative est `docs/roadmap-editorial-agentique.md` dans ce dépôt.
 Évaluer le prototype sur plusieurs tirages avant tout portage.
+
+
+## État du calcul exact Keno 16/56 — 1er octobre 2026
+
+Le scan Metal du M4 Pro est terminé : 4 165 fragments contigus couvrent C(56,16),
+les histogrammes `arithmetic_triples` et `longest_arithmetic_progression` totalisent
+chacun 41 648 951 840 265. Dans le working tree local, AleaQuant charge ces lois,
+reconstruit le JSON 16/56 à 20 métriques, les 31 faits Keno présents et leur profil de
+rareté. Les tests ciblés lois/récurrences et faits génériques passent (18 tests).
+Aucun déploiement n'a eu lieu. La comparaison Metal/Rayon exhaustive, le profil sur
+l'ensemble de l'historique 16/56 et la qualification des pages Keno restent à faire.
+Le régime historique 20/70 demeure séparé et incomplet pour ces trois lois.
+
+## Reprise — traçabilité, 2 octobre 2026
+
+Voir ARTICLE-TRACEABILITY.md et l'entrée CHANGELOG correspondante. Les témoins
+originaux sont préservés ; nouveau draft dans runs-traceability/EM-26078-v2/.
+128 tests web (+28 sous-tests), 119 agents passent. Aucune publication. Relire le
+nouveau témoin et traiter les dates/URL manquantes avant de généraliser le rattrapage.

@@ -1,5 +1,7 @@
 """Récupère un batch de rapports de tirage en mode « compose » et écrit les brouillons.
 
+Auteur : AleaQuant · 2026-10-02 · Révision traçabilité : note publique, preuves et SHA de la version relue.
+
   python3 agent/compose_batch_collect.py --batch-id BATCH_ID
 
 Relancer jusqu'à ce que le statut soit "completed" (de quelques minutes à 24 h).
@@ -15,6 +17,7 @@ téléchargé (ou fabriqué) :
   python3 agent/compose_batch_collect.py --input-file sortie.jsonl --manifest m.json
 """
 import argparse
+from hashlib import sha256
 import json
 import sys
 from pathlib import Path
@@ -26,7 +29,7 @@ MANIFEST_DIR = OUT_DIR / "_batches"
 
 sys.path.insert(0, str(ROOT / "agent"))
 from guards import (  # noqa: E402
-    build_compose_article, run_all_guards, strip_markdown,
+    MODEL, build_compose_article, run_all_guards, strip_markdown,
 )
 
 PRICE_IN = 0.75 / 1e6 / 2
@@ -54,7 +57,7 @@ def extract_output_text(body):
     raise ValueError("forme de réponse inattendue : texte introuvable")
 
 
-def traiter(contenu, manifest, out_dir):
+def traiter(contenu, manifest, out_dir, batch_model=None, workflow_config_sha256=None):
     """Traite les lignes de résultat. Aucun appel réseau : testable hors ligne."""
     n_ok = n_blocked = n_failed = 0
     cout = 0.0
@@ -86,18 +89,30 @@ def traiter(contenu, manifest, out_dir):
             continue
 
         facts_path = Path(info["facts_path"])
-        facts = json.loads(facts_path.read_text(encoding="utf-8"))
+        facts_bytes = facts_path.read_bytes()
+        if info.get("facts_sha256") and sha256(facts_bytes).hexdigest() != info["facts_sha256"]:
+            print(f"!! {draw_id} : faits modifiés depuis la soumission du batch")
+            n_failed += 1
+            continue
+        facts = json.loads(facts_bytes)
         guards = run_all_guards(texte, facts)
-        article = build_compose_article(facts_path, facts, texte, guards)
-        article["provenance"]["writer"] += WRITER_SUFFIX
-        article["provenance"]["mode"] = "batch"
+        actual_model = body.get("model") or batch_model or MODEL
+        article = build_compose_article(facts_path, facts, texte, guards,
+                                        mode="batch", model=actual_model)
+        if info.get("prompt_sha256"):
+            article["provenance"]["prompt_sha256"] = info["prompt_sha256"]
+        if workflow_config_sha256:
+            article["provenance"]["batch_config_sha256"] = workflow_config_sha256
         out = out_dir / draw_id / "draft.json"
         out.parent.mkdir(parents=True, exist_ok=True)
         out.write_text(json.dumps(article, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
         usage = body.get("usage") or {}
-        cout += (usage.get("input_tokens", 0) or 0) * PRICE_IN
-        cout += (usage.get("output_tokens", 0) or 0) * PRICE_OUT
+        if actual_model and actual_model != MODEL:
+            cout = None  # Le prix fixe connu ne vaut pas pour un autre modèle.
+        if cout is not None:
+            cout += (usage.get("input_tokens", 0) or 0) * PRICE_IN
+            cout += (usage.get("output_tokens", 0) or 0) * PRICE_OUT
         if article["status"] == "BLOCKED":
             n_blocked += 1
             bloques.append((draw_id, article["guard"]["problems"]))
@@ -117,7 +132,8 @@ def main():
     if args.input_file:
         if not args.manifest:
             sys.exit("--input-file exige --manifest")
-        manifest = json.loads(args.manifest.read_text(encoding="utf-8"))["draws"]
+        manifest_record = json.loads(args.manifest.read_text(encoding="utf-8"))
+        manifest = manifest_record["draws"]
         contenu = args.input_file.read_text(encoding="utf-8")
     else:
         if not args.batch_id:
@@ -132,13 +148,17 @@ def main():
         manifest_path = MANIFEST_DIR / f"{args.batch_id}.manifest.json"
         if not manifest_path.exists():
             sys.exit(f"Manifeste introuvable : {manifest_path}")
-        manifest = json.loads(manifest_path.read_text(encoding="utf-8"))["draws"]
+        manifest_record = json.loads(manifest_path.read_text(encoding="utf-8"))
+        manifest = manifest_record["draws"]
         contenu = client.files.content(batch.output_file_id).text
 
-    n_ok, n_blocked, n_failed, cout, bloques = traiter(contenu, manifest, args.out)
+    n_ok, n_blocked, n_failed, cout, bloques = traiter(
+        contenu, manifest, args.out, batch_model=manifest_record.get("model"),
+        workflow_config_sha256=manifest_record.get("workflow_config_sha256"))
 
     print(f"\nOK={n_ok} | bloqués (garde)={n_blocked} | échecs={n_failed}")
-    print(f"Coût mesuré (tarif batch) : {cout:.4f} $")
+    print(f"Coût estimé aux tarifs connus du modèle par défaut : {cout:.4f} $"
+          if cout is not None else "Coût non estimé : tarif du modèle à renseigner")
     print(f"Brouillons dans : {args.out}")
     if bloques:
         print("\nÀ reprendre en direct (le garde a bloqué) :")

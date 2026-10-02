@@ -1,4 +1,13 @@
-"""Pages statiques EuroMillions et Loto, lisibles sans JavaScript.
+"""AleaQuant — pages statiques EuroMillions, Loto et Keno, lisibles sans JavaScript.
+
+Auteur : AleaQuant · 2026-10-02 · Révision traçabilité : note publique, preuves et SHA de la version relue.
+
+Version : 0.7 | Date : 2026-10-02 | Auteur : AleaQuant
+Historique : 0.7 ajoute la carte descriptive des sommes par dizaine aux trois jeux.
+Historique : 0.6 ajoute les fiches/index Keno pour le régime actif 16/56.
+Historique : 0.5 rend le jeu et la date explicites dans le titre visible des fiches.
+Historique : 0.4 aligne les mini-histogrammes des fiches sur ceux de l'accueil.
+TODO : qualifier une publication distincte des anciens tirages Keno 20/70.
 
 Entrées (lecture seule) : dist/data/facts/<draw>.json (un fichier par tirage, voir
 build_data.py --facts), dist/data/draws.json (ordre chronologique, règle).
@@ -13,12 +22,12 @@ import html
 from functools import lru_cache
 from hashlib import sha256
 import json
-from math import ceil
 import sys
 from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent))
 from common import DATA, read_json  # noqa: E402
+from facts import decade_sums_fact  # noqa: E402
 DIST = DATA.parent
 
 RARITY_FR = {'COMMON': 'courante', 'UNCOMMON': 'peu courante', 'RARE': 'rare', 'VERY_RARE': 'très rare'}
@@ -77,6 +86,10 @@ def card_laws(facts):
         grid = next(f for f in facts['facts'] if f['fact_id'] == 'F.grid.probability')['value']['grid']
         domains = {name: (component['picks'], component['domain'])
                    for name, component in grid.items()}
+    elif facts['game_id'] == 'keno':
+        draw = next(f for f in facts['facts'] if f['fact_id'] == 'F.draw.probability')['value']['draw']
+        domains = {name: (component['picks'], component['domain'])
+                   for name, component in draw.items()}
     else:
         return {}
     return {name: read_regime_law(str(DATA / 'laws' / f'regime-{picks}-{domain}.json'))
@@ -85,7 +98,7 @@ def card_laws(facts):
 
 
 def metric_spark(fact, laws):
-    """SVG compact d'une loi exacte scalaire ; l'orange repère la valeur observée."""
+    """SVG compact d'une loi exacte, dessiné comme la sparkline de l'accueil."""
     metric = fact.get('metric', '')
     if '.' not in metric or not isinstance(fact.get('value'), (int, float)):
         return ''
@@ -105,28 +118,32 @@ def metric_spark(fact, laws):
     # Évite d'afficher la loi d'un autre régime sous un fait juste par hasard.
     if abs(values[positions[0]][1] / regime['total'] - fact['p_class']) > 1e-10:
         return ''
-    group_size = ceil(len(values) / 48)
-    bins = [sum(count for _, count in values[i:i + group_size])
-            for i in range(0, len(values), group_size)]
-    maximum = max(bins)
-    width = 300 / len(bins)
-    # Un pixel minimal comme sur l'accueil : les queues non nulles ne disparaissent pas
-    # après l'arrondi du SVG, sans modifier les probabilités utilisées pour la hauteur.
-    bars = ' '.join(f'M{(i + .5) * width:.2f} 45V{45 - max(1, 41 * count / maximum):.2f}'
-                    for i, count in enumerate(bins))
-    marker = (positions[0] // group_size + .5) * width
-    grouped = ' regroupées pour l’affichage' if group_size > 1 else ''
+    # Même géométrie que spark() dans dist/draws.js : une barre par classe,
+    # sans regroupement artificiel. Les hauteurs restent fondées sur la loi exacte.
+    width = 300 / len(values)
+    maximum = max(count for _, count in values)
+    bars = []
+    for i, (_, count) in enumerate(values):
+        bar_width = max(width - (1 if width > 3 else 0), 0.8)
+        x = i * width + (0.5 if width > 3 else 0)
+        height = max(1, 42 * count / maximum)
+        y = 46 - height
+        radius = ' rx="1.5"' if width > 6 else ''
+        bars.append(f'<rect x="{x:.2f}" y="{y:.2f}" width="{bar_width:.2f}" '
+                    f'height="{height:.2f}"{radius} fill="#b7d3f6"/>')
+    marker = (positions[0] + .5) * width
     title = esc(f'Loi exacte — {fact["label"]} ; valeur observée {fact["value"]}')
-    description = esc(f'Distribution des classes{grouped}. Trait orange : valeur du tirage. '
+    description = esc('Toutes les classes de la loi exacte sont représentées. '
+                      'Trait orange : valeur du tirage. '
                       'La rareté indiquée au-dessus porte sur la classe exacte.')
     return (f'<svg class="metric-spark" viewBox="0 0 300 46" role="img" aria-label="{title}">'
             f'<title>{title}</title><desc>{description}</desc>'
-            f'<path d="{bars}" fill="none" stroke="#b7d3f6" stroke-width="{max(1, width - 1):.1f}"/>'
+            f'{"".join(bars)}'
             f'<line x1="{marker:.1f}" y1="1" x2="{marker:.1f}" y2="46" '
             'stroke="#eb6834" stroke-width="2"/></svg>')
 
 
-def mcard(fact, laws=None):
+def mcard(fact, laws=None, detail=None):
     label = esc(fact['label'])
     rarity = fact.get('rarity')
     chip = f'<span class="chip {rarity}">{RARITY_FR.get(rarity, rarity)}</span>' if rarity else ''
@@ -140,10 +157,47 @@ def mcard(fact, laws=None):
     if hp:
         hist = (f'<p class="small">Observée {fmt_num(hp["count"])} fois sur {fmt_num(hp["draws"])} '
                 f'tirages antérieurs (attendu {hp["expected"]}).</p>')
+    detail_html = f'<p class="small">{esc(detail)}</p>' if detail else ''
     return (f'<div class="mcard"><h4>{label}{chip}</h4>'
             f'<div class="val">{esc(shown)}</div>'
             f'<div class="sub">{esc(" · ".join(sub_bits))}</div>'
-            f'{metric_spark(fact, laws or {})}{hist}</div>')
+            f'{detail_html}{metric_spark(fact, laws or {})}{hist}</div>')
+
+
+def decade_count_detail(fact, domain):
+    """Déplie le vecteur par dizaines avec les bornes propres au jeu."""
+    try:
+        counts = [int(part) for part in str(fact['value']).split('-')]
+    except (KeyError, TypeError, ValueError):
+        return None
+    expected = (domain + 9) // 10
+    if len(counts) != expected:
+        return None
+    bins = []
+    for i, count in enumerate(counts):
+        bins.append(f'D{i + 1} : {count}')
+    return ' · '.join(bins)
+
+
+def decade_sums_card(facts, domain):
+    """Carte de sous-totaux par dizaine, sans badge ni prétention de rareté."""
+    fact = next((f for f in facts.get('facts', [])
+                 if f.get('fact_id') == 'F.main.decade_sums'), None)
+    if fact is None:
+        # Les archives existantes gardent leur SHA et leurs articles approuvés ; la
+        # vue est calculée depuis les numéros de tirage jusqu'au prochain backfill.
+        fact = decade_sums_fact(facts['main'], domain)
+    rows = ''.join(
+        '<div class="decade-sum-row">'
+        f'<span>D{b["decade"]}</span>'
+        f'<span>{b["count"]} {"numéro" if b["count"] == 1 else "numéros"}</span>'
+        f'<strong>Σ {fmt_num(b["sum"])}</strong></div>'
+        for b in fact['value']['profile'])
+    return ('<div class="mcard decade-sums-card"><h4>Somme par dizaine</h4>'
+            f'<div class="decade-sum-profile">{rows}</div>'
+            '<p class="small">Somme des valeurs tirées dans chaque tranche. '
+            'D1, D2… désignent les tranches successives ; la dernière peut être tronquée. '
+            'Les effectifs aident à lire chaque sous-total.</p></div>')
 
 
 def balls_html(main, stars):
@@ -187,11 +241,14 @@ def article_html(article):
     if article is None:
         return ''
     draft = article['draft']
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'agent'))
+    from article_traceability import methodology_html
+    methodology = methodology_html(draft.get('methodology'))
     paragraphs = ''.join(f'<p>{esc(part.strip())}</p>' for part in draft['body'].split('\n\n') if part.strip())
     return (f'<article class="draw-article" aria-labelledby="article-title">'
             f'<span class="eyebrow">ARTICLE · RELU ET APPROUVÉ</span>'
             f'<h2 id="article-title">{esc(draft["title"])}</h2>'
-            f'<div class="draw-article-body">{paragraphs}</div></article>')
+            f'<div class="draw-article-body">{paragraphs}</div>{methodology}</article>')
 
 
 def page_html(facts, prev_id, next_id, article=None):
@@ -201,7 +258,11 @@ def page_html(facts, prev_id, next_id, article=None):
     is_current_rule = 'F.stars.rule' not in f_by_id
     metric_facts = [f for f in facts['facts'] if f.get('category') == 'class_metric']
     laws = card_laws(facts)
-    cards = ''.join(mcard(f, laws) for f in metric_facts)
+    cards = ''.join(
+        mcard(f, laws, decade_count_detail(f, laws['main']['domain'])
+              if f.get('metric') == 'main.decade_counts' and 'main' in laws else None)
+        for f in metric_facts)
+    cards += decade_sums_card(facts, laws.get('main', {}).get('domain', 50))
 
     pascal = f_by_id.get('F.pascal.subsets')
     history = f_by_id.get('F.history.exact_main')
@@ -231,7 +292,7 @@ def page_html(facts, prev_id, next_id, article=None):
             f'loi exacte, rareté des métriques, historique antérieur. Comprendre n’est pas prédire.')
     ld = {
         '@context': 'https://schema.org', '@type': 'Article',
-        'headline': f'Tirage EuroMillions du {date_fr(date)}',
+        'headline': f'EuroMillions — tirage du {date_fr(date)}',
         'datePublished': date, 'description': desc,
         'author': {'@type': 'Organization', 'name': 'AleaQuant'},
         'publisher': {'@type': 'Organization', 'name': 'AleaQuant'},
@@ -252,14 +313,14 @@ def page_html(facts, prev_id, next_id, article=None):
 <body><a class="skip" href="#main">Aller au contenu</a><header>{NAV}<span class="edition">ÉDITION EXPÉRIMENTALE · V0</span></header>
 <main id="main"><section class="section" aria-labelledby="draw-title">
 <div class="section-head"><div><span class="eyebrow">DRAW / EUROMILLIONS · {esc(draw_id)}</span>
-<h1 id="draw-title">Tirage du {date_fr(date)}</h1></div>
+<h1 id="draw-title">EuroMillions — tirage du {date_fr(date)}</h1></div>
 <p>{esc(grid_prob["statement"]) if grid_prob else ""}</p></div>
 <div class="draw-head"><div>{balls_html(main, stars)}
 <p class="draw-meta">{date_fr(date)} · tirage {esc(draw_id)} · {fmt_num(facts["prior_draws"])} tirages antérieurs dans l’historique · règle {esc(rule)}</p></div></div>
 {article_html(article)}
 {"".join(callouts)}
 <div class="metric-grid">{cards}</div>
-<p class="small">Mini-histogrammes : distribution exacte de chaque métrique affichée ; le trait orange marque la valeur de ce tirage. Certaines classes voisines sont regroupées pour le dessin, sans changer leur fréquence ni leur rareté.</p>
+<p class="small">Mini-histogrammes : chaque barre représente une classe de la loi exacte ; le trait orange marque la valeur de ce tirage. Une hauteur minimale préserve la visibilité des classes très peu fréquentes.</p>
 <p class="small">Loi exacte : énumération complète, sans simulation. Comparaisons historiques calculées uniquement sur les tirages antérieurs à ce tirage (aucun regard en avant).</p>
 {f'<p class="callout"><em>{esc(expectation["statement"])}</em></p>' if expectation else ""}
 <p><a class="text-link" href="/#{esc(draw_id)}">Explorer ce tirage dans l’outil interactif →</a></p>
@@ -323,7 +384,11 @@ def loto_page_html(facts, prev_id, next_id, article=None):
     k, domain = grid['main']['picks'], grid['main']['domain']
     metrics = [f for f in facts['facts'] if f.get('category') == 'class_metric']
     laws = card_laws(facts)
-    cards = ''.join(mcard(f, laws) for f in metrics)
+    cards = ''.join(
+        mcard(f, laws, decade_count_detail(f, laws['main']['domain'])
+              if f.get('metric') == 'main.decade_counts' and 'main' in laws else None)
+        for f in metrics)
+    cards += decade_sums_card(facts, laws.get('main', {}).get('domain', 49))
     history = by_id.get('F.history.exact_main')
     signature = by_id.get('F.signature')
     expectation = by_id.get('F.editorial.expectation')
@@ -342,7 +407,7 @@ def loto_page_html(facts, prev_id, next_id, article=None):
              + '</nav>')
     ld = {
         '@context': 'https://schema.org', '@type': 'Article',
-        'headline': f'Tirage Loto du {label}',
+        'headline': f'Loto — tirage du {label}',
         'datePublished': date, 'description': desc,
         'author': {'@type': 'Organization', 'name': 'AleaQuant'},
         'publisher': {'@type': 'Organization', 'name': 'AleaQuant'},
@@ -361,14 +426,14 @@ def loto_page_html(facts, prev_id, next_id, article=None):
 <body><a class="skip" href="#main">Aller au contenu</a><header>{nav}<span class="edition">ÉDITION EXPÉRIMENTALE · V0</span></header>
 <main id="main"><section class="section" aria-labelledby="draw-title">
 <div class="section-head"><div><span class="eyebrow">DRAW / LOTO · {esc(draw_id)}</span>
-<h1 id="draw-title">Tirage du {esc(label)}</h1></div>
+<h1 id="draw-title">Loto — tirage du {esc(label)}</h1></div>
 <p>{esc(by_id['F.grid.probability']['statement'])}</p></div>
 <div class="draw-head"><div>{loto_balls_html(facts['components'])}
 <p class="draw-meta">{esc(label)} · {esc(draw_id)} · {fmt_num(facts['prior_draws'])} tirages antérieurs comparables · règle {esc(rule)}</p></div></div>
 {article_html(article)}
 {''.join(callouts)}
 <div class="metric-grid">{cards}</div>
-<p class="small">Mini-histogrammes : distribution exacte de chaque métrique affichée ; le trait orange marque la valeur de ce tirage. Certaines classes voisines sont regroupées pour le dessin, sans changer leur fréquence ni leur rareté.</p>
+<p class="small">Mini-histogrammes : chaque barre représente une classe de la loi exacte ; le trait orange marque la valeur de ce tirage. Une hauteur minimale préserve la visibilité des classes très peu fréquentes.</p>
 <p class="small">Loi exacte des {k} numéros parmi {domain} : énumération complète, sans simulation. L’historique compare seulement les tirages antérieurs de la même formule {k}/{domain}. {complement_note}</p>
 {f'<p class="callout"><em>{esc(expectation["statement"])}</em></p>' if expectation else ''}
 <p><a class="text-link" href="/tirages/euromillions/">Explorer aussi les tirages EuroMillions →</a></p>
@@ -401,10 +466,105 @@ def loto_index_html(facts_list):
 <ul class="draw-index" id="loto-index">{items}</ul></section></main>{FOOTER}</body></html>'''
 
 
-def games_index_html(em_count, loto_count):
+def keno_balls_html(numbers):
+    """Affiche les 16 numéros tirés, sans les confondre avec une grille jouée."""
+    balls = ''.join(f'<span class="ball">{n:02d}</span>' for n in numbers)
+    return f'<div class="balls keno-balls" aria-label="Numéros tirés">{balls}</div>'
+
+
+def keno_page_html(facts, prev_id, next_id, article=None):
+    """Fiche de tirage Keno 16/56 ; le régime historique 20/70 reste séparé."""
+    if facts.get('game_id') != 'keno' or facts.get('rule_id') != 'keno-56-16-v1':
+        raise ValueError('La publication Keno MVP est limitée au régime actif 16/56')
+    by_id = {f['fact_id']: f for f in facts['facts']}
+    draw_fact = by_id.get('F.draw.probability')
+    if not draw_fact:
+        raise ValueError(f"Probabilité du tirage absente : {facts.get('draw_id')}")
+    grid = draw_fact['value']['draw']['main']
+    picks, domain = grid['picks'], grid['domain']
+    draw_id, date = facts['draw_id'], facts['date']
+    title = f'Tirage Keno du {date_fr(date)} — {draw_id} | AleaQuant'
+    desc = (f'Analyse AleaQuant du tirage Keno {draw_id} du {date_fr(date)} : '
+            'loi exacte des métriques et historique de la formule 16/56.')
+    canonical = f'{SITE_URL}/tirages/keno/{draw_id}/'
+    metrics = [f for f in facts['facts'] if f.get('category') == 'class_metric']
+    laws = card_laws(facts)
+    cards = ''.join(
+        mcard(f, laws, decade_count_detail(f, laws['main']['domain'])
+              if f.get('metric') == 'main.decade_counts' and 'main' in laws else None)
+        for f in metrics)
+    cards += decade_sums_card(facts, laws.get('main', {}).get('domain', 56))
+    history = by_id.get('F.history.exact_main')
+    signature = by_id.get('F.signature')
+    expectation = by_id.get('F.editorial.expectation')
+    callouts = []
+    if history:
+        callouts.append('<div class="callout"><span class="big">'
+                        + esc(history['value']['count'])
+                        + '</span><div><strong>Déjà-vu des 16 numéros</strong><p>'
+                        + esc(history['statement']) + '</p></div></div>')
+    if signature:
+        callouts.append(f'<p class="small">{esc(signature["statement"])}</p>')
+    pager = ('<nav class="draw-pager" aria-label="Tirages voisins">'
+             + (f'<a href="../{esc(prev_id)}/">← Tirage précédent</a>' if prev_id else '<span></span>')
+             + '<a href="../">Tous les tirages Keno 16/56</a>'
+             + (f'<a href="../{esc(next_id)}/">Tirage suivant →</a>' if next_id else '<span></span>')
+             + '</nav>')
+    ld = {
+        '@context': 'https://schema.org', '@type': 'Article',
+        'headline': f'Keno — tirage du {date_fr(date)}',
+        'datePublished': date, 'description': desc,
+        'author': {'@type': 'Organization', 'name': 'AleaQuant'},
+        'publisher': {'@type': 'Organization', 'name': 'AleaQuant'},
+    }
+    return f'''<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{esc(title)}</title><meta name="description" content="{esc(desc)}">
+<link rel="canonical" href="{canonical}">
+<meta property="og:type" content="article"><meta property="og:title" content="{esc(title)}">
+<meta property="og:description" content="{esc(desc)}"><meta property="og:url" content="{canonical}">
+<link rel="stylesheet" href="../../../style.css"><link rel="stylesheet" href="../../../atlas.css">
+<script type="application/ld+json">{json.dumps(ld, ensure_ascii=False)}</script></head>
+<body><a class="skip" href="#main">Aller au contenu</a><header>{NAV}<span class="edition">ÉDITION EXPÉRIMENTALE · V0</span></header>
+<main id="main"><section class="section" aria-labelledby="draw-title">
+<div class="section-head"><div><span class="eyebrow">DRAW / KENO · {esc(draw_id)}</span>
+<h1 id="draw-title">Keno — tirage du {date_fr(date)}</h1></div><p>{esc(draw_fact['statement'])}</p></div>
+<div class="draw-head"><div>{keno_balls_html(facts['main'])}
+<p class="draw-meta">{date_fr(date)} · tirage {esc(draw_id)} · {fmt_num(facts['prior_draws'])} tirages antérieurs comparables · règle {esc(facts['rule_id'])}</p></div></div>
+{article_html(article)}
+{''.join(callouts)}
+<div class="metric-grid">{cards}</div>
+<p class="small">Mini-histogrammes : chaque barre représente une classe de la loi exacte ; le trait orange marque la valeur de ce tirage. Une hauteur minimale préserve la visibilité des classes très peu fréquentes.</p>
+<p class="small">La probabilité affichée concerne le tirage exact de 16 numéros parmi 56 ; elle ne donne pas la probabilité de gain d’une grille Keno jouée. Les métriques et l’historique comparent uniquement les tirages antérieurs de la formule 16/56.</p>
+{f'<p class="callout"><em>{esc(expectation["statement"])}</em></p>' if expectation else ''}
+<p><a class="text-link" href="/tirages/euromillions/">Explorer aussi les tirages EuroMillions →</a> · <a class="text-link" href="/tirages/loto/">Loto →</a></p>
+{pager}
+</section></main>{FOOTER}</body></html>'''
+
+
+def keno_index_html(facts_list):
+    items = ''.join(
+        f'<li data-date="{esc(f["date"])}"><a href="{esc(f["draw_id"])}/">'
+        f'{date_fr(f["date"])} — {esc(f["draw_id"])}</a></li>'
+        for f in reversed(facts_list))
+    title = 'Tirages Keno 16/56 | AleaQuant'
+    desc = ('Analyses des tirages Keno depuis l’entrée en vigueur de la formule 16/56. '
+            'Les archives de l’ancienne formule 20/70 sont conservées séparément.')
+    return f'''<!doctype html>
+<html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>{esc(title)}</title><meta name="description" content="{esc(desc)}">
+<link rel="canonical" href="{SITE_URL}/tirages/keno/">
+<link rel="stylesheet" href="../../style.css"><link rel="stylesheet" href="../../atlas.css"></head>
+<body><a class="skip" href="#main">Aller au contenu</a><header>{NAV}<span class="edition">ÉDITION EXPÉRIMENTALE · V0</span></header>
+<main id="main"><section class="section"><div class="section-head"><div><span class="eyebrow">DRAW / KENO</span>
+<h1>Tirages Keno — formule 16/56</h1></div><p>{fmt_num(len(facts_list))} tirages analysés depuis l’entrée en vigueur de la formule actuelle. Les anciens tirages 20/70 ne sont pas mélangés à cet historique.</p></div>
+<ul class="draw-index">{items}</ul></section></main>{FOOTER}</body></html>'''
+
+
+def games_index_html(em_count, loto_count, keno_count=0):
     """Choix explicite du jeu ; seuls les jeux publiés sont proposés."""
     title = 'Choisir un jeu et explorer ses tirages | AleaQuant'
-    desc = 'Tirages EuroMillions et Loto analysés selon leurs règles historiques.'
+    desc = 'Tirages EuroMillions, Loto et Keno analysés selon leurs règles historiques.'
     return f'''<!doctype html>
 <html lang="fr"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>{esc(title)}</title><meta name="description" content="{esc(desc)}">
@@ -416,7 +576,8 @@ def games_index_html(em_count, loto_count):
 <div class="game-choices">
 <a class="game-choice" href="/tirages/euromillions/"><strong>EuroMillions</strong><span>{fmt_num(em_count)} tirages analysés · cinq numéros et deux étoiles</span><em>Explorer EuroMillions →</em></a>
 <a class="game-choice" href="/tirages/loto/"><strong>Loto</strong><span>{fmt_num(loto_count)} tirages analysés · formules historiques respectées</span><em>Explorer Loto →</em></a>
-</div><p class="small">Keno est en préparation : ses lois et son historique ne sont pas encore publiés.</p>
+{f'<a class="game-choice" href="/tirages/keno/"><strong>Keno</strong><span>{fmt_num(keno_count)} tirages analysés · formule actuelle 16/56</span><em>Explorer Keno →</em></a>' if keno_count else ''}
+</div>{'<p class="small">Keno est en préparation.</p>' if not keno_count else ''}
 </section></main>{FOOTER}</body></html>'''
 
 
@@ -448,6 +609,20 @@ def refresh_draw_page(draw_id):
         following = loto[i + 1]['draw_id'] if i + 1 < len(loto) else None
         output = DIST / 'tirages' / 'loto' / draw_id / 'index.html'
         content = loto_page_html(facts, previous, following, article)
+    elif draw_id.startswith('KE-'):
+        if facts.get('rule_id') != 'keno-56-16-v1':
+            raise ValueError('Seuls les tirages Keno du régime actif 16/56 sont publiés')
+        keno = [read_json(path) for path in (DATA / 'facts').glob('KE-*.json')]
+        keno = [item for item in keno if item.get('rule_id') == 'keno-56-16-v1']
+        keno.sort(key=lambda item: (item['date'], item['draw_id']))
+        positions = [i for i, item in enumerate(keno) if item['draw_id'] == draw_id]
+        if len(positions) != 1:
+            raise ValueError(f'Tirage Keno actif absent ou non unique : {draw_id}')
+        i = positions[0]
+        previous = keno[i - 1]['draw_id'] if i else None
+        following = keno[i + 1]['draw_id'] if i + 1 < len(keno) else None
+        output = DIST / 'tirages' / 'keno' / draw_id / 'index.html'
+        content = keno_page_html(facts, previous, following, article)
     else:
         raise ValueError(f'Page de tirage non prise en charge : {draw_id}')
     output.parent.mkdir(parents=True, exist_ok=True)
@@ -494,18 +669,35 @@ def build():
             loto_page_html(facts, prev_id, next_id, articles.get(draw_id)), encoding='utf-8')
     (loto_dir / 'index.html').write_text(loto_index_html(loto_facts), encoding='utf-8')
 
-    # Un point d'entrée commun rend explicite le jeu choisi, notamment depuis
-    # la navigation des pages de tirage. Le Keno n'y figure pas avant qualification.
+    # L'ancienne formule Keno 20/70 reste archivée dans les faits, mais ne se
+    # mélange pas à l'index du régime actif 16/56.
+    keno_facts = [read_json(p) for p in (DATA / 'facts').glob('KE-*.json')]
+    keno_facts = [f for f in keno_facts if f.get('rule_id') == 'keno-56-16-v1']
+    keno_facts.sort(key=lambda f: (f['date'], f['draw_id']))
+    keno_dir = DIST / 'tirages' / 'keno'
+    keno_dir.mkdir(parents=True, exist_ok=True)
+    for i, facts in enumerate(keno_facts):
+        draw_id = facts['draw_id']
+        prev_id = keno_facts[i - 1]['draw_id'] if i else None
+        next_id = keno_facts[i + 1]['draw_id'] if i + 1 < len(keno_facts) else None
+        page_dir = keno_dir / draw_id
+        page_dir.mkdir(parents=True, exist_ok=True)
+        (page_dir / 'index.html').write_text(
+            keno_page_html(facts, prev_id, next_id, articles.get(draw_id)), encoding='utf-8')
+    (keno_dir / 'index.html').write_text(keno_index_html(keno_facts), encoding='utf-8')
+
+    # Un point d'entrée commun rend explicite le jeu choisi.
     game_dir = DIST / 'tirages'
     game_dir.mkdir(parents=True, exist_ok=True)
     (game_dir / 'index.html').write_text(
-        games_index_html(len(rows), len(loto_facts)), encoding='utf-8')
+        games_index_html(len(rows), len(loto_facts), len(keno_facts)), encoding='utf-8')
 
     # sitemap.xml
     urls = [f'{SITE_URL}/', f'{SITE_URL}/tirages/', f'{SITE_URL}/tirages/euromillions/',
-            f'{SITE_URL}/tirages/loto/']
+            f'{SITE_URL}/tirages/loto/', f'{SITE_URL}/tirages/keno/']
     urls += [f'{SITE_URL}/tirages/euromillions/{r[1]}/' for r in rows]
     urls += [f'{SITE_URL}/tirages/loto/{f["draw_id"]}/' for f in loto_facts]
+    urls += [f'{SITE_URL}/tirages/keno/{f["draw_id"]}/' for f in keno_facts]
     sitemap = ('<?xml version="1.0" encoding="UTF-8"?>\n'
                '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n' +
                ''.join(f'<url><loc>{esc(u)}</loc></url>\n' for u in urls) +
@@ -529,7 +721,8 @@ def build():
     (DIST / 'rss.xml').write_text(rss, encoding='utf-8')
 
     print(json.dumps({'euromillions_pages_written': written, 'loto_pages_written': len(loto_facts),
-                       'total_draws': len(rows) + len(loto_facts),
+                       'keno_pages_written': len(keno_facts),
+                       'total_draws': len(rows) + len(loto_facts) + len(keno_facts),
                        'sitemap_urls': len(urls)}, indent=1))
 
 

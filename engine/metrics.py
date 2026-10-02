@@ -1,5 +1,9 @@
 """Métriques d'un tirage, génériques : k numéros tirés dans un domaine 1..n.
 
+Version : 0.2 | Date : 2026-10-02 | Auteur : AleaQuant
+Historique : 0.2 ajoute les sous-totaux descriptifs par dizaine.
+TODO : qualifier une loi exacte marginale par dizaine si un usage de rareté le justifie.
+
 Le laboratoire définit ces métriques pour EuroMillions seul (5 parmi 50, dizaines
 1-10…41-50, coupure bas/haut à 25). Ce module les calcule pour n'importe quel couple
 (k, n), ce qu'exigent le Loto (6 parmi 49 puis 5 parmi 49) et le Keno (20 parmi 70 puis
@@ -26,6 +30,32 @@ from math import comb
 def tranches(domain, taille=10):
     """Bornes basses des tranches de `taille` numéros couvrant 1..domain."""
     return tuple(range(1, domain + 1, taille))
+
+
+def profil_dizaines(numeros, domain, *, taille_tranche=10):
+    """Effectif et sous-total des numéros tirés dans chaque tranche de dix.
+
+    Le dernier intervalle est tronqué à `domain` (par exemple 51–56 au Keno 16/56).
+    Ces sous-totaux sont descriptifs : cette fonction ne leur attribue ni loi ni rareté.
+    """
+    valeurs = tuple(sorted(numeros))
+    if not valeurs or valeurs[0] < 1 or valeurs[-1] > domain:
+        raise ValueError(f"sélection hors du domaine 1-{domain}")
+    if len(set(valeurs)) != len(valeurs):
+        raise ValueError(f"doublon dans {valeurs}")
+    bornes = tranches(domain, taille_tranche)
+    effectifs, sous_totaux = [0] * len(bornes), [0] * len(bornes)
+    for valeur in valeurs:
+        i = (valeur - 1) // taille_tranche
+        effectifs[i] += 1
+        sous_totaux[i] += valeur
+    return tuple({
+        "decade": i + 1,
+        "start": lo,
+        "end": min(lo + taille_tranche - 1, domain),
+        "count": effectifs[i],
+        "sum": sous_totaux[i],
+    } for i, lo in enumerate(bornes))
 
 
 def coupure_basse(domain):
@@ -89,9 +119,10 @@ def metriques(numeros, domain, *, taille_tranche=10):
     resultat["repeated_terminal_digits"] = sum(c - 1 for c in terminaux.values())
     resultat["terminal_pair_collisions"] = sum(comb(c, 2) for c in terminaux.values())
 
-    bornes = tranches(domain, taille_tranche)
-    decades = tuple(sum(lo <= v <= lo + taille_tranche - 1 for v in valeurs) for lo in bornes)
+    profil = profil_dizaines(valeurs, domain, taille_tranche=taille_tranche)
+    decades = tuple(b["count"] for b in profil)
     resultat["decade_counts"] = decades
+    resultat["decade_sums"] = tuple(b["sum"] for b in profil)
     resultat["max_same_decade"] = max(decades)
     resultat["occupied_decades"] = sum(c > 0 for c in decades)
 
