@@ -35,11 +35,14 @@ ne déclenche pas de publication.
 > à cause d'un motif `KE--*.json` erroné ; les deux régimes Keno contiennent maintenant
 > respectivement 20 et 17 métriques. Aucun calcul massif de lois n'a été relancé.
 
-Politique proposée pour CI, recette et production : `CI-STAGING-PRODUCTION.md`.
-Recommandation : Worker `aleaquant-recette` sur `recette.aleaquant.org`, protégé
-par Access ; garder `private.aleaquant.org` pour le tunnel Mac. Le jeton du
-tunnel, l’API Token CI et l’identité Access ont des rôles distincts. Aucun
-pipeline ni recette isolée n’est encore activé.
+Mise à jour du 03/10/2026 : **recette → staging distinct → production**.
+Recette active : https://recette.aleaquant.org/ ; maquette sous `/maquette/`,
+Worker `aleaquant-recette`, connexion Access avec la politique existante.
+Snapshot isolé et tracé, `workers.dev`/previews désactivés, noindex.
+Procédure : `RECETTE.md` ; livraison : `DEPLOYMENTS.md`. Staging distinct et CI
+restent à créer ; aucune promotion automatique. Production inchangée.
+`private.aleaquant.org` reste le tunnel Mac ; `review.aleaquant.org` la console
+éditoriale. Les trois identités tunnel/API de déploiement/Access restent distinctes.
 
 Domaine raccordé le 01/10/2026 : https://aleaquant.org/ et
 https://aleaquant.org/maquette/. HTTPS et trois pages vérifiés ; pas de nouveau

@@ -1,5 +1,24 @@
 # Journal de développement
 
+## 2026-10-03 — recette isolée avant un staging distinct
+
+- Décision confirmée : recette → staging distinct → production. Worker
+  `aleaquant-recette` sur `recette.aleaquant.org`, protégé par Cloudflare Access.
+- `wrangler.recette.jsonc` : configuration indépendante, workers.dev et previews
+  désactivés. `tools/prepare_recette.py` v1.1 : copie figée de `dist/`, SHA-256,
+  provenance dirty explicite, refus d'écrasement et budget de 20 000 assets.
+- Adaptations limitées au snapshot : noindex, robots et liens de navigation
+  internes ; faits, sources scientifiques et configuration production préservés.
+- 10 029 assets déployés ; maquette et trois fiches de jeux vérifiées avec leurs
+  histogrammes. 13 tests de préparation + 1 test de budget réussis, dry-run valide.
+- Anonyme redirigé vers Access ; noindex et CSP vérifiés après connexion.
+  Version de production et trois empreintes HTTP inchangées.
+- Guides, architecture, TODO, dette, handoff et inventaire actualisés. Staging,
+  CI et promotion automatisée restent à réaliser. [Livraison](DEPLOYMENTS.md).
+- Implémentation déléguée à GPT-6.1 Sol, effort élevé ; consommation de jetons
+  et coût non exposés par l'outil de délégation. Aucun calcul GPU ni appel LLM
+  du pipeline éditorial réalisé.
+
 ## 2026-10-02 — services après redémarrage du Mac
 
 - `tools/refresh.conf` v0.3 : chemins dérivés du dépôt, correction du fichier

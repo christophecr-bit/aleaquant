@@ -1,5 +1,40 @@
 # Déploiements AleaQuant
 
+## 3 octobre 2026 — recette protégée, séparée de la production
+
+- Autorisation : préparer et héberger la version à valider, avec le parcours
+  **recette → staging distinct → production** confirmé par Christophe.
+- Worker `aleaquant-recette` : https://recette.aleaquant.org/ ; entrée maquette
+  https://recette.aleaquant.org/maquette/. Access créé avant la route, politique
+  existante réutilisée. Aucun nouvel accès accordé à un autre public.
+- Configuration `wrangler.recette.jsonc` ; Wrangler **4.147.0**. Adresse
+  workers.dev et previews désactivées. Snapshots locaux ignorés par Git.
+- Premier lot `.recette/current` : version `cb3639cc-e73c-4b31-8692-dbc8f6c638ff`.
+  Deuxième lot `.recette/lots/20261003-02` : **`0770c758-ea7c-4290-ae8e-264a086397a2`**,
+  correction des liens de maquette pour rester sur l'origine recette.
+- **10 029 assets** ; première livraison complète, puis 1 fichier modifié
+  (`maquette/index.html`), 10 028 déjà présents. Les 20 033 entrées annoncées au
+  scan Wrangler incluent les répertoires ; elles ne sont pas le compte d'assets.
+- HEAD source `d737a646cf8bc78b2e3fff3a0c2d96b49cbfc1d3`, arbre dirty assumé :
+  la recette copie le `dist/` local, pas un candidat de production validé.
+  [Manifeste SHA](deployments/20261003-recette-assets.json).
+- Empreinte publique finale :
+  `5c02bcadb027ac4ce0871f47910746ab52a493555df99c7c5d768498d8403bd1`.
+- Validation : 13 tests du préparateur + 1 test du budget, dry-run Wrangler,
+  vérification SHA des 10 031 fichiers du snapshot (dont 2 fichiers de contrôle).
+  Navigation authentifiée et fiches EM-26078, LO-20260928, KE-26365 contrôlées :
+  respectivement 21, 18 et 18 histogrammes présents.
+- Accès anonyme `/` et `/maquette/` : 302 vers Access ; workers.dev : 404.
+  En-têtes noindex et CSP présents sur la maquette après connexion.
+  [Résultats et limites détaillés](deployments/20261003-recette-verification.json).
+- Production avant/après : version `0fca4e10-6695-4161-b51f-0bd7b7f6bbc1`
+  inchangée, HTTP 200 et SHA identiques pour `/`, `/maquette/`, `/articles.json`.
+- Aucun recalcul de faits, aucune génération ni approbation d'article, aucune
+  modification du moteur HPC. Les modifications Git préexistantes sont conservées.
+- Limites : le premier essai `wrangler dev --local` a atteint la limite de
+  watchers et a été arrêté ; aucun service ajouté sur le Mac. Staging et CI
+  restent à créer. Guide d'exploitation : [RECETTE.md](RECETTE.md).
+
 ## 2 octobre 2026 — publication après recalcul des trois jeux
 
 - Autorisation humaine reçue après validation des recalculs.

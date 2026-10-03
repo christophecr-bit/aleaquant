@@ -1,6 +1,12 @@
 # TODO opérationnelle AleaQuant
 
-Auteur : AleaQuant · v0.2 · 2 octobre 2026
+Auteur : AleaQuant · v0.3 · 3 octobre 2026
+
+## Recette / staging — 3 octobre 2026
+
+- [x] Recette Cloudflare isolée et protégée, snapshot SHA, noindex, contrôle humain possible.
+- [ ] Staging distinct, puis CI et promotion explicite du même contenu validé.
+- Procédure : [RECETTE.md](RECETTE.md) ; architecture : [CI-STAGING-PRODUCTION.md](CI-STAGING-PRODUCTION.md).
 
 Cette liste contient les actions concrètes de mise en service, vérification et
 coordination. Elle ne définit pas les fonctions produit (`PRODUCT-BACKLOG.md`),

@@ -1,0 +1,17 @@
+// Recette permanente : Worker distinct de staging et de la production.
+// Auteur : AleaQuant · Date : 2026-10-03 · Version : 1.0.
+// Historique : création d'une configuration recette indépendante.
+// Préparer le snapshot avec tools/prepare_recette.py avant de déployer.
+{
+  "name": "aleaquant-recette",
+  "compatibility_date": "2026-09-29",
+  "assets": {
+    "directory": "./.recette/current/dist",
+    "not_found_handling": "404-page"
+  },
+  "workers_dev": false,
+  "preview_urls": false,
+  "routes": [
+    { "pattern": "recette.aleaquant.org", "custom_domain": true }
+  ]
+}

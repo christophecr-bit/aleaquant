@@ -1,23 +1,30 @@
 # Politique CI, recette et production AleaQuant
 
-**Version :** 0.1 · **Date :** 2026-10-01 · **Auteur :** AleaQuant  
-**Statut :** proposition d’architecture ; aucun pipeline CI ni environnement de recette n’est configuré par ce document.
+**Version :** 0.2 · **Date :** 2026-10-03 · **Auteur :** AleaQuant
+**Statut :** architecture validée sur trois environnements ; recette déployée et protégée par Access, staging distinct et CI à réaliser.
 
-## Décision proposée
+## Décision retenue le 3 octobre 2026
 
-Utiliser deux Workers persistants Wrangler : `aleaquant-recette` pour la recette
-et le Worker actuel `aleaquant` pour la production. La recette sert sur
-`recette.aleaquant.org`, protégé par Cloudflare Access ; la production sert sur
-`aleaquant.org`. Garder `workers.dev` comme adresse technique de secours pendant
-la transition. Le sous-domaine `private.aleaquant.org` reste réservé au tunnel
-d’accès au Mac et ne doit pas être réutilisé pour la recette.
+Christophe demande **recette → staging distinct → production**. Chaque niveau
+possède un Worker et une configuration propres ; aucun déploiement implicite
+au niveau suivant.
 
-Les aperçus Cloudflare par branche sont une évolution possible quand la CI est
-en place. Ils créent un déploiement distinct par branche avec URL stable et URL
-immuable par déploiement, variables et observabilité isolées. Ils sont publics
-par défaut ; un aperçu sur domaine personnalisé doit être protégé par Access.
-Pour le POC éditorial actuel, un seul environnement de recette permanent est
-plus simple à exploiter.
+| Niveau | Worker / domaine | Rôle | État |
+|---|---|---|---|
+| Recette | `aleaquant-recette` / `recette.aleaquant.org` | Valider le rendu, la maquette et les fonctionnalités sur un lot figé. | Déployé le 3 octobre ; Access vérifié. |
+| Staging | `aleaquant-staging` / `staging.aleaquant.org` | Répéter la livraison du candidat validé en conditions proches de la production. | À créer séparément. |
+| Production | `aleaquant` / `aleaquant.org` | Site publié. | Existant ; inchangé par la préparation recette. |
+
+La recette est, et le futur staging devra être, protégé par Access, exclu de l'indexation,
+sans adresse `workers.dev` ni URL de preview contournant cette protection.
+`private.aleaquant.org` reste le tunnel SSH ; `review.aleaquant.org` reste la
+console éditoriale sur le Mac. La recette sert des fichiers sur Cloudflare et
+n'exige pas que le Mac soit allumé.
+
+La mise en place recette utilise une configuration séparée
+`wrangler.recette.jsonc`, jamais un remplacement de `wrangler.jsonc` production.
+Procédure et paquet figé : [RECETTE.md](RECETTE.md). Pas de nouveau calcul de
+faits ni de génération d'article pour préparer le paquet.
 
 ## Modèle Cloudflare
 
@@ -40,20 +47,24 @@ réexaminée si un service avec état est ajouté.
 
 ```mermaid
 flowchart LR
-  A[Branche ou PR] --> B[CI : lint ciblé, tests, cohérence des données]
-  B -->|échec| X[Arrêt · aucun déploiement]
-  B -->|réussite| C[Déployer le commit sur aleaquant-recette]
-  C --> D[Smoke tests HTTPS · pages · assets · SEO]
-  D -->|échec| X
-  D -->|réussite| E[Recette humaine]
-  E --> F[Merge vers main]
-  F --> G[Approbation environnement GitHub Production]
-  G --> H[Déployer le même commit et le même dist validé]
-  H --> I[Smoke tests production]
-  I -->|échec| J[Rollback vers version Worker précédente]
+  A[Sources et contrôles] --> B[Lot figé avec manifeste SHA]
+  B --> C[Recette privée]
+  C --> D[Validation humaine du rendu et des fonctions]
+  D --> E[Staging privé distinct]
+  E --> F[Vérifications de livraison]
+  F --> G[Approbation de production]
+  G --> H[Production]
 ```
 
-## Règles CI et publication
+Le flux CI cible est encore à construire. La première recette est une livraison
+manuelle explicite et isolée. Un lot de travail peut contenir des changements
+locaux non committés : le manifeste l'indique, et **ne vaut pas candidat de
+production validé**. Pour promouvoir, figer et versionner les sources approuvées.
+Les fichiers de contenu doivent garder leurs SHA entre niveaux ; les surcharges
+propres à l'environnement (`_headers`, `robots.txt`, domaine) sont identifiées
+séparément. Ne jamais promouvoir par mégarde un `Disallow: /` en production.
+
+## Règles CI cibles et publication
 
 1. Toute modification passe par une branche ou une PR et des contrôles locaux/CI.
    Aucun `wrangler deploy` lancé depuis un poste n’est requis pour le flux normal.
@@ -67,9 +78,9 @@ flowchart LR
 4. La recette humaine porte sur un SHA précis. Si le commit change, la validation
    expire et la recette doit être rejouée.
 5. Le passage en production exige une approbation explicite de l’environnement
-   GitHub `production`. Déployer le même SHA et les mêmes assets que ceux validés
-   en recette ; reconstruire à partir d’entrées non figées invalide cette
-   équivalence.
+   GitHub `production`. Promouvoir le même commit de contenu validé en recette puis staging, avec
+   ses seules surcharges d’environnement tracées ; reconstruire à partir
+   d’entrées non figées invalide cette équivalence.
 6. Après déploiement, vérifier HTTP 200, HTTPS, pages représentatives des jeux,
    histogrammes et fichiers statiques, puis consigner version Worker, SHA,
    résultat et heure dans `docs/DEPLOYMENTS.md`.
@@ -114,11 +125,11 @@ un Service Token au navigateur.
 
 1. Créer l’application Cloudflare Access de `recette.aleaquant.org` et son
    Worker `aleaquant-recette` sans modifier la production.
-2. Ajouter un environnement `staging` à `wrangler.jsonc`, avec un nom, un domaine
-   personnalisé et chaque binding explicitement déclaré. Vérifier que les
-   secrets/données copiés sont adaptés à la recette.
+2. Préparer la recette avec `wrangler.recette.jsonc` et un snapshot isolé.
+   Créer ensuite le staging séparément ; chaque configuration déclare son nom,
+   domaine, assets et bindings sans hériter des routes de production.
 3. Créer une CI GitHub qui exécute les contrôles déjà disponibles et déploie
-   recette seulement après succès. Configurer `production` comme environnement
+   recette puis staging seulement après les validations requises. Configurer `production` comme environnement
    protégé avec approbation humaine.
 4. Tester une livraison de bout en bout et le rollback avant de désactiver le
    déploiement manuel historique.
@@ -129,16 +140,16 @@ un Service Token au navigateur.
 
 - Production : Worker `aleaquant`, domaine personnalisé `aleaquant.org`,
   `workers.dev` activé.
-- Recette : la maquette éditoriale est actuellement une page `/maquette/` dans
-  le Worker de production ; ce n’est pas un environnement isolé.
+- La maquette `/maquette/` existe encore sur le Worker de production ; sa copie
+  en recette permet désormais de valider un lot séparément. Consulter
+  [RECETTE.md](RECETTE.md) pour le statut de la première livraison.
 - Aucun workflow GitHub Actions de livraison n’a été trouvé dans le dépôt au
   moment de cette proposition.
 - Avant activation CI : rétablir l’accès GitHub du poste, vérifier que la branche
   distante contient les commits locaux à livrer, et choisir les contrôles
   déterministes obligatoires. Ne pas lancer un push forcé pour contourner l’écart.
-- La version installée de Wrangler est 4.145.0 ; Cloudflare Previews nécessite
-  actuellement Wrangler 4.135.0 ou plus. Le projet ne dispose pas encore d’une
-  dépendance Wrangler locale figée ; épingler sa version CI avant automatisation.
+- Wrangler observé le 3 octobre : 4.147.0. Le projet ne dispose pas encore
+  d’une dépendance Wrangler locale figée ; épingler sa version CI avant automatisation.
 
 ## Références officielles
 
@@ -149,3 +160,6 @@ un Service Token au navigateur.
 - [Versions et déploiements](https://developers.cloudflare.com/workers/versions-and-deployments/)
 - [Custom Domains](https://developers.cloudflare.com/workers/configuration/routing/custom-domains/)
 - [Déploiements progressifs](https://developers.cloudflare.com/workers/versions-and-deployments/gradual-deployments/)
+
+Historique : v0.1 — proposition initiale ; v0.2 — trois niveaux distincts
+confirmés par Christophe, recette séparée et promotion du contenu tracée.

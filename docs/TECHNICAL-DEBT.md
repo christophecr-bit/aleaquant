@@ -86,14 +86,24 @@ entrée terminée quitte cette liste et rejoint `CHANGELOG.md`.
   Validation attendue : lancer un lot témoin de chaque jeu sans terminal, simuler
   échec/interruption/double lancement et vérifier la protection d’un article
   approuvé. Déploiement et approbation éditoriale restent des actions distinctes.
-- [ ] **Rendre le déploiement reproductible** : vérifier le lien GitHub–Cloudflare,
-  créer les environnements recette/production prévus dans
-  [`CI-STAGING-PRODUCTION.md`](CI-STAGING-PRODUCTION.md), séparer les secrets et
-  exécuter les contrôles/tests avant déploiement. Le flux actuellement vérifié
-  reste manuel (`wrangler deploy`, puis `git push`).
+- [ ] **Rendre le déploiement reproductible** : créer le staging distinct demandé
+  après recette, puis la CI GitHub–Cloudflare et la promotion explicite du lot
+  validé recette → staging → production. Séparer les secrets et approbations,
+  figer Wrangler, tester rollback et contrôles obligatoires.
+  [`CI-STAGING-PRODUCTION.md`](CI-STAGING-PRODUCTION.md). La livraison recette
+  actuelle reste manuelle ; le manifeste signale les assets issus d'un dist dirty.
+  La recette isolée est livrée le 03/10/2026 : [procédure](RECETTE.md),
+  [travail clôturé](CHANGELOG.md).
+- [ ] **Prévisualisation Wrangler sur grand arbre** : `wrangler dev --local`
+  a signalé la limite des watchers pour les ~10 000 dossiers du snapshot.
+  Essai arrêté ; aucun service permanent ajouté. L'aperçu 4173 demeure disponible,
+  et la première recette a été contrôlée directement sur Cloudflare.
+
 - [ ] **Contrôler automatiquement le budget Wrangler** : compter les assets du
   build et échouer avant déploiement si la limite configurée approche ; documenter
   les exclusions et les fichiers servis à la demande.
+  Le préparateur recette impose déjà la limite de 20 000 ; étendre ce contrôle
+  aux autres chemins de livraison lors de la mise en place CI.
 - [ ] **Finaliser les URL du domaine propre** : canonicals, sitemap/RSS et
   redirections `workers.dev`/`www` cohérents avec `aleaquant.org`.
 - [ ] **Vérifier l'accès SSH distant via Access/Tunnel** séparément du site public,
