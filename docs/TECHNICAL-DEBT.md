@@ -86,9 +86,9 @@ entrée terminée quitte cette liste et rejoint `CHANGELOG.md`.
   Validation attendue : lancer un lot témoin de chaque jeu sans terminal, simuler
   échec/interruption/double lancement et vérifier la protection d’un article
   approuvé. Déploiement et approbation éditoriale restent des actions distinctes.
-- [ ] **Rendre le déploiement reproductible** : créer le staging distinct demandé
-  après recette, puis la CI GitHub–Cloudflare et la promotion explicite du lot
-  validé recette → staging → production. Séparer les secrets et approbations,
+- [ ] **Rendre le déploiement reproductible** : CI GitHub–Cloudflare et livraison
+  directe du lot validé en recette vers la production. Aucun staging distinct
+  à créer (clarification du 03/10/2026). Séparer les secrets,
   figer Wrangler, tester rollback et contrôles obligatoires.
   [`CI-STAGING-PRODUCTION.md`](CI-STAGING-PRODUCTION.md). La livraison recette
   actuelle reste manuelle ; le manifeste signale les assets issus d'un dist dirty.

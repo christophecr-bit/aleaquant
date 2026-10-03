@@ -1,6 +1,6 @@
 # Inventaire des composants AleaQuant
 
-Auteur : AleaQuant · v0.2 · 3 octobre 2026 (ajout recette ; relevé local du 2 octobre conservé)
+Auteur : AleaQuant · v0.3 · 3 octobre 2026 (recette/production ; relevé local du 2 octobre conservé)
 
 Cet inventaire indique où tournent les composants et comment ils sont reliés.
 Il décrit l'état local observé à la date du relevé ; les versions installées
@@ -59,10 +59,11 @@ Hébergement vérifié le 3 octobre :
 | Environnement | Adresse / Worker | État |
 |---|---|---|
 | Recette | `recette.aleaquant.org` / `aleaquant-recette` | Déployé, Cloudflare Access, maquette sous `/maquette/`, indépendant du Mac. |
-| Staging distinct | `staging.aleaquant.org` / `aleaquant-staging` | Prévu, à créer ; aucun port local à utiliser. |
 | Production | `aleaquant.org` / `aleaquant` | Existant, inchangé lors de la livraison recette. |
 
 Voir [RECETTE.md](RECETTE.md) et [CI-STAGING-PRODUCTION.md](CI-STAGING-PRODUCTION.md).
+La recette remplit le rôle de staging : le lot validé est livré directement en
+production. Le troisième environnement envisagé précédemment est abandonné.
 
 | Écoute observée | Usage | Exposition |
 |---|---|---|

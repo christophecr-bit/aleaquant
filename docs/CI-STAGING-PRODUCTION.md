@@ -1,21 +1,22 @@
 # Politique CI, recette et production AleaQuant
 
-**Version :** 0.2 · **Date :** 2026-10-03 · **Auteur :** AleaQuant
-**Statut :** architecture validée sur trois environnements ; recette déployée et protégée par Access, staging distinct et CI à réaliser.
+**Version :** 0.3 · **Date :** 2026-10-03 · **Auteur :** AleaQuant
+**Statut :** recette → validation humaine → production ; recette déployée et protégée par Access, CI à réaliser.
 
 ## Décision retenue le 3 octobre 2026
 
-Christophe demande **recette → staging distinct → production**. Chaque niveau
-possède un Worker et une configuration propres ; aucun déploiement implicite
-au niveau suivant.
+Clarification de Christophe : **une recette validée est poussée directement en
+production**. Deux environnements suffisent. « Staging » désigne ici le rôle de
+préproduction rempli par la recette ; aucun troisième Worker n'est prévu.
+La validation « bon pour production » autorise la livraison du lot identifié,
+sans passage ni validation supplémentaire dans un staging séparé.
 
 | Niveau | Worker / domaine | Rôle | État |
 |---|---|---|---|
 | Recette | `aleaquant-recette` / `recette.aleaquant.org` | Valider le rendu, la maquette et les fonctionnalités sur un lot figé. | Déployé le 3 octobre ; Access vérifié. |
-| Staging | `aleaquant-staging` / `staging.aleaquant.org` | Répéter la livraison du candidat validé en conditions proches de la production. | À créer séparément. |
 | Production | `aleaquant` / `aleaquant.org` | Site publié. | Existant ; inchangé par la préparation recette. |
 
-La recette est, et le futur staging devra être, protégé par Access, exclu de l'indexation,
+La recette est protégée par Access, exclue de l'indexation,
 sans adresse `workers.dev` ni URL de preview contournant cette protection.
 `private.aleaquant.org` reste le tunnel SSH ; `review.aleaquant.org` reste la
 console éditoriale sur le Mac. La recette sert des fichiers sur Cloudflare et
@@ -50,10 +51,8 @@ flowchart LR
   A[Sources et contrôles] --> B[Lot figé avec manifeste SHA]
   B --> C[Recette privée]
   C --> D[Validation humaine du rendu et des fonctions]
-  D --> E[Staging privé distinct]
-  E --> F[Vérifications de livraison]
-  F --> G[Approbation de production]
-  G --> H[Production]
+  D -->|Bon pour production| E[Livraison du lot validé]
+  E --> F[Production et contrôles après livraison]
 ```
 
 Le flux CI cible est encore à construire. La première recette est une livraison
@@ -77,8 +76,10 @@ séparément. Ne jamais promouvoir par mégarde un `Disallow: /` en production.
    public avant d’y envoyer l’intégralité de `dist/`.
 4. La recette humaine porte sur un SHA précis. Si le commit change, la validation
    expire et la recette doit être rejouée.
-5. Le passage en production exige une approbation explicite de l’environnement
-   GitHub `production`. Promouvoir le même commit de contenu validé en recette puis staging, avec
+5. La validation humaine du lot en recette, exprimée comme « bon pour production »,
+   déclenche sa livraison directe. Dans la future CI, l'environnement GitHub
+   `production` pourra porter cette même approbation, sans la dupliquer.
+   Promouvoir le même commit de contenu validé en recette, avec
    ses seules surcharges d’environnement tracées ; reconstruire à partir
    d’entrées non figées invalide cette équivalence.
 6. Après déploiement, vérifier HTTP 200, HTTPS, pages représentatives des jeux,
@@ -126,11 +127,11 @@ un Service Token au navigateur.
 1. Créer l’application Cloudflare Access de `recette.aleaquant.org` et son
    Worker `aleaquant-recette` sans modifier la production.
 2. Préparer la recette avec `wrangler.recette.jsonc` et un snapshot isolé.
-   Créer ensuite le staging séparément ; chaque configuration déclare son nom,
+   Chaque configuration recette/production déclare son nom,
    domaine, assets et bindings sans hériter des routes de production.
 3. Créer une CI GitHub qui exécute les contrôles déjà disponibles et déploie
-   recette puis staging seulement après les validations requises. Configurer `production` comme environnement
-   protégé avec approbation humaine.
+   en recette, puis livre directement en production le lot validé humainement.
+   Configurer `production` comme environnement protégé portant cette validation.
 4. Tester une livraison de bout en bout et le rollback avant de désactiver le
    déploiement manuel historique.
 5. Ajouter ensuite, si utile, des Workers Previews par PR, avec nettoyage des
@@ -161,5 +162,6 @@ un Service Token au navigateur.
 - [Custom Domains](https://developers.cloudflare.com/workers/configuration/routing/custom-domains/)
 - [Déploiements progressifs](https://developers.cloudflare.com/workers/versions-and-deployments/gradual-deployments/)
 
-Historique : v0.1 — proposition initiale ; v0.2 — trois niveaux distincts
-confirmés par Christophe, recette séparée et promotion du contenu tracée.
+Historique : v0.1 — proposition initiale ; v0.2 — hypothèse de trois niveaux ;
+v0.3 — clarification de Christophe : recette validée → production directe,
+abandon du staging distinct. La CI reste une évolution, sans bloquer le flux manuel.

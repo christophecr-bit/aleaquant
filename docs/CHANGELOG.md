@@ -1,5 +1,16 @@
 # Journal de développement
 
+## 2026-10-03 — clarification : recette validée → production directe
+
+- Deux environnements : recette privée pour validation, puis production publique.
+  Abandon de la création d'un staging distinct ; la recette remplit ce rôle.
+- La validation « bon pour production » du lot suffit pour sa livraison directe,
+  sans seconde recette. CI future ; flux manuel maintenu pour le moment.
+- Architecture, guide, inventaire, TODO et dette alignés ; entrées historiques
+  conservées. Commentaire Wrangler clarifié, paramètres inchangés.
+- Vérification documentaire et `git diff --check` ; aucun déploiement ni test
+  applicatif requis, aucun contenu publié ou recalculé.
+
 ## 2026-10-03 — recette isolée avant un staging distinct
 
 - Décision confirmée : recette → staging distinct → production. Worker

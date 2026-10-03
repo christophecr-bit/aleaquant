@@ -35,12 +35,13 @@ ne déclenche pas de publication.
 > à cause d'un motif `KE--*.json` erroné ; les deux régimes Keno contiennent maintenant
 > respectivement 20 et 17 métriques. Aucun calcul massif de lois n'a été relancé.
 
-Mise à jour du 03/10/2026 : **recette → staging distinct → production**.
+Clarification du 03/10/2026 : **recette → validation humaine → production**.
 Recette active : https://recette.aleaquant.org/ ; maquette sous `/maquette/`,
 Worker `aleaquant-recette`, connexion Access avec la politique existante.
 Snapshot isolé et tracé, `workers.dev`/previews désactivés, noindex.
-Procédure : `RECETTE.md` ; livraison : `DEPLOYMENTS.md`. Staging distinct et CI
-restent à créer ; aucune promotion automatique. Production inchangée.
+Procédure : `RECETTE.md` ; livraison : `DEPLOYMENTS.md`. Aucun staging distinct
+à créer : le lot validé « bon pour production » est livré directement. La CI
+reste à réaliser ; le flux est encore manuel. Production inchangée par ce cadrage.
 `private.aleaquant.org` reste le tunnel Mac ; `review.aleaquant.org` la console
 éditoriale. Les trois identités tunnel/API de déploiement/Access restent distinctes.
 

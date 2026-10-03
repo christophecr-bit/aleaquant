@@ -1,5 +1,9 @@
 # Déploiements AleaQuant
 
+Décision actuelle (clarification du 03/10/2026) : **recette validée → production
+directe**, sans staging distinct. Voir [la politique de livraison](CI-STAGING-PRODUCTION.md).
+Les entrées ci-dessous conservent le contexte historique de chaque livraison.
+
 ## 3 octobre 2026 — recette protégée, séparée de la production
 
 - Autorisation : préparer et héberger la version à valider, avec le parcours

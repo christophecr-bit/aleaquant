@@ -1,12 +1,13 @@
 # Recette AleaQuant
 
-**Auteur :** AleaQuant · **Date :** 2026-10-03 · **Version :** 1.1.
-**Historique :** 1.0 environnement recette isolé; 1.1 liens internes adaptés au snapshot.
+**Auteur :** AleaQuant · **Date :** 2026-10-03 · **Version :** 1.2.
+**Historique :** 1.0 recette isolée ; 1.1 liens internes ; 1.2 recette validée → production directe.
 
 La recette héberge un lot figé à valider sur `recette.aleaquant.org`, avec le
-Worker séparé `aleaquant-recette`. Elle précède un futur environnement **staging**
-distinct, puis la production `aleaquant.org`. Staging et la CI ne sont pas créés
-par cette configuration. `private.aleaquant.org` reste réservé au tunnel vers le Mac.
+Worker séparé `aleaquant-recette`. **Une fois validé pour publication, le lot passe
+directement en production sur `aleaquant.org`.** La recette remplit le rôle de
+staging ; aucun environnement supplémentaire n'est prévu. La livraison est encore
+manuelle, la CI reste à réaliser. `private.aleaquant.org` reste le tunnel vers le Mac.
 
 ## État vérifié le 3 octobre 2026
 
@@ -97,7 +98,7 @@ npx --no-install wrangler --config wrangler.recette.jsonc deploy
 
 Pour un autre lot, conserver `--assets .recette/lots/lot-002/dist` sur cette
 commande. La configuration doit toujours être précisée pour cibler le Worker
-recette. La publication ne déploie ni staging ni production.
+recette. Cette commande publie uniquement en recette.
 
 Vérifier l'accès sans session (authentification Access exigée), puis avec
 l'identité autorisée : accueil `/`, entrée éditoriale `/maquette/`, `/tirages/`,
@@ -108,6 +109,8 @@ avant publication, même si seules les pages d'articles approuvés sont rendues.
 
 Consigner l'identifiant de version Worker, l'empreinte du manifeste, la date et
 les vérifications dans le journal de livraison. Toute nouvelle préparation
-produit un lot à valider de nouveau. Le passage futur à staging puis à production
-devra réutiliser les mêmes contenus approuvés, avec les adaptations propres à
-chaque environnement documentées; il nécessite ses étapes et autorisations.
+produit un lot à valider de nouveau. La validation « bon pour production »
+autorise la livraison directe de ce lot en production : mêmes contenus approuvés,
+avec les adaptations d'environnement documentées (notamment retrait des règles
+noindex/robots propres à la recette). Aucune régénération du contenu à cette étape.
+Cette clarification du processus ne vaut pas validation du lot actuellement en recette.

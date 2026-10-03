@@ -1,11 +1,12 @@
 # TODO opérationnelle AleaQuant
 
-Auteur : AleaQuant · v0.3 · 3 octobre 2026
+Auteur : AleaQuant · v0.4 · 3 octobre 2026
 
-## Recette / staging — 3 octobre 2026
+## Recette / production — 3 octobre 2026
 
 - [x] Recette Cloudflare isolée et protégée, snapshot SHA, noindex, contrôle humain possible.
-- [ ] Staging distinct, puis CI et promotion explicite du même contenu validé.
+- [ ] Livrer directement en production le lot validé en recette, puis automatiser
+  ce parcours dans la CI. Aucun staging distinct à créer.
 - Procédure : [RECETTE.md](RECETTE.md) ; architecture : [CI-STAGING-PRODUCTION.md](CI-STAGING-PRODUCTION.md).
 
 Cette liste contient les actions concrètes de mise en service, vérification et
@@ -25,6 +26,9 @@ d'exploitation plutôt que supprimées du processus.
 | OPS-006 | À chaque évolution du modèle | Avant déploiement d'une nouvelle métrique, claim de méthode, règle/régime, moteur ou correction de données, compléter le registre canonique, rattacher les preuves et empreintes des dépôts, faire relire le résumé public puis publier la mini note avec la mise à jour correspondante. | Version du modèle, portée jeux/régimes, données recalculées, validation et URL de note. | PB-008 |
 
 ## Historique
+
+- v0.4 (2026-10-03) — clarification : recette validée → production directe ;
+  retrait de la tâche de création d'un staging distinct.
 
 - v0.2 (2026-10-02) — ajoute le contrôle/passage en publication des mini notes de
   version du modèle AleaQuant.
