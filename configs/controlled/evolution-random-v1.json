@@ -1,0 +1,240 @@
+{
+  "schema_version": "aleaquant-controlled-study-1.0",
+  "id": "controlled_evolution",
+  "version": 1,
+  "title": "Évolution avec témoins RANDOM",
+  "question": "À pools, contraintes et budget fixes, quels nouveaux compromis géométriques apparaissent après deux générations de mutations puis une génération de croisements, avec sélection sur quatre critères exacts et évaluations indépendantes ? Comparer ces candidats à des portefeuilles RANDOM sans objectifs, au même pool et sur le domaine complet, en conservant les deux protocoles distincts.",
+  "experiment_kind": "evolution",
+  "experiment": {
+    "schema_version": "aleaquant-evolution-study-1.0",
+    "id": "overlap_descendants",
+    "version": 1,
+    "title": "Descendants des finalistes : mutations, sélection et croisements",
+    "question": "À pools, contraintes et budget fixes, quels nouveaux compromis géométriques apparaissent après deux générations de mutations puis une génération de croisements, avec sélection sur quatre critères exacts et évaluations indépendantes ?",
+    "base_profile": {
+      "schema_version": "1.0",
+      "id": "evolution_overlap_base",
+      "version": 1,
+      "family": "BALANCED",
+      "game": {
+        "id": "euromillions",
+        "rule_id": "euromillions-50-12-v1",
+        "number_domain": [
+          1,
+          50
+        ],
+        "star_domain": [
+          1,
+          12
+        ],
+        "numbers_per_grid": 5,
+        "stars_per_grid": 2,
+        "unit_price_eur": 2.5,
+        "options": []
+      },
+      "pool": {
+        "method": "explicit",
+        "numbers": [
+          6,
+          7,
+          9,
+          13,
+          15,
+          17,
+          22,
+          30,
+          35,
+          40,
+          42,
+          43,
+          48,
+          49,
+          50
+        ],
+        "stars": [
+          2,
+          7,
+          9,
+          10,
+          11
+        ],
+        "number_count": 15,
+        "star_count": 5,
+        "seed": 20261009
+      },
+      "constraints": {
+        "grid_count": 20,
+        "budget_max_eur": 50.0,
+        "unique_grids": true,
+        "max_pairwise_overlap": {
+          "numbers": 5,
+          "stars": 2
+        },
+        "conditional_guarantee": null
+      },
+      "objectives": {
+        "distinct_pairs": 3,
+        "distinct_triples": 8,
+        "balance_numbers": 0.9,
+        "balance_stars": 0.8,
+        "concentration": 0,
+        "minimize_overlap": {
+          "aggregation": "sum_squares",
+          "numbers": 0.7,
+          "stars": 0
+        }
+      },
+      "search": {
+        "method": "prototype_greedy",
+        "seed": 2026101100,
+        "candidate_count": 1,
+        "candidates_per_step": 1200,
+        "max_attempts": 24000,
+        "max_seconds": 30,
+        "population_size": 1,
+        "operators": []
+      },
+      "evaluation": {
+        "method": "monte_carlo",
+        "draws": 5000,
+        "seed": 3010010,
+        "batch_size": 1000,
+        "max_seconds": 30,
+        "max_certificate_cases": 100000,
+        "metrics": [
+          "any_prize",
+          "multiple_prizes",
+          "at_least_3_numbers",
+          "at_least_4_numbers"
+        ]
+      }
+    },
+    "parents": [
+      {
+        "source": "dist/data/portfolio_study_runs/d15bfdb2be06a6f958b47b0e1e0036b21e794bec833a6a7d5f3deb3e7f66a60c/catalogue.json",
+        "source_sha256": "15d8d5084a6bd1b800aa5773793da8e236972ab4bde20cbd1d1edbcb0004abe9",
+        "id": "overlap_20x15x5_w02_s2026101002",
+        "content_sha256": "119225c3e19b9e4bf76fc7d840b3813b7a1374e7ae4b5dcb60b83563eeaa913d"
+      },
+      {
+        "source": "dist/data/portfolio_study_runs/d15bfdb2be06a6f958b47b0e1e0036b21e794bec833a6a7d5f3deb3e7f66a60c/catalogue.json",
+        "source_sha256": "15d8d5084a6bd1b800aa5773793da8e236972ab4bde20cbd1d1edbcb0004abe9",
+        "id": "overlap_20x15x5_w03_s2026101003",
+        "content_sha256": "d9e67b039679da7540bc33ea49a39dbc6fdef04b23b3feaa772e5a993d842ba0"
+      },
+      {
+        "source": "dist/data/portfolio_study_runs/d15bfdb2be06a6f958b47b0e1e0036b21e794bec833a6a7d5f3deb3e7f66a60c/catalogue.json",
+        "source_sha256": "15d8d5084a6bd1b800aa5773793da8e236972ab4bde20cbd1d1edbcb0004abe9",
+        "id": "overlap_20x15x5_w00_s2026101004",
+        "content_sha256": "a74797f443ad084ee2a1edbebc662620406fc674ae090270934391c84a12b7bf"
+      },
+      {
+        "source": "dist/data/portfolio_study_runs/d15bfdb2be06a6f958b47b0e1e0036b21e794bec833a6a7d5f3deb3e7f66a60c/catalogue.json",
+        "source_sha256": "15d8d5084a6bd1b800aa5773793da8e236972ab4bde20cbd1d1edbcb0004abe9",
+        "id": "overlap_20x15x5_w01_s2026101005",
+        "content_sha256": "d3cb2bdce11ca4815e0470592b1367314a353e28457c8110f081ed4d148ebda8"
+      },
+      {
+        "source": "dist/data/portfolio_study_runs/d15bfdb2be06a6f958b47b0e1e0036b21e794bec833a6a7d5f3deb3e7f66a60c/catalogue.json",
+        "source_sha256": "15d8d5084a6bd1b800aa5773793da8e236972ab4bde20cbd1d1edbcb0004abe9",
+        "id": "overlap_20x15x5_w00_s2026101006",
+        "content_sha256": "5893c428c21a86021bf94afc83182dfee829ee4ba1674f938e9b46037a085745"
+      }
+    ],
+    "generation": {
+      "seed": 2026101100,
+      "population_size": 5,
+      "schedule": [
+        {
+          "phase": "mutation",
+          "proposals": 8
+        },
+        {
+          "phase": "mutation",
+          "proposals": 8
+        },
+        {
+          "phase": "crossover",
+          "proposals": 8
+        }
+      ],
+      "selection": "exact_pareto_four_v1"
+    },
+    "bounds": {
+      "max_proposals": 24,
+      "max_run_seconds": 600
+    },
+    "metrics": [
+      "portfolio.distinct_pairs@v1",
+      "portfolio.distinct_triples@v1",
+      "portfolio.mean_number_overlap@v1",
+      "portfolio.max_number_overlap@v1",
+      "portfolio.number_overlap_square_sum@v1",
+      "portfolio.star_overlap_square_sum@v1",
+      "portfolio.number_frequency_sd@v1",
+      "portfolio.star_frequency_sd@v1",
+      "portfolio.distinct_star_pairs@v1",
+      "portfolio.any_prize_probability@v1",
+      "portfolio.multiple_prizes_probability@v1",
+      "portfolio.jackpot_probability@v1",
+      "portfolio.number_overlap_distribution@v1",
+      "portfolio.star_overlap_distribution@v1",
+      "portfolio.number_frequencies@v1",
+      "portfolio.star_frequencies@v1",
+      "portfolio.at_least_3_numbers_probability@v1",
+      "portfolio.at_least_4_numbers_probability@v1",
+      "portfolio.mean_winning_grids@v1"
+    ],
+    "confirmation": {
+      "max_finalists": 5,
+      "evaluation": {
+        "method": "monte_carlo",
+        "draws": 5000,
+        "seed": 3110010,
+        "batch_size": 1000,
+        "max_seconds": 30,
+        "max_certificate_cases": 100000,
+        "metrics": [
+          "any_prize",
+          "multiple_prizes",
+          "at_least_3_numbers",
+          "at_least_4_numbers"
+        ]
+      }
+    }
+  },
+  "random_controls": {
+    "same_pool": {
+      "seeds": [
+        2026101200,
+        2026101201,
+        2026101202,
+        2026101203,
+        2026101204,
+        2026101205,
+        2026101206,
+        2026101207,
+        2026101208,
+        2026101209
+      ]
+    },
+    "full_domain": {
+      "seeds": [
+        2026101200,
+        2026101201,
+        2026101202,
+        2026101203,
+        2026101204,
+        2026101205,
+        2026101206,
+        2026101207,
+        2026101208,
+        2026101209
+      ]
+    }
+  },
+  "bounds": {
+    "max_total_constructions": 49,
+    "max_run_seconds": 600
+  }
+}

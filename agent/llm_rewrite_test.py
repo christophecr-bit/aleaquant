@@ -1,7 +1,7 @@
 """Test à un seul article : reformulation LLM du brouillon déterministe.
 Lance ça toi-même (accès réseau requis) :
 
-  cd ~/aleaquant-web
+  cd ~/aleaquant/aleaquant-web
   python3 -m pip install --user openai   # si pas déjà installé
   python3 agent/llm_rewrite_test.py
 

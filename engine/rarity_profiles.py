@@ -1,4 +1,8 @@
-"""Profil de rareté de chaque mesure sur tout l'historique.
+"""AleaQuant — profils de rareté des mesures sur l'historique ou par régime.
+
+Version : 0.3 | Date : 2026-10-01 | Auteur : AleaQuant
+Historique : 0.3 corrige le motif de lecture des préfixes de tirage avec tiret.
+TODO : ajouter un contrôle de complétude des profils au préflight du pipeline.
 
 Pourquoi : un badge de rareté n'informe que si la mesure peut AUSSI ne pas être rare.
 `main.sorted_gaps` est TRÈS RARE pour les 1984 tirages — son badge ne distingue donc
@@ -74,7 +78,8 @@ def build_par_regime(game_id, prefixe):
                      / 'games' / f'{game_id}.yaml')
     regles = {r.id: r for r in config.rules}
     niveaux = defaultdict(lambda: defaultdict(Counter))
-    for fp in sorted((DATA / 'facts').glob(f'{prefixe}-*.json')):
+    # `prefixe` contient déjà son tiret, par ex. `KE-`; ne pas chercher `KE--*.json`.
+    for fp in sorted((DATA / 'facts').glob(f'{prefixe}*.json')):
         d = json.loads(fp.read_text(encoding='utf-8'))
         regle = regles[d['rule_id']]
         for f in d['facts']:

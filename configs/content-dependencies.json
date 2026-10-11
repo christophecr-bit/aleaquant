@@ -1,0 +1,1399 @@
+{
+  "schema": "aleaquant-content-dependencies-1.0",
+  "version": "1.0",
+  "production_origin": "https://aleaquant.org",
+  "nodes": [
+    {
+      "id": "numero",
+      "kind": "notion",
+      "version": "1.0",
+      "content": {
+        "label": "Numéro",
+        "definition": "Une valeur du premier ensemble de la grille. Dans cette expérience EuroMillions, cinq numéros distincts sont choisis parmi 1 à 50."
+      },
+      "target": {
+        "path": "comprendre/glossaire/index.html",
+        "anchor": "numero"
+      },
+      "requires": [],
+      "related": [],
+      "state": "local",
+      "content_sha256": "4d01c901a4ff6cfcf415831b776bda9016c944286d4bf90e8dd69d630030f62d"
+    },
+    {
+      "id": "etoile",
+      "kind": "notion",
+      "version": "1.0",
+      "content": {
+        "label": "Étoile",
+        "definition": "Une valeur du second ensemble de la grille. Dans cette expérience, deux étoiles distinctes sont choisies parmi 1 à 12 ; elles sont comptées séparément des numéros."
+      },
+      "target": {
+        "path": "comprendre/glossaire/index.html",
+        "anchor": "etoile"
+      },
+      "requires": [],
+      "related": [],
+      "state": "local",
+      "content_sha256": "d873e3d1e1d65192bffccd1cecdd9bb0bb8646167e4a91e0bd9fb9f768c4fcb1"
+    },
+    {
+      "id": "grille",
+      "kind": "notion",
+      "version": "1.0",
+      "content": {
+        "label": "Grille",
+        "definition": "Un choix de cinq numéros et de deux étoiles dans cette expérience EuroMillions. L’ordre de présentation ne change pas la grille."
+      },
+      "target": {
+        "path": "comprendre/glossaire/index.html",
+        "anchor": "grille"
+      },
+      "requires": [
+        {
+          "id": "numero",
+          "version": "1.0"
+        },
+        {
+          "id": "etoile",
+          "version": "1.0"
+        }
+      ],
+      "related": [],
+      "state": "local",
+      "content_sha256": "0b39cc6de380366cd5dcaa8181f40c4d9cb46c32f265db4657c0d4e4a8acd07a"
+    },
+    {
+      "id": "portefeuille",
+      "kind": "notion",
+      "version": "1.0",
+      "content": {
+        "label": "Portefeuille",
+        "definition": "Un ensemble de grilles considéré et évalué ensemble. Le nombre de grilles et leur coût font partie de sa description."
+      },
+      "target": {
+        "path": "comprendre/glossaire/index.html",
+        "anchor": "portefeuille"
+      },
+      "requires": [
+        {
+          "id": "grille",
+          "version": "1.0"
+        }
+      ],
+      "related": [
+        "budget",
+        "couverture"
+      ],
+      "state": "local",
+      "content_sha256": "34dab20f406c1182f99a8baa37331f866e80b4f6f12e7a2b4ec8e2f2198e322d"
+    },
+    {
+      "id": "pool",
+      "kind": "notion",
+      "version": "1.0",
+      "content": {
+        "label": "Pool",
+        "definition": "L’ensemble autorisé pour choisir les numéros ou les étoiles lors de la construction. Un pool de 15 numéros et 5 étoiles restreint les grilles construites ; le tirage simulé reste sur le domaine complet 50/12."
+      },
+      "target": {
+        "path": "comprendre/glossaire/index.html",
+        "anchor": "pool"
+      },
+      "requires": [
+        {
+          "id": "numero",
+          "version": "1.0"
+        },
+        {
+          "id": "etoile",
+          "version": "1.0"
+        }
+      ],
+      "related": [
+        "effet-pool"
+      ],
+      "state": "local",
+      "content_sha256": "935afd71fc4c8342e3b0e7eaf97676e5a5fff7852cc8fed2a9b542a77f763a01"
+    },
+    {
+      "id": "paire-base",
+      "kind": "notion",
+      "version": "1.0",
+      "content": {
+        "label": "Paire",
+        "definition": "Un ensemble de deux objets distincts, sans ordre. La paire A–B est la même que B–A."
+      },
+      "target": {
+        "path": "comprendre/glossaire/index.html",
+        "anchor": "paire-base"
+      },
+      "requires": [],
+      "related": [
+        "paire",
+        "paire-grilles"
+      ],
+      "state": "local",
+      "content_sha256": "42b8383694d91bfcc70352e20c0946da79461142b2d13b19fbb739f2d9c46deb"
+    },
+    {
+      "id": "paire",
+      "kind": "notion",
+      "version": "1.0",
+      "content": {
+        "label": "Paire de numéros",
+        "definition": "Deux numéros distincts, sans ordre : {7,14} est une paire. Cinq numéros contiennent dix paires. Une paire d’étoiles suit la même définition dans l’ensemble des étoiles."
+      },
+      "target": {
+        "path": "comprendre/glossaire/index.html",
+        "anchor": "paire"
+      },
+      "requires": [
+        {
+          "id": "paire-base",
+          "version": "1.0"
+        },
+        {
+          "id": "numero",
+          "version": "1.0"
+        }
+      ],
+      "related": [
+        "couverture"
+      ],
+      "state": "local",
+      "content_sha256": "84fbb65975fb13358301317ef985dae2f131da4e70089ea4cdc8ba40dcabce49"
+    },
+    {
+      "id": "triplet",
+      "kind": "notion",
+      "version": "1.0",
+      "content": {
+        "label": "Triplet",
+        "definition": "Trois numéros distincts, sans ordre. Les cinq numéros d’une grille contiennent dix triplets différents."
+      },
+      "target": {
+        "path": "comprendre/glossaire/index.html",
+        "anchor": "triplet"
+      },
+      "requires": [
+        {
+          "id": "numero",
+          "version": "1.0"
+        },
+        {
+          "id": "grille",
+          "version": "1.0"
+        }
+      ],
+      "related": [
+        "couverture"
+      ],
+      "state": "local",
+      "content_sha256": "ea6124f2e35f31a80beb2e60b535e57e49b63f8f20dbe23942726189fd676eab"
+    },
+    {
+      "id": "paire-grilles",
+      "kind": "notion",
+      "version": "1.0",
+      "content": {
+        "label": "Paire de grilles",
+        "definition": "Deux grilles distinctes prises ensemble pour les comparer. Un portefeuille de 20 grilles contient 20 × 19 / 2 = 190 paires de grilles."
+      },
+      "target": {
+        "path": "comprendre/glossaire/index.html",
+        "anchor": "paire-grilles"
+      },
+      "requires": [
+        {
+          "id": "paire-base",
+          "version": "1.0"
+        },
+        {
+          "id": "grille",
+          "version": "1.0"
+        }
+      ],
+      "related": [
+        "recouvrement"
+      ],
+      "state": "local",
+      "content_sha256": "c0c0311d9493ab34d40fd6813dff2922407cadaede80ceaa2523424f8501e98a"
+    },
+    {
+      "id": "recouvrement",
+      "kind": "notion",
+      "version": "1.0",
+      "content": {
+        "label": "Recouvrement entre deux grilles",
+        "definition": "Les numéros communs aux deux grilles, ou leur nombre selon la mesure affichée. Si A et B partagent 7, 14 et 22, leur intersection de numéros vaut 3. Les étoiles communes sont mesurées séparément."
+      },
+      "target": {
+        "path": "comprendre/glossaire/index.html",
+        "anchor": "recouvrement"
+      },
+      "requires": [
+        {
+          "id": "paire-grilles",
+          "version": "1.0"
+        }
+      ],
+      "related": [
+        "recouvrement-paires",
+        "penalite-recouvrement"
+      ],
+      "state": "local",
+      "content_sha256": "449f2f7257533dee07dbf6580248beded9a7f66f83fe6c92c4f9f989e663f92c"
+    },
+    {
+      "id": "recouvrement-paires",
+      "kind": "notion",
+      "version": "1.0",
+      "content": {
+        "label": "Paires de numéros communes",
+        "definition": "Les paires présentes dans les deux grilles. Si elles partagent k numéros, elles partagent k × (k−1) / 2 paires : pour k = 3, {7,14}, {7,22} et {14,22}, soit 3 paires."
+      },
+      "target": {
+        "path": "comprendre/glossaire/index.html",
+        "anchor": "recouvrement-paires"
+      },
+      "requires": [
+        {
+          "id": "paire",
+          "version": "1.0"
+        },
+        {
+          "id": "recouvrement",
+          "version": "1.0"
+        }
+      ],
+      "related": [
+        "penalite-recouvrement"
+      ],
+      "state": "local",
+      "content_sha256": "744f14dd03bddf2ad1b551ef4571d18d60fce8ca181f0f7bbeff0ee21acd00eb"
+    },
+    {
+      "id": "couverture",
+      "kind": "notion",
+      "version": "1.0",
+      "content": {
+        "label": "Couverture",
+        "definition": "Le nombre de groupes distincts présents dans au moins une grille : numéros, paires ou triplets selon la mesure. Une paire présente dans cinq grilles compte une seule fois dans sa couverture."
+      },
+      "target": {
+        "path": "comprendre/glossaire/index.html",
+        "anchor": "couverture"
+      },
+      "requires": [
+        {
+          "id": "portefeuille",
+          "version": "1.0"
+        },
+        {
+          "id": "paire",
+          "version": "1.0"
+        },
+        {
+          "id": "triplet",
+          "version": "1.0"
+        }
+      ],
+      "related": [
+        "collision",
+        "frequence"
+      ],
+      "state": "local",
+      "content_sha256": "93f55cc2636b02907b5b8dc6792864346d17d8caf7a41d2770602b5dcac00fdc"
+    },
+    {
+      "id": "collision",
+      "kind": "notion",
+      "version": "1.0",
+      "content": {
+        "label": "Collision de paires ou de triplets",
+        "definition": "La répétition d’un même groupe dans plusieurs grilles. La métrique précise son mode de comptage : les occurrences au-delà de la première et les coïncidences entre paires de grilles sont deux comptes différents."
+      },
+      "target": {
+        "path": "comprendre/glossaire/index.html",
+        "anchor": "collision"
+      },
+      "requires": [
+        {
+          "id": "couverture",
+          "version": "1.0"
+        },
+        {
+          "id": "paire-grilles",
+          "version": "1.0"
+        }
+      ],
+      "related": [
+        "recouvrement-paires"
+      ],
+      "state": "local",
+      "content_sha256": "096b6332859a5f11de6ec02e8e61ce674b36c1d0d1f7e7a4ddfab23bb1279319"
+    },
+    {
+      "id": "union",
+      "kind": "notion",
+      "version": "1.0",
+      "content": {
+        "label": "Union",
+        "definition": "Tous les numéros distincts présents dans les grilles réunies ; chaque numéro n’y figure qu’une fois. On calcule séparément l’union des étoiles."
+      },
+      "target": {
+        "path": "comprendre/glossaire/index.html",
+        "anchor": "union"
+      },
+      "requires": [
+        {
+          "id": "portefeuille",
+          "version": "1.0"
+        }
+      ],
+      "related": [],
+      "state": "local",
+      "content_sha256": "0ea2e9c2aa2f2b18760a40a7ed4e98e5c05d9985713a2b78d15ec1c62729fc95"
+    },
+    {
+      "id": "frequence",
+      "kind": "notion",
+      "version": "1.0",
+      "content": {
+        "label": "Fréquence dans le portefeuille",
+        "definition": "Le nombre de grilles qui contiennent un numéro ou une étoile. Ici il décrit les grilles construites, pas les tirages passés. Le tableau complet comprend aussi les valeurs jamais choisies."
+      },
+      "target": {
+        "path": "comprendre/glossaire/index.html",
+        "anchor": "frequence"
+      },
+      "requires": [
+        {
+          "id": "portefeuille",
+          "version": "1.0"
+        }
+      ],
+      "related": [
+        "dispersion"
+      ],
+      "state": "local",
+      "content_sha256": "35f44ed8c219874b4254cf1f7554684f3ebaa329fbbdf13cd55ee306f00258dc"
+    },
+    {
+      "id": "moyenne",
+      "kind": "notion",
+      "version": "1.0",
+      "content": {
+        "label": "Moyenne, minimum et maximum",
+        "definition": "La moyenne est la somme des valeurs divisée par leur nombre. Le minimum et le maximum sont les valeurs extrêmes. Une moyenne sur dix constructions peut masquer des résultats différents selon la graine."
+      },
+      "target": {
+        "path": "comprendre/glossaire/index.html",
+        "anchor": "moyenne"
+      },
+      "requires": [],
+      "related": [
+        "graine",
+        "distribution"
+      ],
+      "state": "local",
+      "content_sha256": "01aa927695d129b2af53354c4f37a96ac67230bc9f4f726f1da98dbb54661e2f"
+    },
+    {
+      "id": "dispersion",
+      "kind": "notion",
+      "version": "1.0",
+      "content": {
+        "label": "Dispersion des fréquences",
+        "definition": "Le degré d’inégalité des fréquences ; l’écart-type est l’une de ses mesures. Il faut préciser les valeurs incluses : la mesure de cette étude inclut les 50 numéros, donc les fréquences nulles hors du pool."
+      },
+      "target": {
+        "path": "comprendre/glossaire/index.html",
+        "anchor": "dispersion"
+      },
+      "requires": [
+        {
+          "id": "frequence",
+          "version": "1.0"
+        },
+        {
+          "id": "moyenne",
+          "version": "1.0"
+        }
+      ],
+      "related": [
+        "compromis-geometriques"
+      ],
+      "state": "local",
+      "content_sha256": "ab8db7bc58b04b41acea9552c7221b02bac3ba3acfdf4a90d7976deb6a63a0c9"
+    },
+    {
+      "id": "distribution",
+      "kind": "notion",
+      "version": "1.0",
+      "content": {
+        "label": "Distribution",
+        "definition": "La répartition des cas entre des valeurs. Pour les intersections, on compte combien de paires de grilles partagent 0, 1, 2… numéros ; un histogramme représente ces nombres."
+      },
+      "target": {
+        "path": "comprendre/glossaire/index.html",
+        "anchor": "distribution"
+      },
+      "requires": [
+        {
+          "id": "paire-grilles",
+          "version": "1.0"
+        },
+        {
+          "id": "recouvrement",
+          "version": "1.0"
+        }
+      ],
+      "related": [
+        "moyenne"
+      ],
+      "state": "local",
+      "content_sha256": "521aeace39e5f7e0a66f4e321c401ad39745ca65a961b03a0c4dd58e29574e1d"
+    },
+    {
+      "id": "poids",
+      "kind": "notion",
+      "version": "1.0",
+      "content": {
+        "label": "Poids d’un objectif",
+        "definition": "Un coefficient qui règle l’importance d’un terme dans le score. Garder les autres poids fixes signifie ne changer que le coefficient étudié, et conserver les autres valeurs."
+      },
+      "target": {
+        "path": "comprendre/glossaire/index.html",
+        "anchor": "poids"
+      },
+      "requires": [],
+      "related": [
+        "score",
+        "ablation"
+      ],
+      "state": "local",
+      "content_sha256": "3d7305fa91f3f864adc83d23b96b76636ecfd58fa783ec35ee1c63dae96edd5a"
+    },
+    {
+      "id": "score",
+      "kind": "notion",
+      "version": "1.0",
+      "content": {
+        "label": "Score de construction",
+        "definition": "Une valeur utilisée pour choisir une proposition de grille. Le prototype récompense les nouvelles paires et triplets et pénalise les fréquences déjà élevées ainsi que le recouvrement. Ce score de recherche n’est pas une probabilité de gain."
+      },
+      "target": {
+        "path": "comprendre/glossaire/index.html",
+        "anchor": "score"
+      },
+      "requires": [
+        {
+          "id": "poids",
+          "version": "1.0"
+        },
+        {
+          "id": "couverture",
+          "version": "1.0"
+        },
+        {
+          "id": "frequence",
+          "version": "1.0"
+        },
+        {
+          "id": "recouvrement",
+          "version": "1.0"
+        }
+      ],
+      "related": [
+        "construction"
+      ],
+      "state": "local",
+      "content_sha256": "82cdc42787887acaccad2817cc447eac7f695a9506409b2a109e0125eeea9c08"
+    },
+    {
+      "id": "penalite-recouvrement",
+      "kind": "notion",
+      "version": "1.0",
+      "content": {
+        "label": "Pénalité des intersections au carré",
+        "definition": "Dans le prototype, une proposition reçoit une pénalité w × Σ k², où k est son nombre de numéros communs avec chaque grille déjà retenue. Trois numéros communs donnent 9w, et non 3w. C’est un coût dans le score ; ce n’est pas une interdiction de partager des numéros."
+      },
+      "target": {
+        "path": "comprendre/glossaire/index.html",
+        "anchor": "penalite-recouvrement"
+      },
+      "requires": [
+        {
+          "id": "poids",
+          "version": "1.0"
+        },
+        {
+          "id": "recouvrement",
+          "version": "1.0"
+        }
+      ],
+      "related": [
+        "recouvrement-paires",
+        "score"
+      ],
+      "state": "local",
+      "content_sha256": "0aae181cb5221ab310da814cec7ba9f60cf8d4e3674ca9404d21b9e7a70c0f99"
+    },
+    {
+      "id": "construction",
+      "kind": "notion",
+      "version": "1.0",
+      "content": {
+        "label": "Construction grille après grille",
+        "definition": "Le prototype ajoute une grille à la fois. Pour chaque ajout, il teste 1 200 propositions aléatoires et retient la meilleure selon le score, en écartant les doublons. Il ne revient pas sur les grilles déjà retenues : c’est une construction gloutonne."
+      },
+      "target": {
+        "path": "comprendre/glossaire/index.html",
+        "anchor": "construction"
+      },
+      "requires": [
+        {
+          "id": "portefeuille",
+          "version": "1.0"
+        },
+        {
+          "id": "score",
+          "version": "1.0"
+        }
+      ],
+      "related": [
+        "mutation",
+        "random"
+      ],
+      "state": "local",
+      "content_sha256": "d1655650cdbab19b9fb552ce068044e0d8b742c9711100868ea0711c2f09deb4"
+    },
+    {
+      "id": "ablation",
+      "kind": "notion",
+      "version": "1.0",
+      "content": {
+        "label": "Ablation et étude d’un paramètre",
+        "definition": "Une ablation retire un composant pour mesurer son effet. Cette étude fait varier la pénalité, avec un réglage à zéro qui la retire du score. Les autres objectifs restent actifs : zéro ne transforme donc pas la méthode en RANDOM."
+      },
+      "target": {
+        "path": "comprendre/glossaire/index.html",
+        "anchor": "ablation"
+      },
+      "requires": [
+        {
+          "id": "poids",
+          "version": "1.0"
+        },
+        {
+          "id": "penalite-recouvrement",
+          "version": "1.0"
+        },
+        {
+          "id": "construction",
+          "version": "1.0"
+        }
+      ],
+      "related": [
+        "random",
+        "graines-appariees"
+      ],
+      "state": "local",
+      "content_sha256": "49df024d04464533a679a9d787e6b14544214d0d14aac42a6915f20d4c30f09f"
+    },
+    {
+      "id": "graine",
+      "kind": "notion",
+      "version": "1.0",
+      "content": {
+        "label": "Graine",
+        "definition": "Une valeur qui initialise un générateur pseudo-aléatoire. Avec les mêmes programmes, paramètres et environnement, elle permet de reproduire une construction ou un ensemble de tirages. Ce n’est pas une prévision des numéros tirés."
+      },
+      "target": {
+        "path": "comprendre/glossaire/index.html",
+        "anchor": "graine"
+      },
+      "requires": [],
+      "related": [
+        "reproductibilite"
+      ],
+      "state": "local",
+      "content_sha256": "69890b8341942058f7678fc96cfbc532d492c86a1ae13444a374903ba8e41ad9"
+    },
+    {
+      "id": "graines-appariees",
+      "kind": "notion",
+      "version": "1.0",
+      "content": {
+        "label": "Graines appariées",
+        "definition": "Les mêmes graines sont utilisées pour les réglages comparés : la graine n° 1 sert aux quatre poids, puis la n° 2, etc. Les différences sont calculées entre constructions correspondant à la même graine ; elles peuvent néanmoins diverger après un choix de grille."
+      },
+      "target": {
+        "path": "comprendre/glossaire/index.html",
+        "anchor": "graines-appariees"
+      },
+      "requires": [
+        {
+          "id": "graine",
+          "version": "1.0"
+        },
+        {
+          "id": "poids",
+          "version": "1.0"
+        }
+      ],
+      "related": [
+        "tirages-communs"
+      ],
+      "state": "local",
+      "content_sha256": "82ec471e5d1c22598c87dd981278150f7e2567510c88e0de483baf58a6eb1791"
+    },
+    {
+      "id": "compromis-geometriques",
+      "kind": "notion",
+      "version": "1.0",
+      "content": {
+        "label": "Compromis géométriques",
+        "definition": "Les avantages et dégradations entre propriétés du portefeuille. Par exemple, une somme d’intersections plus faible peut aller avec moins de triplets couverts ou une intersection maximale plus élevée."
+      },
+      "target": {
+        "path": "comprendre/glossaire/index.html",
+        "anchor": "compromis-geometriques"
+      },
+      "requires": [
+        {
+          "id": "couverture",
+          "version": "1.0"
+        },
+        {
+          "id": "recouvrement",
+          "version": "1.0"
+        },
+        {
+          "id": "dispersion",
+          "version": "1.0"
+        }
+      ],
+      "related": [
+        "pareto"
+      ],
+      "state": "local",
+      "content_sha256": "230647c19e4f8635bffcb9ee0fbed17172073beb65c888f4e877ee603d63a880"
+    },
+    {
+      "id": "pareto",
+      "kind": "notion",
+      "version": "1.0",
+      "content": {
+        "label": "Front Pareto",
+        "definition": "Les candidats qu’aucun autre ne surpasse sur tous les critères déclarés sans dégradation. Ici les quatre critères sont couverture des paires, couverture des triplets, dispersion des fréquences et intersection maximale. La somme des intersections au carré est suivie séparément."
+      },
+      "target": {
+        "path": "comprendre/glossaire/index.html",
+        "anchor": "pareto"
+      },
+      "requires": [
+        {
+          "id": "compromis-geometriques",
+          "version": "1.0"
+        }
+      ],
+      "related": [
+        "selection"
+      ],
+      "state": "local",
+      "content_sha256": "4304fb615e13735e198b67eaef6fc6fa5f4d72ddf0738adc25309c929bca66dc"
+    },
+    {
+      "id": "selection",
+      "kind": "notion",
+      "version": "1.0",
+      "content": {
+        "label": "Sélection",
+        "definition": "Une règle déclarée qui retient certains candidats. Dans ces études, elle utilise les propriétés exactes et la diversité des réglages, sans choisir les graines ni les parents selon leurs résultats Monte-Carlo."
+      },
+      "target": {
+        "path": "comprendre/glossaire/index.html",
+        "anchor": "selection"
+      },
+      "requires": [
+        {
+          "id": "pareto",
+          "version": "1.0"
+        }
+      ],
+      "related": [
+        "monte-carlo",
+        "filiation"
+      ],
+      "state": "local",
+      "content_sha256": "e214a33ba95ef5c0526f1bc65af72ec3e7c825117f44424b2db09a3bf58b5af1"
+    },
+    {
+      "id": "mutation",
+      "kind": "notion",
+      "version": "1.0",
+      "content": {
+        "label": "Mutation",
+        "definition": "La modification d’un portefeuille complet existant : remplacer un numéro, échanger des numéros entre grilles ou remplacer une grille. L’enfant obtenu repasse les validations, les calculs, les preuves éventuelles et les évaluations."
+      },
+      "target": {
+        "path": "comprendre/glossaire/index.html",
+        "anchor": "mutation"
+      },
+      "requires": [
+        {
+          "id": "portefeuille",
+          "version": "1.0"
+        }
+      ],
+      "related": [
+        "filiation",
+        "garantie"
+      ],
+      "state": "local",
+      "content_sha256": "3d77717a8a00f344394d52b5ece068404893165c137d1ed72ed14ec41f834c53"
+    },
+    {
+      "id": "croisement",
+      "kind": "notion",
+      "version": "1.0",
+      "content": {
+        "label": "Croisement",
+        "definition": "La création d’un enfant à partir de grilles de deux portefeuilles parents. Le prototype impose une contribution propre à chacun. L’enfant doit être valide et évalué ; il n’hérite pas automatiquement d’une garantie."
+      },
+      "target": {
+        "path": "comprendre/glossaire/index.html",
+        "anchor": "croisement"
+      },
+      "requires": [
+        {
+          "id": "portefeuille",
+          "version": "1.0"
+        }
+      ],
+      "related": [
+        "filiation",
+        "garantie"
+      ],
+      "state": "local",
+      "content_sha256": "5bd0541d627979833c36d80f1d2d54883712ffec1d1a7fa9efa3b1b77f6ca264"
+    },
+    {
+      "id": "filiation",
+      "kind": "notion",
+      "version": "1.0",
+      "content": {
+        "label": "Filiation",
+        "definition": "Le lien enregistré entre un enfant, ses parents et l’opérateur qui l’a produit. Une génération rassemble un ensemble d’enfants ; le lien de parenté ne prouve pas une amélioration."
+      },
+      "target": {
+        "path": "comprendre/glossaire/index.html",
+        "anchor": "filiation"
+      },
+      "requires": [
+        {
+          "id": "mutation",
+          "version": "1.0"
+        },
+        {
+          "id": "croisement",
+          "version": "1.0"
+        }
+      ],
+      "related": [
+        "selection"
+      ],
+      "state": "local",
+      "content_sha256": "a9bb5d7336fc444f757a66691d134f90b23fb56f89ff79c698535a1a873ad89d"
+    },
+    {
+      "id": "random",
+      "kind": "notion",
+      "version": "1.0",
+      "content": {
+        "label": "Référence aléatoire RANDOM",
+        "definition": "Un portefeuille construit par choix aléatoires uniformes dans les pools déclarés, sans classement par le score. Un témoin comparable conserve le nombre de grilles, le coût et les règles. Un poids de pénalité nul ne suffit pas à être RANDOM."
+      },
+      "target": {
+        "path": "comprendre/glossaire/index.html",
+        "anchor": "random"
+      },
+      "requires": [
+        {
+          "id": "portefeuille",
+          "version": "1.0"
+        },
+        {
+          "id": "pool",
+          "version": "1.0"
+        }
+      ],
+      "related": [
+        "effet-pool",
+        "tirages-communs"
+      ],
+      "state": "local",
+      "content_sha256": "940d1cd328cd0e15315f6fa90c3e93bf3b6105f09488a5d46861cbb6116372a3"
+    },
+    {
+      "id": "effet-pool",
+      "kind": "notion",
+      "version": "1.0",
+      "content": {
+        "label": "Effet du pool",
+        "definition": "L’effet associé à la restriction de l’ensemble de choix. RANDOM sur les mêmes pools et RANDOM sur 50 numéros et 12 étoiles sont deux références distinctes ; leur comparaison change aussi le pool."
+      },
+      "target": {
+        "path": "comprendre/glossaire/index.html",
+        "anchor": "effet-pool"
+      },
+      "requires": [
+        {
+          "id": "pool",
+          "version": "1.0"
+        },
+        {
+          "id": "random",
+          "version": "1.0"
+        }
+      ],
+      "related": [
+        "probabilite"
+      ],
+      "state": "local",
+      "content_sha256": "aa1c191a736ab0b6fd935497db35f82a2c7733bc0e5b0e8ccfc83f7618e17604"
+    },
+    {
+      "id": "probabilite",
+      "kind": "notion",
+      "version": "1.0",
+      "content": {
+        "label": "Probabilité",
+        "definition": "Une proportion théorique d’issues d’un événement dans un modèle donné. Une fréquence mesurée sur des tirages simulés en est une estimation et garde une incertitude."
+      },
+      "target": {
+        "path": "comprendre/glossaire/index.html",
+        "anchor": "probabilite"
+      },
+      "requires": [],
+      "related": [
+        "monte-carlo",
+        "intervalle-confiance"
+      ],
+      "state": "local",
+      "content_sha256": "21af4d67ca6da9d200b63c5d3b3b4b23bef08e155557269844f7e721172b710c"
+    },
+    {
+      "id": "monte-carlo",
+      "kind": "notion",
+      "version": "1.0",
+      "content": {
+        "label": "Simulation Monte-Carlo",
+        "definition": "L’évaluation sur de nombreux tirages aléatoires simulés après avoir figé les portefeuilles. Elle estime des événements comme « au moins une grille gagnante ». Elle ne prédit pas le prochain tirage."
+      },
+      "target": {
+        "path": "comprendre/glossaire/index.html",
+        "anchor": "monte-carlo"
+      },
+      "requires": [
+        {
+          "id": "portefeuille",
+          "version": "1.0"
+        },
+        {
+          "id": "probabilite",
+          "version": "1.0"
+        },
+        {
+          "id": "graine",
+          "version": "1.0"
+        }
+      ],
+      "related": [
+        "tirages-communs",
+        "intervalle-confiance"
+      ],
+      "state": "local",
+      "content_sha256": "4f240cd182eae6f4f44dffe8b2c4a1994b899d6a29e1422427b2bc105953c590"
+    },
+    {
+      "id": "tirages-communs",
+      "kind": "notion",
+      "version": "1.0",
+      "content": {
+        "label": "Tirages communs et confirmation indépendante",
+        "definition": "Pour comparer les candidats, chacun reçoit exactement les mêmes tirages simulés. La confirmation utilise un nouvel ensemble indépendant. Partager une graine de construction et partager des tirages d’évaluation sont deux protocoles différents."
+      },
+      "target": {
+        "path": "comprendre/glossaire/index.html",
+        "anchor": "tirages-communs"
+      },
+      "requires": [
+        {
+          "id": "monte-carlo",
+          "version": "1.0"
+        }
+      ],
+      "related": [
+        "graines-appariees"
+      ],
+      "state": "local",
+      "content_sha256": "c8e2544f60ce2b47eea791a4c55bf01bd033489f8aabbaa5544fdd58f689adf7"
+    },
+    {
+      "id": "intervalle-confiance",
+      "kind": "notion",
+      "version": "1.0",
+      "content": {
+        "label": "Intervalle de confiance",
+        "definition": "Un intervalle calculé pour décrire l’incertitude d’une estimation. Ici Wilson à 95 % concerne la probabilité d’un événement pour un portefeuille. Il ne décrit ni la variabilité entre graines ni directement l’incertitude de la différence entre deux portefeuilles."
+      },
+      "target": {
+        "path": "comprendre/glossaire/index.html",
+        "anchor": "intervalle-confiance"
+      },
+      "requires": [
+        {
+          "id": "probabilite",
+          "version": "1.0"
+        },
+        {
+          "id": "monte-carlo",
+          "version": "1.0"
+        }
+      ],
+      "related": [
+        "significativite"
+      ],
+      "state": "local",
+      "content_sha256": "13b886cc9996a73d8f7b4d1dae17e4e60c42d093d853f37f3fea12a86ae57548"
+    },
+    {
+      "id": "significativite",
+      "kind": "notion",
+      "version": "1.0",
+      "content": {
+        "label": "Significativité statistique",
+        "definition": "La conclusion d’un test déclaré sur la compatibilité de résultats avec une hypothèse. Une différence de moyennes ou deux intervalles individuels ne suffisent pas à la démontrer. Les écarts de cette étude restent descriptifs."
+      },
+      "target": {
+        "path": "comprendre/glossaire/index.html",
+        "anchor": "significativite"
+      },
+      "requires": [
+        {
+          "id": "intervalle-confiance",
+          "version": "1.0"
+        },
+        {
+          "id": "moyenne",
+          "version": "1.0"
+        }
+      ],
+      "related": [
+        "tirages-communs"
+      ],
+      "state": "local",
+      "content_sha256": "0f85cef4f4c566708c407f41b92407d8a6cf3c31bf31e70afce8872c9b925c6d"
+    },
+    {
+      "id": "esperance",
+      "kind": "notion",
+      "version": "1.0",
+      "content": {
+        "label": "Espérance",
+        "definition": "La moyenne théorique d’une quantité aléatoire. Pour le nombre de grilles gagnantes, on additionne leurs probabilités individuelles ; le recouvrement influence les gains simultanés, pas cette somme à nombre de grilles et règles identiques."
+      },
+      "target": {
+        "path": "comprendre/glossaire/index.html",
+        "anchor": "esperance"
+      },
+      "requires": [
+        {
+          "id": "probabilite",
+          "version": "1.0"
+        },
+        {
+          "id": "portefeuille",
+          "version": "1.0"
+        }
+      ],
+      "related": [
+        "rang-gagnant"
+      ],
+      "state": "local",
+      "content_sha256": "6aba5de9c8c57aaf93b844eacb20678ae4c64e9164dafe2e344ae4a255c3d200"
+    },
+    {
+      "id": "rang-gagnant",
+      "kind": "notion",
+      "version": "1.0",
+      "content": {
+        "label": "Grille gagnante et rang",
+        "definition": "Une grille dont les nombres de numéros et d’étoiles corrects satisfont un rang des règles déclarées. « Au moins une grille gagnante » et « au moins deux » sont des événements différents du portefeuille."
+      },
+      "target": {
+        "path": "comprendre/glossaire/index.html",
+        "anchor": "rang-gagnant"
+      },
+      "requires": [
+        {
+          "id": "grille",
+          "version": "1.0"
+        },
+        {
+          "id": "portefeuille",
+          "version": "1.0"
+        }
+      ],
+      "related": [
+        "jackpot",
+        "meme-grille"
+      ],
+      "state": "local",
+      "content_sha256": "83e908a1479cd0b10f73329d9d329c6f6095d29d8cbad71a37c6f154831c7b59"
+    },
+    {
+      "id": "jackpot",
+      "kind": "notion",
+      "version": "1.0",
+      "content": {
+        "label": "Jackpot",
+        "definition": "Dans ce modèle EuroMillions, le rang où une même grille contient les cinq numéros et les deux étoiles du tirage. Sa probabilité exacte relève du calcul combinatoire ; une petite simulation observe rarement cet événement."
+      },
+      "target": {
+        "path": "comprendre/glossaire/index.html",
+        "anchor": "jackpot"
+      },
+      "requires": [
+        {
+          "id": "rang-gagnant",
+          "version": "1.0"
+        }
+      ],
+      "related": [
+        "probabilite"
+      ],
+      "state": "local",
+      "content_sha256": "3f13ba1f902110daaa3f523fe396ab6d0af575efe379e0dc34d6ecd8b9078902"
+    },
+    {
+      "id": "enumeration",
+      "kind": "notion",
+      "version": "1.0",
+      "content": {
+        "label": "Énumération exhaustive",
+        "definition": "Le parcours de tous les cas d’un ensemble précisément défini. Un résultat vérifié sur chaque cas est exact pour cet ensemble ; il faut conserver la définition de ce périmètre."
+      },
+      "target": {
+        "path": "comprendre/glossaire/index.html",
+        "anchor": "enumeration"
+      },
+      "requires": [],
+      "related": [
+        "garantie"
+      ],
+      "state": "local",
+      "content_sha256": "7fb1becfa53b1fdbf87f679fc53c0e4564132eb0bc370fd667c178365e9df558"
+    },
+    {
+      "id": "meme-grille",
+      "kind": "notion",
+      "version": "1.0",
+      "content": {
+        "label": "Résultat conjoint sur une même grille",
+        "definition": "La présence simultanée des numéros et étoiles requis dans une seule grille. Avoir les bons numéros dans A et les bonnes étoiles dans B ne remplit pas cette condition."
+      },
+      "target": {
+        "path": "comprendre/glossaire/index.html",
+        "anchor": "meme-grille"
+      },
+      "requires": [
+        {
+          "id": "grille",
+          "version": "1.0"
+        }
+      ],
+      "related": [
+        "garantie",
+        "rang-gagnant"
+      ],
+      "state": "local",
+      "content_sha256": "c011449c0a63c2523bafe7854118de33b1a4047c9f830353e9bffbc6c0f3a4d7"
+    },
+    {
+      "id": "garantie",
+      "kind": "notion",
+      "version": "1.0",
+      "content": {
+        "label": "Garantie conditionnelle",
+        "definition": "Une propriété prouvée pour tous les tirages satisfaisant une condition explicite, par exemple appartenir aux pools. Elle concerne les grilles exactes vérifiées et un résultat conjoint sur une même grille ; elle ne garantit pas que la condition arrivera au prochain tirage."
+      },
+      "target": {
+        "path": "comprendre/glossaire/index.html",
+        "anchor": "garantie"
+      },
+      "requires": [
+        {
+          "id": "pool",
+          "version": "1.0"
+        },
+        {
+          "id": "enumeration",
+          "version": "1.0"
+        },
+        {
+          "id": "meme-grille",
+          "version": "1.0"
+        }
+      ],
+      "related": [
+        "mutation",
+        "croisement"
+      ],
+      "state": "local",
+      "content_sha256": "a778e86e583740565b26d14b8114d27428c87925fbd68c76c1f3c0ddfeaaea16"
+    },
+    {
+      "id": "budget",
+      "kind": "notion",
+      "version": "1.0",
+      "content": {
+        "label": "Budget et coût réel",
+        "definition": "Le plafond autorisé et le coût des grilles effectivement construites sont deux valeurs distinctes. Dans cette configuration, 20 grilles à 2,50 € donnent un coût modélisé de 50 €. Cette valeur appartient aux règles enregistrées de l’expérience."
+      },
+      "target": {
+        "path": "comprendre/glossaire/index.html",
+        "anchor": "budget"
+      },
+      "requires": [
+        {
+          "id": "portefeuille",
+          "version": "1.0"
+        }
+      ],
+      "related": [],
+      "state": "local",
+      "content_sha256": "137c169114be96ee2554df22cc906d4e58a1a5a9d12d7871a0d946b9545b011c"
+    },
+    {
+      "id": "reproductibilite",
+      "kind": "notion",
+      "version": "1.0",
+      "content": {
+        "label": "Reproductibilité",
+        "definition": "La possibilité de refaire une exécution à partir de sa configuration, de ses graines, de ses sources et de ses versions enregistrées. Une empreinte SHA-256 identifie un contenu ; elle ne remplace pas sa validation scientifique."
+      },
+      "target": {
+        "path": "comprendre/glossaire/index.html",
+        "anchor": "reproductibilite"
+      },
+      "requires": [
+        {
+          "id": "graine",
+          "version": "1.0"
+        }
+      ],
+      "related": [],
+      "state": "local",
+      "content_sha256": "5e068f41e5084c0edaf1dc5439541357b8745eaa01ae3b1d960d4a395612382b"
+    },
+    {
+      "id": "page:portfolio-atlas",
+      "kind": "page",
+      "version": "1.0",
+      "content_sha256": "d2492034f3bc77059c00cb5430ff8f117c1037e98442232fc185465d4842a2e7",
+      "target": {
+        "path": "portefeuilles/index.html",
+        "anchor": null
+      },
+      "requires": [
+        {
+          "id": "portefeuille",
+          "version": "1.0"
+        },
+        {
+          "id": "grille",
+          "version": "1.0"
+        },
+        {
+          "id": "pool",
+          "version": "1.0"
+        },
+        {
+          "id": "paire",
+          "version": "1.0"
+        },
+        {
+          "id": "triplet",
+          "version": "1.0"
+        },
+        {
+          "id": "paire-grilles",
+          "version": "1.0"
+        },
+        {
+          "id": "recouvrement",
+          "version": "1.0"
+        },
+        {
+          "id": "recouvrement-paires",
+          "version": "1.0"
+        },
+        {
+          "id": "couverture",
+          "version": "1.0"
+        },
+        {
+          "id": "collision",
+          "version": "1.0"
+        },
+        {
+          "id": "union",
+          "version": "1.0"
+        },
+        {
+          "id": "frequence",
+          "version": "1.0"
+        },
+        {
+          "id": "dispersion",
+          "version": "1.0"
+        },
+        {
+          "id": "distribution",
+          "version": "1.0"
+        },
+        {
+          "id": "moyenne",
+          "version": "1.0"
+        },
+        {
+          "id": "score",
+          "version": "1.0"
+        },
+        {
+          "id": "poids",
+          "version": "1.0"
+        },
+        {
+          "id": "penalite-recouvrement",
+          "version": "1.0"
+        },
+        {
+          "id": "construction",
+          "version": "1.0"
+        },
+        {
+          "id": "ablation",
+          "version": "1.0"
+        },
+        {
+          "id": "graine",
+          "version": "1.0"
+        },
+        {
+          "id": "graines-appariees",
+          "version": "1.0"
+        },
+        {
+          "id": "compromis-geometriques",
+          "version": "1.0"
+        },
+        {
+          "id": "pareto",
+          "version": "1.0"
+        },
+        {
+          "id": "selection",
+          "version": "1.0"
+        },
+        {
+          "id": "mutation",
+          "version": "1.0"
+        },
+        {
+          "id": "croisement",
+          "version": "1.0"
+        },
+        {
+          "id": "filiation",
+          "version": "1.0"
+        },
+        {
+          "id": "random",
+          "version": "1.0"
+        },
+        {
+          "id": "effet-pool",
+          "version": "1.0"
+        },
+        {
+          "id": "monte-carlo",
+          "version": "1.0"
+        },
+        {
+          "id": "tirages-communs",
+          "version": "1.0"
+        },
+        {
+          "id": "probabilite",
+          "version": "1.0"
+        },
+        {
+          "id": "intervalle-confiance",
+          "version": "1.0"
+        },
+        {
+          "id": "significativite",
+          "version": "1.0"
+        },
+        {
+          "id": "esperance",
+          "version": "1.0"
+        },
+        {
+          "id": "jackpot",
+          "version": "1.0"
+        },
+        {
+          "id": "rang-gagnant",
+          "version": "1.0"
+        },
+        {
+          "id": "garantie",
+          "version": "1.0"
+        },
+        {
+          "id": "enumeration",
+          "version": "1.0"
+        },
+        {
+          "id": "meme-grille",
+          "version": "1.0"
+        },
+        {
+          "id": "budget",
+          "version": "1.0"
+        },
+        {
+          "id": "reproductibilite",
+          "version": "1.0"
+        }
+      ],
+      "related": [],
+      "state": "local"
+    }
+  ],
+  "managed_pages": [
+    {
+      "id": "page:portfolio-atlas",
+      "version": "1.0"
+    }
+  ],
+  "observations": [],
+  "publications": []
+}

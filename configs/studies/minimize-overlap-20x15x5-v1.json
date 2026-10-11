@@ -1,0 +1,201 @@
+{
+  "schema_version": "aleaquant-study-1.0",
+  "id": "overlap_20x15x5",
+  "version": 1,
+  "title": "Effet de minimize_overlap — 20 grilles, pool 15/5",
+  "question": "À budget, pools et autres poids fixes, comment la pénalité des intersections de numéros au carré modifie-t-elle les couvertures, les fréquences, les compromis géométriques et les événements simulés sur dix graines appariées ?",
+  "base_profile": {
+    "schema_version": "1.0",
+    "id": "overlap_study_base",
+    "version": 1,
+    "family": "BALANCED",
+    "game": {
+      "id": "euromillions",
+      "rule_id": "euromillions-50-12-v1",
+      "number_domain": [
+        1,
+        50
+      ],
+      "star_domain": [
+        1,
+        12
+      ],
+      "numbers_per_grid": 5,
+      "stars_per_grid": 2,
+      "unit_price_eur": 2.5,
+      "options": []
+    },
+    "pool": {
+      "method": "explicit",
+      "numbers": [
+        6,
+        7,
+        9,
+        13,
+        15,
+        17,
+        22,
+        30,
+        35,
+        40,
+        42,
+        43,
+        48,
+        49,
+        50
+      ],
+      "stars": [
+        2,
+        7,
+        9,
+        10,
+        11
+      ],
+      "number_count": 15,
+      "star_count": 5,
+      "seed": 20261009
+    },
+    "constraints": {
+      "grid_count": 20,
+      "budget_max_eur": 50.0,
+      "unique_grids": true,
+      "max_pairwise_overlap": {
+        "numbers": 5,
+        "stars": 2
+      },
+      "conditional_guarantee": null
+    },
+    "objectives": {
+      "distinct_pairs": 3,
+      "distinct_triples": 8,
+      "balance_numbers": 0.9,
+      "balance_stars": 0.8,
+      "concentration": 0,
+      "minimize_overlap": {
+        "aggregation": "sum_squares",
+        "numbers": 0.7,
+        "stars": 0
+      }
+    },
+    "search": {
+      "method": "prototype_greedy",
+      "seed": 2026101000,
+      "candidate_count": 1,
+      "candidates_per_step": 1200,
+      "max_attempts": 24000,
+      "max_seconds": 30,
+      "population_size": 1,
+      "operators": []
+    },
+    "evaluation": {
+      "method": "monte_carlo",
+      "draws": 20000,
+      "seed": 2810010,
+      "batch_size": 2000,
+      "max_seconds": 30,
+      "max_certificate_cases": 100000,
+      "metrics": [
+        "any_prize",
+        "multiple_prizes",
+        "at_least_3_numbers",
+        "at_least_4_numbers"
+      ]
+    }
+  },
+  "vary": {
+    "parameter": "objectives.minimize_overlap.numbers",
+    "values": [
+      0,
+      0.35,
+      0.7,
+      1.4
+    ]
+  },
+  "generation": {
+    "seeds": [
+      2026101000,
+      2026101001,
+      2026101002,
+      2026101003,
+      2026101004,
+      2026101005,
+      2026101006,
+      2026101007,
+      2026101008,
+      2026101009
+    ],
+    "repetitions": 10
+  },
+  "bounds": {
+    "max_constructions": 40,
+    "max_run_seconds": 600
+  },
+  "comparison": {
+    "method": "same_pool_paired_seeds",
+    "metrics": [
+      "portfolio.distinct_pairs@v1",
+      "portfolio.distinct_triples@v1",
+      "portfolio.mean_number_overlap@v1",
+      "portfolio.max_number_overlap@v1",
+      "portfolio.number_overlap_square_sum@v1",
+      "portfolio.star_overlap_square_sum@v1",
+      "portfolio.number_frequency_sd@v1",
+      "portfolio.star_frequency_sd@v1",
+      "portfolio.distinct_star_pairs@v1",
+      "portfolio.any_prize_probability@v1",
+      "portfolio.multiple_prizes_probability@v1",
+      "portfolio.jackpot_probability@v1",
+      "portfolio.number_overlap_distribution@v1",
+      "portfolio.star_overlap_distribution@v1",
+      "portfolio.number_frequencies@v1",
+      "portfolio.star_frequencies@v1",
+      "portfolio.at_least_3_numbers_probability@v1",
+      "portfolio.at_least_4_numbers_probability@v1",
+      "portfolio.mean_winning_grids@v1"
+    ]
+  },
+  "confirmation": {
+    "selection": "geometry_pareto_diverse_v1",
+    "max_finalists": 12,
+    "evaluation": {
+      "method": "monte_carlo",
+      "draws": 20000,
+      "seed": 2910010,
+      "batch_size": 2000,
+      "max_seconds": 30,
+      "max_certificate_cases": 100000,
+      "metrics": [
+        "any_prize",
+        "multiple_prizes",
+        "at_least_3_numbers",
+        "at_least_4_numbers"
+      ]
+    }
+  },
+  "references": [
+    {
+      "id": "complete_45",
+      "content_sha256": "1c301394acefe1d2285b1ae19477eafe434dd02379b4fa6c9a3f5dbeddff7977"
+    },
+    {
+      "id": "balanced_45",
+      "content_sha256": "3e5afb69a104a9b6edea6e0f54ef6e7699284e5cf777988cb90e56a35c6e397d"
+    },
+    {
+      "id": "balanced_50",
+      "content_sha256": "ef9746d7184ee131618b5c3ff8de6ffb8a22d4529375372533ba790e1e3eb10c"
+    },
+    {
+      "id": "spread_50",
+      "content_sha256": "268dfd92a660386658b40d0e7fe79ba9cfa6e5b26ef0687f3f9f637666539154"
+    },
+    {
+      "id": "spread_55",
+      "content_sha256": "2e6dbb3e42bfbacf83746b070fec439bdefb9650178b36d26e2992a3ebb275cd"
+    },
+    {
+      "id": "clustered_50",
+      "content_sha256": "c9daa45e74ef139de77ef2972adc527ec806af86098cd14d2dfea43c93700934"
+    }
+  ]
+}

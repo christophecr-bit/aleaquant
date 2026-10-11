@@ -1,5 +1,160 @@
 # Journal de développement
 
+## 2026-10-11 — contrôle rédactionnel sans étoiles pour Loto et Keno
+
+- Garde partagé v0.10 : le champ étoiles optionnel ne provoque plus d’erreur
+  pour les faits Loto/Keno. Les nombres restent confrontés aux mêmes preuves.
+- Prompt compose v0.2 commun aux trois jeux : règle/domaine réels, Chance Loto,
+  distinction tirage exact/grille Keno ; même constitution et mêmes consignes.
+- 34 tests ciblés et 3 sous-tests réussis : trois jeux, nombre non sourcé rejeté,
+  preuve de probabilité Keno rattachée à son seul constat.
+- Choix d’angle v0.2 multijeux : neuf tests ciblés réussis.
+- Trois articles locaux préparés dans le dépôt éditorial canonique ; aucun
+  article importé ni déploiement.
+
+## 2026-10-11 — Recherche séparée de Méthode
+
+- Aperçu v0.3 : cinq liens de navigation et quatre portes ; HOME-RESEARCH ajouté.
+- Recherche : publications scientifiques expliquées et lien AleaQuant ; Méthode :
+  construction et évaluation des portefeuilles, lien vers le pipeline existant.
+- Introduction Recherche v0.2, architecture v0.10, guide v1.2 ; aperçu v0.2
+  préservé. Textes toujours à valider, aucun article ni déploiement.
+- Vérifié dans Chrome : cinq liens, destination Recherche, rendu à 320 px sans
+  débordement ; empreintes et destinations HTTP 200 contrôlées.
+
+## 2026-10-11 — Recherche & méthode visible dans l'accueil v0
+
+- Aperçu v0.2 : restaure le nom de la quatrième rubrique dans la navigation et
+  HOME-METHODE. Publications scientifiques décryptées, lien explicite AleaQuant
+  et méthode du projet sont distingués dans une introduction locale de rubrique.
+- Nouveaux textes RESEARCH-INTRO/PUBLICATIONS/METHOD à relire ; aucun article de
+  recherche annoncé comme publié. Aperçu v0.1 préservé et SHA vérifiés ; manifeste
+  v0.2 toujours PENDING_HUMAN_REVIEW. Ancien accueil et dist inchangés.
+- Architecture v0.9 et guide de v0 v1.1 alignés ; vérification des liens,
+  des empreintes et du parcours local sur bureau et mobile (320 px, sans
+  débordement horizontal). Aucun article, recalcul ou déploiement.
+
+## 2026-10-11 — atelier personnalisé et service de souscription
+
+- Backlog v0.15 : PB-019 atelier sur pool utilisateur fixé et PB-020 souscription/
+  paiement. Des portefeuilles complets avec vraies grilles restent gratuits dans
+  l'Atlas ; le service porte sur construction, diagnostic, comparaison et gestion.
+- Dette v2.9 : TD-ATELIER-001 pour calculs, comptes et résultats privés ; TD-SUB-001
+  pour fournisseur, droits, quotas, événements de paiement et cycle d'abonnement.
+- Roadmap v0.6 alignée. Fonctions à cadrer après la v0 ; fournisseur, périodicité
+  et tarifs non choisis. Aucun compte marchand, paiement réel, changement de moteur
+  ou déploiement effectué. Vérification documentaire des liens et références.
+
+## 2026-10-11 — dépendances déclarées pour tout article
+
+- Règle documentaire v1.2 : le Scout inscrit les dépendances dès la proposition,
+  le texte aborde les notions nécessaires et les relecteurs vérifient ce parcours.
+  Les prérequis publiés restent exigés avant la mise en ligne de l'article.
+- Politique canonique v1.1 / Scout v1.4 ; qualification structurée encore ouverte.
+  Aucun contenu public ou moteur scientifique modifié.
+
+## 2026-10-11 — mission documentaire du Scout
+
+- Règle documentaire v1.1 : le Scout part de l'inventaire et des dépendances
+  bloquées, ou de l'intérêt éditorial d'une notion. Paire reste au glossaire ;
+  concentration et span peuvent susciter une proposition d'article.
+- Backlog v0.14 / PB-016 et politique canonique : consignes Scout v1.3 livrées ;
+  alimentation automatique, manifeste et qualification restent TD-SCOUT-001.
+  Aucun article, donnée scientifique, build public ou déploiement modifié.
+- Liens locaux et chargement du prompt vérifiés ; trois contrôles ciblés du
+  graphe canonique passent, sans qualifier encore le tri par un Scout LLM.
+
+## 2026-10-10 — socle de veille éditoriale RSS/arXiv
+
+- SQLite déjà présent pour les tirages et les checkpoints éditoriaux, contrôles
+  conformes. Nouvelle base de veille dans le seul dépôt éditorial canonique,
+  sans modifier les trois bases précédentes ni les pipelines scientifiques.
+- Cinq flux officiels configurés : arXiv probabilités/combinatoire/statistique,
+  Images des mathématiques et Interstices/Inria. Versions, provenance, doublons,
+  cache HTTP, erreurs, bornes et statut ; aucun LLM ni publication automatique.
+- Première collecte : 35 références éditoriales ; service quotidien 09 h 05
+  installé et chargé, exécution de qualification : cinq HTTP 304, zéro doublon,
+  exit 0. Les prochaines échéances et la reprise du Mac restent à contrôler.
+- Lecteur SQLite optionnel pour le Scout, références non vérifiées et témoin
+  bloqué faute de preuves. 48 tests ciblés hors ligne réussis. Guide et preuves
+  dans `../../aleaquant-editorial-agents/docs/RESEARCH-WATCH.md`.
+- Backlog v0.13 : PB-010 partiel ; TODO v0.7 : OPS-010 ; dette v2.8 : liens vers
+  TD-WATCH-001/002 canoniques. Curation et suivi console restent à livrer.
+
+## 2026-10-10 — préparation de la v0 manuelle et références d'articles
+
+- Chris retient l'accueil court et une première livraison manuelle avec Codex.
+  Aperçu séparé dans `prototypes/v0-homepage-review/`, sept blocs identifiés et
+  manifeste en attente de revue ; ancien accueil et maquette conservés.
+  Rendu vérifié dans Chrome sur ordinateur et mobile, sans débordement à 320 px ;
+  références, sources et empreintes contrôlées, commandes de consultation documentées.
+- Référence canonique visible dans le Journal, son lecteur et la page statique :
+  `tirage-EM-2011053`. Le rendu de cette seule page ajoute uniquement l'ID ;
+  brouillon, faits, SHA et décision humaine sont inchangés. Contrôles ciblés :
+  17 tests réussis et syntaxe JavaScript valide.
+- Audit local/public daté : un article intégré, nouveaux glossaire/Atlas locaux,
+  données publiques EuroMillions au 29 septembre contre 9 octobre localement.
+  Garde bloquée par les prérequis non publiés et l'inventaire de l'article historique.
+- Guide `V0-MANUAL-RELEASE.md`, contrat de traçabilité v1.1, architecture v0.8,
+  backlog v0.12 et TODO v0.6 ; TD v2.7 précise l'amorçage et les éditions corrigées.
+  Aucune validation du contenu de homepage ni publication distante effectuée.
+
+## 2026-10-10 — style des boules texturées validé pour PB-018
+
+- `PRODUCT-BACKLOG.md` v0.11 : validation explicite par Chris du rendu bleu
+  satiné, grain fin, léger relief et chiffres sombres sur une pastille claire.
+  L'intensité du bleu pourra représenter la fréquence du numéro dans la matrice.
+- Image copiée sans modification dans `docs/references/atlas-textured-lottery-balls-v1.png`,
+  avec fiche de référence v1.0, prompt et provenance ; original conservé.
+- Empreinte de la copie et liens vérifiés. Référence graphique uniquement :
+  matrice du site et prompteur inchangés, intégration et lecture à petite taille
+  encore à réaliser.
+
+## 2026-10-10 — vitrine visuelle de l'Atlas inscrite au backlog
+
+- `PRODUCT-BACKLOG.md` v0.10 : PB-018 prolonge PB-005 et PB-016. Chris retient
+  la matrice et le réseau de l'aperçu ; des boules de loto texturées habilleront
+  les présences et la sélection d'une grille rejoindra le prompteur.
+- Extension prévue : parcours des branches de l'Atlas en dossiers virtuels et
+  vignettes, avec études, générations, parents et descendants ; un croisement
+  conserve ses deux parents. L'aperçu autonome et sa source sont référencés.
+- État explicite : aperçu local sur quatre portefeuilles de 20 grilles ; textures,
+  intégration, explorateur et qualification sur 30 grilles restent à réaliser.
+  Vérification documentaire des références et des changements ; aucun moteur,
+  résultat de recherche, contenu publié ou déploiement modifié.
+
+## 2026-10-10 — RANDOM, progressivité et dépendances éditoriales
+
+- TD-PORT-001/002 résolues pour les protocoles d'ablation et d'évolution : nouvelle
+  enveloppe contrôlée, génération réelle de 40 constructions puis 24 enfants,
+  dix RANDOM mêmes pools et dix domaine complet par étude, MC commun et
+  confirmation indépendante de tous les témoins. Nouvelles projections : 60 et
+  49 fiches ; anciennes archives 40/29 et sources scientifiques préservées.
+- Qualification stricte des méthodes, règles, coûts, pools, sources, protocoles
+  et ensembles MC ; aucun témoin dans la sélection, aucun poids nul assimilé
+  à RANDOM. Projections recomputées à l'identique ; 152 tests scientifiques ciblés
+  réussis. Guide et commandes : `PORTFOLIO-CONTROLLED-STUDIES.md`.
+- Récit du catalogue repris autour de la question et des observations ; paramètres,
+  identifiants et graines sous des volets de reproductibilité fermés. QA réelle
+  60/49, archives 40/29, Pipeline 30, ZIP 6, parents et viewer jusqu'aux grilles
+  19/20. Portable autonome sans requête `/data`, desktop et mobile 390 px vérifiés.
+- Règle durable de progressivité dans `AGENTS.md` et
+  `SITE-DOCUMENTATION-RULES.md`. Inventaire initial de 43 notions du catalogue ;
+  46 définitions locales avec prérequis transitifs et liens complémentaires.
+  Glossaire directement incrémenté ; articles réservés au pipeline éditorial.
+- Registre versionné de dépendances, garde avant import éditorial et déploiement
+  standard. Un prérequis local ne compte pas comme publié ; versions, contenu,
+  preuve HTTP publique et reconfirmation avant déploiement sont exigés.
+  Le lot courant reste bloqué : aucun faux état publié, aucune publication distante.
+  22 tests de dépendances et 17 tests d'import réussis, soit 191 tests ciblés
+  au total ; les 22 contrôles documentaires passent également sous `python -O`.
+- Quatorze dossiers Topic validés dans le dépôt éditorial canonique, avec sources,
+  preuves mathématiques et prérequis anticipés ; rédaction/relecture restent à
+  réaliser. Aucun appel LLM, brouillon fake ou article ajouté au site.
+- PB-016 / TD-DOC-001 / OPS-007 suivent l'extension du système au reste du site
+  et sa publication. PB-017 / TD-EDIT-001 inscrivent la compétence d'agent adaptée
+  au niveau de l'article ; principe documenté, routage explicitement différé.
+
 ## 2026-10-03 — clarification : recette validée → production directe
 
 - Deux environnements : recette privée pour validation, puis production publique.

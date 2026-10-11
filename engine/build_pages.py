@@ -2,7 +2,8 @@
 
 Auteur : AleaQuant · 2026-10-02 · Révision traçabilité : note publique, preuves et SHA de la version relue.
 
-Version : 0.7 | Date : 2026-10-02 | Auteur : AleaQuant
+Version : 0.8 | Date : 2026-10-10 | Auteur : AleaQuant
+Historique : 0.8 rend la référence stable de l'article consultable sans réviser le contenu.
 Historique : 0.7 ajoute la carte descriptive des sommes par dizaine aux trois jeux.
 Historique : 0.6 ajoute les fiches/index Keno pour le régime actif 16/56.
 Historique : 0.5 rend le jeu et la date explicites dans le titre visible des fiches.
@@ -248,6 +249,8 @@ def article_html(article):
     return (f'<article class="draw-article" aria-labelledby="article-title">'
             f'<span class="eyebrow">ARTICLE · RELU ET APPROUVÉ</span>'
             f'<h2 id="article-title">{esc(draft["title"])}</h2>'
+            f'<p class="small article-reference">Référence de l’article : '
+            f'<code>{esc(article["article_id"])}</code></p>'
             f'<div class="draw-article-body">{paragraphs}</div>{methodology}</article>')
 
 

@@ -1,3 +1,8 @@
+"""Tests de transport/import éditorial, y compris l'identité des titres de tirage.
+
+Nom : tests/test_import.py · v0.2 · 2026-10-02 · Auteur : AleaQuant
+Historique : vérifie la présence du jeu et de la date complète dans les titres publiés.
+"""
 import importlib.util
 import json
 from pathlib import Path
@@ -38,6 +43,22 @@ class ImportTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'non concordants'):
             module.validate(article)
 
+    def test_draw_title_names_game_and_complete_date(self):
+        article = self.article()
+        article['kind'] = 'draw_report'
+        article['article_id'] = 'tirage-EM-2011053'
+        article['research_pack']['draw_id'] = 'EM-2011053'
+        article['draft']['title'] = 'Une somme à 222'
+        article['draft']['research_pack_sha256'] = module.digest(article['research_pack'])
+        article['draft_sha256'] = module.digest(article['draft'])
+        article['human_decision']['draft_sha256'] = article['draft_sha256']
+        with self.assertRaisesRegex(ValueError, 'nommer explicitement le jeu'):
+            module.validate(article)
+        article['draft']['title'] = 'EuroMillions — tirage du 6 septembre 2011 : une somme à 222'
+        article['draft_sha256'] = module.digest(article['draft'])
+        article['human_decision']['draft_sha256'] = article['draft_sha256']
+        self.assertIs(module.validate(article), article)
+
     def test_one_article_per_draw(self):
         with tempfile.TemporaryDirectory() as folder:
             source = Path(folder) / 'export.json'
@@ -46,6 +67,7 @@ class ImportTests(unittest.TestCase):
             article['kind'] = 'draw_report'
             article['article_id'] = 'tirage-EM-2011053'
             article['research_pack']['draw_id'] = 'EM-2011053'
+            article['draft']['title'] = 'EuroMillions — tirage du 6 septembre 2011'
             article['draft']['research_pack_sha256'] = module.digest(article['research_pack'])
             article['draft_sha256'] = module.digest(article['draft'])
             article['human_decision']['draft_sha256'] = article['draft_sha256']

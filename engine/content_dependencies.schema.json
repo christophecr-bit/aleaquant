@@ -1,0 +1,69 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://aleaquant.org/schemas/content-dependencies-1.0.json",
+  "title": "AleaQuant documentary dependency registry v1.0",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema", "version", "production_origin", "nodes", "managed_pages", "observations", "publications"],
+  "properties": {
+    "schema": {"const": "aleaquant-content-dependencies-1.0"},
+    "version": {"const": "1.0"},
+    "production_origin": {"type": "string", "format": "uri", "pattern": "^https://[^/?#]+$"},
+    "nodes": {"type": "array", "items": {"$ref": "#/$defs/node"}},
+    "managed_pages": {"type": "array", "items": {"$ref": "#/$defs/reference"}, "uniqueItems": true},
+    "observations": {"type": "array", "items": {"$ref": "#/$defs/observation"}},
+    "publications": {"type": "array", "items": {"$ref": "#/$defs/publication"}, "uniqueItems": true}
+  },
+  "$defs": {
+    "text": {"type": "string", "minLength": 1},
+    "sha": {"type": "string", "pattern": "^[0-9a-f]{64}$"},
+    "path": {"type": "string", "minLength": 1, "pattern": "^(?!/)(?!.*(?:^|/)\\.\\.(?:/|$))(?!.*\\\\).+$"},
+    "reference": {
+      "type": "object", "additionalProperties": false, "required": ["id", "version"],
+      "properties": {"id": {"$ref": "#/$defs/text"}, "version": {"$ref": "#/$defs/text"}}
+    },
+    "target": {
+      "type": "object", "additionalProperties": false, "required": ["path", "anchor"],
+      "properties": {"path": {"$ref": "#/$defs/path"}, "anchor": {"type": ["string", "null"]}}
+    },
+    "node": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "kind", "version", "content_sha256", "target", "requires", "related", "state"],
+      "properties": {
+        "id": {"$ref": "#/$defs/text"}, "kind": {"enum": ["notion", "article", "page"]},
+        "version": {"$ref": "#/$defs/text"}, "content_sha256": {"$ref": "#/$defs/sha"},
+        "target": {"$ref": "#/$defs/target"}, "state": {"enum": ["draft", "local", "published"]},
+        "requires": {"type": "array", "items": {"$ref": "#/$defs/reference"}, "uniqueItems": true},
+        "related": {"type": "array", "items": {"$ref": "#/$defs/text"}},
+        "content": {
+          "type": "object", "additionalProperties": false, "required": ["label", "definition"],
+          "properties": {"label": {"$ref": "#/$defs/text"}, "definition": {"$ref": "#/$defs/text"}}
+        }
+      },
+      "allOf": [{
+        "if": {"properties": {"kind": {"const": "notion"}}},
+        "then": {"required": ["content"], "properties": {"target": {"properties": {"anchor": {"type": "string", "minLength": 1}}}}},
+        "else": {"not": {"required": ["content"]}}
+      }]
+    },
+    "observation": {
+      "type": "object", "additionalProperties": false,
+      "required": ["id", "environment", "anonymous", "url", "http_status", "checked_at", "deployment_id", "asset_sha256", "response_path"],
+      "properties": {
+        "id": {"$ref": "#/$defs/text"}, "environment": {"$ref": "#/$defs/text"},
+        "anonymous": {"type": "boolean"}, "url": {"type": "string", "format": "uri"},
+        "http_status": {"type": "integer"}, "checked_at": {"type": "string", "format": "date-time"},
+        "deployment_id": {"$ref": "#/$defs/text"}, "asset_sha256": {"$ref": "#/$defs/sha"},
+        "response_path": {"$ref": "#/$defs/path"}
+      }
+    },
+    "publication": {
+      "type": "object", "additionalProperties": false,
+      "required": ["node_id", "node_version", "content_sha256", "observation_id"],
+      "properties": {
+        "node_id": {"$ref": "#/$defs/text"}, "node_version": {"$ref": "#/$defs/text"},
+        "content_sha256": {"$ref": "#/$defs/sha"}, "observation_id": {"$ref": "#/$defs/text"}
+      }
+    }
+  }
+}

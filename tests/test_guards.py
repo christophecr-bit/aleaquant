@@ -17,7 +17,7 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / 'agent'))
 from guards import (  # noqa: E402
     RARITY_PROFILES, guard_class_citations, guard_enum_leak,
-    guard_interpretive_words, guard_markdown, notable_badges, notable_level,
+    evidence_block, guard_interpretive_words, guard_markdown, notable_badges, notable_level,
     paragraph_evidence, strip_markdown,
 )
 
@@ -45,6 +45,17 @@ class ProfileTests(unittest.TestCase):
 
 
 class LexicalGuardTests(unittest.TestCase):
+    def test_somme_par_dizaine_est_presentee_sans_rarete(self):
+        profile = {
+            'fact_id': 'F.main.decade_sums', 'metric': 'main.decade_sums',
+            'label': 'Somme par dizaine', 'category': 'descriptive_profile',
+            'value': {'profile': [{'decade': 1, 'count': 2, 'sum': 11}]},
+        }
+        text = evidence_block({'facts': [profile]})
+        self.assertIn('Somme par dizaine', text)
+        self.assertIn('D1 : 2 numéros, somme 11', text)
+        self.assertNotIn('rareté=', text)
+
     def test_le_garde_se_declenche_sur_un_tirage_ordinaire(self):
         """EM-2004010 n'a aucune mesure au-dessus de sa référence : tout mot de
         rareté doit être signalé. C'est le test que l'ancien garde ne passait pas."""
@@ -101,6 +112,23 @@ class LinterTests(unittest.TestCase):
         sha = m.digest(draft)
         article = {'schema': 'aleaquant-article-v1', 'status': 'HUMAN_APPROVED',
                    'article_id': 'test-lint', 'draft': draft, 'draft_sha256': sha,
+                   'research_pack': pack,
+                   'human_decision': {'approved': True, 'reviewer': 'T', 'draft_sha256': sha}}
+        with self.assertRaises(ValueError):
+            m.validate(article)
+
+    def test_import_refuse_un_titre_predictif(self):
+        import importlib.util
+        spec = importlib.util.spec_from_file_location('ia_title', ROOT / 'scripts' / 'import_article.py')
+        m = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(m)
+        pack = {'evidence': []}
+        draft = {'title': 'Cette grille prédit le prochain tirage', 'body': 'Un texte descriptif.',
+                 'claims': [{'text': 'Un texte descriptif.'}],
+                 'research_pack_sha256': m.digest(pack)}
+        sha = m.digest(draft)
+        article = {'schema': 'aleaquant-article-v1', 'status': 'HUMAN_APPROVED',
+                   'article_id': 'test-title', 'draft': draft, 'draft_sha256': sha,
                    'research_pack': pack,
                    'human_decision': {'approved': True, 'reviewer': 'T', 'draft_sha256': sha}}
         with self.assertRaises(ValueError):
@@ -216,3 +244,20 @@ class OtherGuardTests(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class MultigameNumberGuardTests(unittest.TestCase):
+    def test_games_without_stars_keep_number_guard(self):
+        from guards import guard_full_text
+        for draw_id in ('LO-20261007', 'KE-26372', 'EM-26081'):
+            with self.subTest(draw_id=draw_id):
+                source = facts(draw_id)
+                self.assertEqual(guard_full_text(str(source['main'][0]), source), set())
+                self.assertIn('999999999999', guard_full_text('999999999999', source))
+
+
+class KenoDrawProbabilityEvidenceTests(unittest.TestCase):
+    def test_draw_probability_is_attached_to_keno_draw_not_grid(self):
+        source = facts('KE-26372')
+        self.assertIn('F.draw.probability', paragraph_evidence('Le tirage exact a une probabilité de 1 sur 41 648 951 840 265.', source))
+        self.assertNotIn('F.draw.probability', paragraph_evidence('L’étendue vaut 48.', source))

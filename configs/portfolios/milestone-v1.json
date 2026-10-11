@@ -1,0 +1,1455 @@
+{
+  "schema_version": "1.0",
+  "profiles": [
+    {
+      "schema_version": "1.0",
+      "id": "complete_45_v1",
+      "version": 1,
+      "family": "COVERAGE",
+      "game": {
+        "id": "euromillions",
+        "rule_id": "euromillions-50-12-v1",
+        "number_domain": [
+          1,
+          50
+        ],
+        "star_domain": [
+          1,
+          12
+        ],
+        "numbers_per_grid": 5,
+        "stars_per_grid": 2,
+        "unit_price_eur": 2.5,
+        "options": []
+      },
+      "pool": {
+        "method": "explicit",
+        "numbers": [
+          6,
+          9,
+          13,
+          22,
+          30,
+          43
+        ],
+        "stars": [
+          2,
+          7,
+          9
+        ],
+        "number_count": 6,
+        "star_count": 3,
+        "seed": 20261009
+      },
+      "constraints": {
+        "grid_count": 18,
+        "budget_max_eur": 45.0,
+        "unique_grids": true,
+        "max_pairwise_overlap": {
+          "numbers": 5,
+          "stars": 2
+        },
+        "conditional_guarantee": null
+      },
+      "objectives": {
+        "distinct_pairs": 0,
+        "distinct_triples": 0,
+        "balance_numbers": 0,
+        "balance_stars": 0,
+        "concentration": 0,
+        "minimize_overlap": {
+          "aggregation": "sum_squares",
+          "numbers": 0,
+          "stars": 0
+        }
+      },
+      "search": {
+        "method": "enumerate",
+        "seed": 1700000,
+        "candidate_count": 1,
+        "candidates_per_step": 64,
+        "max_attempts": 30000,
+        "max_seconds": 10,
+        "population_size": 1,
+        "operators": []
+      },
+      "evaluation": {
+        "method": "monte_carlo",
+        "draws": 20000,
+        "seed": 2701009,
+        "batch_size": 2000,
+        "max_seconds": 30,
+        "max_certificate_cases": 100000,
+        "metrics": [
+          "any_prize",
+          "multiple_prizes",
+          "at_least_3_numbers",
+          "at_least_4_numbers"
+        ]
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "id": "random_complete_45_v1",
+      "version": 1,
+      "family": "RANDOM",
+      "game": {
+        "id": "euromillions",
+        "rule_id": "euromillions-50-12-v1",
+        "number_domain": [
+          1,
+          50
+        ],
+        "star_domain": [
+          1,
+          12
+        ],
+        "numbers_per_grid": 5,
+        "stars_per_grid": 2,
+        "unit_price_eur": 2.5,
+        "options": []
+      },
+      "pool": {
+        "method": "explicit",
+        "numbers": [
+          6,
+          9,
+          13,
+          22,
+          30,
+          43
+        ],
+        "stars": [
+          2,
+          7,
+          9
+        ],
+        "number_count": 6,
+        "star_count": 3,
+        "seed": 20261009
+      },
+      "constraints": {
+        "grid_count": 18,
+        "budget_max_eur": 45.0,
+        "unique_grids": true,
+        "max_pairwise_overlap": {
+          "numbers": 5,
+          "stars": 2
+        },
+        "conditional_guarantee": null
+      },
+      "objectives": {
+        "distinct_pairs": 0,
+        "distinct_triples": 0,
+        "balance_numbers": 0,
+        "balance_stars": 0,
+        "concentration": 0,
+        "minimize_overlap": {
+          "aggregation": "sum_squares",
+          "numbers": 0,
+          "stars": 0
+        }
+      },
+      "search": {
+        "method": "random",
+        "seed": 1800000,
+        "candidate_count": 1,
+        "candidates_per_step": 1,
+        "max_attempts": 30000,
+        "max_seconds": 10,
+        "population_size": 1,
+        "operators": []
+      },
+      "evaluation": {
+        "method": "monte_carlo",
+        "draws": 20000,
+        "seed": 2701009,
+        "batch_size": 2000,
+        "max_seconds": 30,
+        "max_certificate_cases": 100000,
+        "metrics": [
+          "any_prize",
+          "multiple_prizes",
+          "at_least_3_numbers",
+          "at_least_4_numbers"
+        ]
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "id": "balanced_45_v1",
+      "version": 1,
+      "family": "BALANCED",
+      "game": {
+        "id": "euromillions",
+        "rule_id": "euromillions-50-12-v1",
+        "number_domain": [
+          1,
+          50
+        ],
+        "star_domain": [
+          1,
+          12
+        ],
+        "numbers_per_grid": 5,
+        "stars_per_grid": 2,
+        "unit_price_eur": 2.5,
+        "options": []
+      },
+      "pool": {
+        "method": "explicit",
+        "numbers": [
+          6,
+          7,
+          9,
+          13,
+          15,
+          17,
+          22,
+          30,
+          35,
+          40,
+          42,
+          43,
+          48,
+          49,
+          50
+        ],
+        "stars": [
+          2,
+          7,
+          9,
+          10,
+          11
+        ],
+        "number_count": 15,
+        "star_count": 5,
+        "seed": 20261009
+      },
+      "constraints": {
+        "grid_count": 18,
+        "budget_max_eur": 45.0,
+        "unique_grids": true,
+        "max_pairwise_overlap": {
+          "numbers": 5,
+          "stars": 2
+        },
+        "conditional_guarantee": null
+      },
+      "objectives": {
+        "distinct_pairs": 3,
+        "distinct_triples": 8,
+        "balance_numbers": 0.9,
+        "balance_stars": 0.8,
+        "concentration": 0,
+        "minimize_overlap": {
+          "aggregation": "sum_squares",
+          "numbers": 0.7,
+          "stars": 0.2
+        }
+      },
+      "search": {
+        "method": "greedy",
+        "seed": 1700100,
+        "candidate_count": 2,
+        "candidates_per_step": 64,
+        "max_attempts": 30000,
+        "max_seconds": 10,
+        "population_size": 1,
+        "operators": []
+      },
+      "evaluation": {
+        "method": "monte_carlo",
+        "draws": 20000,
+        "seed": 2701009,
+        "batch_size": 2000,
+        "max_seconds": 30,
+        "max_certificate_cases": 100000,
+        "metrics": [
+          "any_prize",
+          "multiple_prizes",
+          "at_least_3_numbers",
+          "at_least_4_numbers"
+        ]
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "id": "random_balanced_45_v1",
+      "version": 1,
+      "family": "RANDOM",
+      "game": {
+        "id": "euromillions",
+        "rule_id": "euromillions-50-12-v1",
+        "number_domain": [
+          1,
+          50
+        ],
+        "star_domain": [
+          1,
+          12
+        ],
+        "numbers_per_grid": 5,
+        "stars_per_grid": 2,
+        "unit_price_eur": 2.5,
+        "options": []
+      },
+      "pool": {
+        "method": "explicit",
+        "numbers": [
+          6,
+          7,
+          9,
+          13,
+          15,
+          17,
+          22,
+          30,
+          35,
+          40,
+          42,
+          43,
+          48,
+          49,
+          50
+        ],
+        "stars": [
+          2,
+          7,
+          9,
+          10,
+          11
+        ],
+        "number_count": 15,
+        "star_count": 5,
+        "seed": 20261009
+      },
+      "constraints": {
+        "grid_count": 18,
+        "budget_max_eur": 45.0,
+        "unique_grids": true,
+        "max_pairwise_overlap": {
+          "numbers": 5,
+          "stars": 2
+        },
+        "conditional_guarantee": null
+      },
+      "objectives": {
+        "distinct_pairs": 0,
+        "distinct_triples": 0,
+        "balance_numbers": 0,
+        "balance_stars": 0,
+        "concentration": 0,
+        "minimize_overlap": {
+          "aggregation": "sum_squares",
+          "numbers": 0,
+          "stars": 0
+        }
+      },
+      "search": {
+        "method": "random",
+        "seed": 1800100,
+        "candidate_count": 2,
+        "candidates_per_step": 1,
+        "max_attempts": 30000,
+        "max_seconds": 10,
+        "population_size": 1,
+        "operators": []
+      },
+      "evaluation": {
+        "method": "monte_carlo",
+        "draws": 20000,
+        "seed": 2701009,
+        "batch_size": 2000,
+        "max_seconds": 30,
+        "max_certificate_cases": 100000,
+        "metrics": [
+          "any_prize",
+          "multiple_prizes",
+          "at_least_3_numbers",
+          "at_least_4_numbers"
+        ]
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "id": "balanced_50_v1",
+      "version": 1,
+      "family": "BALANCED",
+      "game": {
+        "id": "euromillions",
+        "rule_id": "euromillions-50-12-v1",
+        "number_domain": [
+          1,
+          50
+        ],
+        "star_domain": [
+          1,
+          12
+        ],
+        "numbers_per_grid": 5,
+        "stars_per_grid": 2,
+        "unit_price_eur": 2.5,
+        "options": []
+      },
+      "pool": {
+        "method": "explicit",
+        "numbers": [
+          6,
+          7,
+          9,
+          13,
+          15,
+          17,
+          22,
+          30,
+          35,
+          40,
+          42,
+          43,
+          48,
+          49,
+          50
+        ],
+        "stars": [
+          2,
+          7,
+          9,
+          10,
+          11
+        ],
+        "number_count": 15,
+        "star_count": 5,
+        "seed": 20261009
+      },
+      "constraints": {
+        "grid_count": 20,
+        "budget_max_eur": 50.0,
+        "unique_grids": true,
+        "max_pairwise_overlap": {
+          "numbers": 5,
+          "stars": 2
+        },
+        "conditional_guarantee": null
+      },
+      "objectives": {
+        "distinct_pairs": 3,
+        "distinct_triples": 8,
+        "balance_numbers": 0.9,
+        "balance_stars": 0.8,
+        "concentration": 0,
+        "minimize_overlap": {
+          "aggregation": "sum_squares",
+          "numbers": 0.7,
+          "stars": 0.2
+        }
+      },
+      "search": {
+        "method": "greedy",
+        "seed": 1700200,
+        "candidate_count": 2,
+        "candidates_per_step": 64,
+        "max_attempts": 30000,
+        "max_seconds": 10,
+        "population_size": 1,
+        "operators": []
+      },
+      "evaluation": {
+        "method": "monte_carlo",
+        "draws": 20000,
+        "seed": 2701009,
+        "batch_size": 2000,
+        "max_seconds": 30,
+        "max_certificate_cases": 100000,
+        "metrics": [
+          "any_prize",
+          "multiple_prizes",
+          "at_least_3_numbers",
+          "at_least_4_numbers"
+        ]
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "id": "random_balanced_50_v1",
+      "version": 1,
+      "family": "RANDOM",
+      "game": {
+        "id": "euromillions",
+        "rule_id": "euromillions-50-12-v1",
+        "number_domain": [
+          1,
+          50
+        ],
+        "star_domain": [
+          1,
+          12
+        ],
+        "numbers_per_grid": 5,
+        "stars_per_grid": 2,
+        "unit_price_eur": 2.5,
+        "options": []
+      },
+      "pool": {
+        "method": "explicit",
+        "numbers": [
+          6,
+          7,
+          9,
+          13,
+          15,
+          17,
+          22,
+          30,
+          35,
+          40,
+          42,
+          43,
+          48,
+          49,
+          50
+        ],
+        "stars": [
+          2,
+          7,
+          9,
+          10,
+          11
+        ],
+        "number_count": 15,
+        "star_count": 5,
+        "seed": 20261009
+      },
+      "constraints": {
+        "grid_count": 20,
+        "budget_max_eur": 50.0,
+        "unique_grids": true,
+        "max_pairwise_overlap": {
+          "numbers": 5,
+          "stars": 2
+        },
+        "conditional_guarantee": null
+      },
+      "objectives": {
+        "distinct_pairs": 0,
+        "distinct_triples": 0,
+        "balance_numbers": 0,
+        "balance_stars": 0,
+        "concentration": 0,
+        "minimize_overlap": {
+          "aggregation": "sum_squares",
+          "numbers": 0,
+          "stars": 0
+        }
+      },
+      "search": {
+        "method": "random",
+        "seed": 1800200,
+        "candidate_count": 2,
+        "candidates_per_step": 1,
+        "max_attempts": 30000,
+        "max_seconds": 10,
+        "population_size": 1,
+        "operators": []
+      },
+      "evaluation": {
+        "method": "monte_carlo",
+        "draws": 20000,
+        "seed": 2701009,
+        "batch_size": 2000,
+        "max_seconds": 30,
+        "max_certificate_cases": 100000,
+        "metrics": [
+          "any_prize",
+          "multiple_prizes",
+          "at_least_3_numbers",
+          "at_least_4_numbers"
+        ]
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "id": "spread_50_v1",
+      "version": 1,
+      "family": "LOW_OVERLAP",
+      "game": {
+        "id": "euromillions",
+        "rule_id": "euromillions-50-12-v1",
+        "number_domain": [
+          1,
+          50
+        ],
+        "star_domain": [
+          1,
+          12
+        ],
+        "numbers_per_grid": 5,
+        "stars_per_grid": 2,
+        "unit_price_eur": 2.5,
+        "options": []
+      },
+      "pool": {
+        "method": "explicit",
+        "numbers": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31,
+          32,
+          33,
+          34,
+          35,
+          36,
+          37,
+          38,
+          39,
+          40,
+          41,
+          42,
+          43,
+          44,
+          45,
+          46,
+          47,
+          48,
+          49,
+          50
+        ],
+        "stars": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12
+        ],
+        "number_count": 50,
+        "star_count": 12,
+        "seed": 20261009
+      },
+      "constraints": {
+        "grid_count": 20,
+        "budget_max_eur": 50.0,
+        "unique_grids": true,
+        "max_pairwise_overlap": {
+          "numbers": 5,
+          "stars": 2
+        },
+        "conditional_guarantee": null
+      },
+      "objectives": {
+        "distinct_pairs": 3,
+        "distinct_triples": 8,
+        "balance_numbers": 0.3,
+        "balance_stars": 0.8,
+        "concentration": 0,
+        "minimize_overlap": {
+          "aggregation": "sum_squares",
+          "numbers": 0.7,
+          "stars": 0.2
+        }
+      },
+      "search": {
+        "method": "greedy",
+        "seed": 1700300,
+        "candidate_count": 2,
+        "candidates_per_step": 64,
+        "max_attempts": 30000,
+        "max_seconds": 10,
+        "population_size": 1,
+        "operators": []
+      },
+      "evaluation": {
+        "method": "monte_carlo",
+        "draws": 20000,
+        "seed": 2701009,
+        "batch_size": 2000,
+        "max_seconds": 30,
+        "max_certificate_cases": 100000,
+        "metrics": [
+          "any_prize",
+          "multiple_prizes",
+          "at_least_3_numbers",
+          "at_least_4_numbers"
+        ]
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "id": "random_spread_50_v1",
+      "version": 1,
+      "family": "RANDOM",
+      "game": {
+        "id": "euromillions",
+        "rule_id": "euromillions-50-12-v1",
+        "number_domain": [
+          1,
+          50
+        ],
+        "star_domain": [
+          1,
+          12
+        ],
+        "numbers_per_grid": 5,
+        "stars_per_grid": 2,
+        "unit_price_eur": 2.5,
+        "options": []
+      },
+      "pool": {
+        "method": "explicit",
+        "numbers": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31,
+          32,
+          33,
+          34,
+          35,
+          36,
+          37,
+          38,
+          39,
+          40,
+          41,
+          42,
+          43,
+          44,
+          45,
+          46,
+          47,
+          48,
+          49,
+          50
+        ],
+        "stars": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12
+        ],
+        "number_count": 50,
+        "star_count": 12,
+        "seed": 20261009
+      },
+      "constraints": {
+        "grid_count": 20,
+        "budget_max_eur": 50.0,
+        "unique_grids": true,
+        "max_pairwise_overlap": {
+          "numbers": 5,
+          "stars": 2
+        },
+        "conditional_guarantee": null
+      },
+      "objectives": {
+        "distinct_pairs": 0,
+        "distinct_triples": 0,
+        "balance_numbers": 0,
+        "balance_stars": 0,
+        "concentration": 0,
+        "minimize_overlap": {
+          "aggregation": "sum_squares",
+          "numbers": 0,
+          "stars": 0
+        }
+      },
+      "search": {
+        "method": "random",
+        "seed": 1800300,
+        "candidate_count": 2,
+        "candidates_per_step": 1,
+        "max_attempts": 30000,
+        "max_seconds": 10,
+        "population_size": 1,
+        "operators": []
+      },
+      "evaluation": {
+        "method": "monte_carlo",
+        "draws": 20000,
+        "seed": 2701009,
+        "batch_size": 2000,
+        "max_seconds": 30,
+        "max_certificate_cases": 100000,
+        "metrics": [
+          "any_prize",
+          "multiple_prizes",
+          "at_least_3_numbers",
+          "at_least_4_numbers"
+        ]
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "id": "spread_55_v1",
+      "version": 1,
+      "family": "LOW_OVERLAP",
+      "game": {
+        "id": "euromillions",
+        "rule_id": "euromillions-50-12-v1",
+        "number_domain": [
+          1,
+          50
+        ],
+        "star_domain": [
+          1,
+          12
+        ],
+        "numbers_per_grid": 5,
+        "stars_per_grid": 2,
+        "unit_price_eur": 2.5,
+        "options": []
+      },
+      "pool": {
+        "method": "explicit",
+        "numbers": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31,
+          32,
+          33,
+          34,
+          35,
+          36,
+          37,
+          38,
+          39,
+          40,
+          41,
+          42,
+          43,
+          44,
+          45,
+          46,
+          47,
+          48,
+          49,
+          50
+        ],
+        "stars": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12
+        ],
+        "number_count": 50,
+        "star_count": 12,
+        "seed": 20261009
+      },
+      "constraints": {
+        "grid_count": 22,
+        "budget_max_eur": 55.0,
+        "unique_grids": true,
+        "max_pairwise_overlap": {
+          "numbers": 5,
+          "stars": 2
+        },
+        "conditional_guarantee": null
+      },
+      "objectives": {
+        "distinct_pairs": 3,
+        "distinct_triples": 8,
+        "balance_numbers": 0.3,
+        "balance_stars": 0.8,
+        "concentration": 0,
+        "minimize_overlap": {
+          "aggregation": "sum_squares",
+          "numbers": 0.7,
+          "stars": 0.2
+        }
+      },
+      "search": {
+        "method": "greedy",
+        "seed": 1700400,
+        "candidate_count": 2,
+        "candidates_per_step": 64,
+        "max_attempts": 30000,
+        "max_seconds": 10,
+        "population_size": 1,
+        "operators": []
+      },
+      "evaluation": {
+        "method": "monte_carlo",
+        "draws": 20000,
+        "seed": 2701009,
+        "batch_size": 2000,
+        "max_seconds": 30,
+        "max_certificate_cases": 100000,
+        "metrics": [
+          "any_prize",
+          "multiple_prizes",
+          "at_least_3_numbers",
+          "at_least_4_numbers"
+        ]
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "id": "random_spread_55_v1",
+      "version": 1,
+      "family": "RANDOM",
+      "game": {
+        "id": "euromillions",
+        "rule_id": "euromillions-50-12-v1",
+        "number_domain": [
+          1,
+          50
+        ],
+        "star_domain": [
+          1,
+          12
+        ],
+        "numbers_per_grid": 5,
+        "stars_per_grid": 2,
+        "unit_price_eur": 2.5,
+        "options": []
+      },
+      "pool": {
+        "method": "explicit",
+        "numbers": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31,
+          32,
+          33,
+          34,
+          35,
+          36,
+          37,
+          38,
+          39,
+          40,
+          41,
+          42,
+          43,
+          44,
+          45,
+          46,
+          47,
+          48,
+          49,
+          50
+        ],
+        "stars": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12
+        ],
+        "number_count": 50,
+        "star_count": 12,
+        "seed": 20261009
+      },
+      "constraints": {
+        "grid_count": 22,
+        "budget_max_eur": 55.0,
+        "unique_grids": true,
+        "max_pairwise_overlap": {
+          "numbers": 5,
+          "stars": 2
+        },
+        "conditional_guarantee": null
+      },
+      "objectives": {
+        "distinct_pairs": 0,
+        "distinct_triples": 0,
+        "balance_numbers": 0,
+        "balance_stars": 0,
+        "concentration": 0,
+        "minimize_overlap": {
+          "aggregation": "sum_squares",
+          "numbers": 0,
+          "stars": 0
+        }
+      },
+      "search": {
+        "method": "random",
+        "seed": 1800400,
+        "candidate_count": 2,
+        "candidates_per_step": 1,
+        "max_attempts": 30000,
+        "max_seconds": 10,
+        "population_size": 1,
+        "operators": []
+      },
+      "evaluation": {
+        "method": "monte_carlo",
+        "draws": 20000,
+        "seed": 2701009,
+        "batch_size": 2000,
+        "max_seconds": 30,
+        "max_certificate_cases": 100000,
+        "metrics": [
+          "any_prize",
+          "multiple_prizes",
+          "at_least_3_numbers",
+          "at_least_4_numbers"
+        ]
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "id": "clustered_50_v1",
+      "version": 1,
+      "family": "CONCENTRATED",
+      "game": {
+        "id": "euromillions",
+        "rule_id": "euromillions-50-12-v1",
+        "number_domain": [
+          1,
+          50
+        ],
+        "star_domain": [
+          1,
+          12
+        ],
+        "numbers_per_grid": 5,
+        "stars_per_grid": 2,
+        "unit_price_eur": 2.5,
+        "options": []
+      },
+      "pool": {
+        "method": "explicit",
+        "numbers": [
+          6,
+          9,
+          13,
+          22,
+          30,
+          35,
+          42,
+          43,
+          49,
+          50
+        ],
+        "stars": [
+          2,
+          7,
+          9,
+          11
+        ],
+        "number_count": 10,
+        "star_count": 4,
+        "seed": 20261009
+      },
+      "constraints": {
+        "grid_count": 20,
+        "budget_max_eur": 50.0,
+        "unique_grids": true,
+        "max_pairwise_overlap": {
+          "numbers": 5,
+          "stars": 2
+        },
+        "conditional_guarantee": null
+      },
+      "objectives": {
+        "distinct_pairs": 3,
+        "distinct_triples": 8,
+        "balance_numbers": 0.3,
+        "balance_stars": 0.8,
+        "concentration": 5,
+        "minimize_overlap": {
+          "aggregation": "sum_squares",
+          "numbers": 0,
+          "stars": 0.2
+        }
+      },
+      "search": {
+        "method": "greedy",
+        "seed": 1700500,
+        "candidate_count": 2,
+        "candidates_per_step": 64,
+        "max_attempts": 30000,
+        "max_seconds": 10,
+        "population_size": 1,
+        "operators": []
+      },
+      "evaluation": {
+        "method": "monte_carlo",
+        "draws": 20000,
+        "seed": 2701009,
+        "batch_size": 2000,
+        "max_seconds": 30,
+        "max_certificate_cases": 100000,
+        "metrics": [
+          "any_prize",
+          "multiple_prizes",
+          "at_least_3_numbers",
+          "at_least_4_numbers"
+        ]
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "id": "random_clustered_50_v1",
+      "version": 1,
+      "family": "RANDOM",
+      "game": {
+        "id": "euromillions",
+        "rule_id": "euromillions-50-12-v1",
+        "number_domain": [
+          1,
+          50
+        ],
+        "star_domain": [
+          1,
+          12
+        ],
+        "numbers_per_grid": 5,
+        "stars_per_grid": 2,
+        "unit_price_eur": 2.5,
+        "options": []
+      },
+      "pool": {
+        "method": "explicit",
+        "numbers": [
+          6,
+          9,
+          13,
+          22,
+          30,
+          35,
+          42,
+          43,
+          49,
+          50
+        ],
+        "stars": [
+          2,
+          7,
+          9,
+          11
+        ],
+        "number_count": 10,
+        "star_count": 4,
+        "seed": 20261009
+      },
+      "constraints": {
+        "grid_count": 20,
+        "budget_max_eur": 50.0,
+        "unique_grids": true,
+        "max_pairwise_overlap": {
+          "numbers": 5,
+          "stars": 2
+        },
+        "conditional_guarantee": null
+      },
+      "objectives": {
+        "distinct_pairs": 0,
+        "distinct_triples": 0,
+        "balance_numbers": 0,
+        "balance_stars": 0,
+        "concentration": 0,
+        "minimize_overlap": {
+          "aggregation": "sum_squares",
+          "numbers": 0,
+          "stars": 0
+        }
+      },
+      "search": {
+        "method": "random",
+        "seed": 1800500,
+        "candidate_count": 2,
+        "candidates_per_step": 1,
+        "max_attempts": 30000,
+        "max_seconds": 10,
+        "population_size": 1,
+        "operators": []
+      },
+      "evaluation": {
+        "method": "monte_carlo",
+        "draws": 20000,
+        "seed": 2701009,
+        "batch_size": 2000,
+        "max_seconds": 30,
+        "max_certificate_cases": 100000,
+        "metrics": [
+          "any_prize",
+          "multiple_prizes",
+          "at_least_3_numbers",
+          "at_least_4_numbers"
+        ]
+      }
+    },
+    {
+      "schema_version": "1.0",
+      "id": "random_full_45_v1",
+      "version": 1,
+      "family": "RANDOM",
+      "game": {
+        "id": "euromillions",
+        "rule_id": "euromillions-50-12-v1",
+        "number_domain": [
+          1,
+          50
+        ],
+        "star_domain": [
+          1,
+          12
+        ],
+        "numbers_per_grid": 5,
+        "stars_per_grid": 2,
+        "unit_price_eur": 2.5,
+        "options": []
+      },
+      "pool": {
+        "method": "explicit",
+        "numbers": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12,
+          13,
+          14,
+          15,
+          16,
+          17,
+          18,
+          19,
+          20,
+          21,
+          22,
+          23,
+          24,
+          25,
+          26,
+          27,
+          28,
+          29,
+          30,
+          31,
+          32,
+          33,
+          34,
+          35,
+          36,
+          37,
+          38,
+          39,
+          40,
+          41,
+          42,
+          43,
+          44,
+          45,
+          46,
+          47,
+          48,
+          49,
+          50
+        ],
+        "stars": [
+          1,
+          2,
+          3,
+          4,
+          5,
+          6,
+          7,
+          8,
+          9,
+          10,
+          11,
+          12
+        ],
+        "number_count": 50,
+        "star_count": 12,
+        "seed": 20261009
+      },
+      "constraints": {
+        "grid_count": 18,
+        "budget_max_eur": 45.0,
+        "unique_grids": true,
+        "max_pairwise_overlap": {
+          "numbers": 5,
+          "stars": 2
+        },
+        "conditional_guarantee": null
+      },
+      "objectives": {
+        "distinct_pairs": 0,
+        "distinct_triples": 0,
+        "balance_numbers": 0,
+        "balance_stars": 0,
+        "concentration": 0,
+        "minimize_overlap": {
+          "aggregation": "sum_squares",
+          "numbers": 0,
+          "stars": 0
+        }
+      },
+      "search": {
+        "method": "random",
+        "seed": 1900000,
+        "candidate_count": 2,
+        "candidates_per_step": 1,
+        "max_attempts": 30000,
+        "max_seconds": 10,
+        "population_size": 1,
+        "operators": []
+      },
+      "evaluation": {
+        "method": "monte_carlo",
+        "draws": 20000,
+        "seed": 2701009,
+        "batch_size": 2000,
+        "max_seconds": 30,
+        "max_certificate_cases": 100000,
+        "metrics": [
+          "any_prize",
+          "multiple_prizes",
+          "at_least_3_numbers",
+          "at_least_4_numbers"
+        ]
+      }
+    }
+  ]
+}

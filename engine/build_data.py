@@ -1,5 +1,9 @@
 """Moteur statistique V0 : historique + lois exactes -> données du site et facts.
 
+Version : 0.2 | Date : 2026-10-02 | Auteur : AleaQuant
+Historique : 0.2 ajoute le routage normal des facts EuroMillions vers le builder YAML.
+TODO : retirer le chemin historique après qualification opérationnelle et parité durable.
+
 Entrées (lecture seule) : base SQLite EuroMillions du laboratoire, lois exactes
 (dist/data/exact_laws.json, voir exact_laws.py) et catalogues de portefeuilles.
 Sorties dans dist/data :
@@ -26,6 +30,7 @@ import numpy as np
 from common import (CURRENT_RULE, DATA, ENGINE_VERSION, HISTORY_DB, LAB, MAIN_CAT, MAIN_FIELDS,
                     STAR_FIELDS, key, load_draws, load_patterns, read_json, sha256_file, write_json)
 from facts import LABELS, STAR_LABELS, build_draw_facts, build_indexes
+from portfolio_geometry import portfolio_geometry
 
 SEED = 20260929
 R = 2000
@@ -170,31 +175,6 @@ def read_grids(path, sep='|'):
     return grids
 
 
-def portfolio_geometry(grids, domain):
-    """Géométrie descriptive de la composante principale (identique au dictionnaire Atlas)."""
-    sets = [frozenset(g[0]) for g in grids]
-    k = len(grids[0][0])
-    inter = [len(a & b) for a, b in combinations(sets, 2)]
-    occ = Counter(v for s in sets for v in s)
-    cov = {}
-    for t in (2, 3):
-        c = Counter(sub for g in grids for sub in combinations(sorted(g[0]), t))
-        cov[t] = {'covered': len(c), 'possible': comb(domain, t),
-                  'collisions': sum(comb(m, 2) for m in c.values())}
-    out = {'grids': len(grids), 'union': len(set().union(*sets)),
-           'overlap_mean': sum(inter) / len(inter), 'overlap_max': max(inter),
-           'overlap_hist': [inter.count(i) for i in range(k + 1)],
-           'occurrence_sd': float(np.std([occ.get(v, 0) for v in range(1, domain + 1)])),
-           'coverage': cov}
-    if len(grids[0]) > 1:  # seconde composante : étoiles (EuroMillions) ou numéro Chance (Loto)
-        second = [frozenset(g[1]) for g in grids]
-        inter2 = [len(a & b) for a, b in combinations(second, 2)]
-        out['second'] = {'union': len(set().union(*second)), 'overlap_mean': sum(inter2) / len(inter2),
-                         'overlap_max': max(inter2),
-                         'distinct_combinations': len({tuple(sorted(x)) for x in second})}
-    return out
-
-
 def lab_catalog(game_module, game_id, catalog_rel):
     """Catalogue durable du laboratoire via son API (SHA revérifiés à chaque lecture)."""
     import importlib
@@ -307,6 +287,7 @@ def portfolios():
 
 # ---------------------------------------------------------------- facts
 def facts_for(draws, rows, laws, patterns, wanted):
+    """Constructeur historique conservé comme oracle de parité et rollback."""
     idx = build_indexes(laws)
     pascal = {t: Counter() for t in (2, 3, 4, 5)}
     out = {}
@@ -318,10 +299,20 @@ def facts_for(draws, rows, laws, patterns, wanted):
     return out
 
 
+def facts_for_generic(wanted, store=HISTORY_DB):
+    """Pipeline de facts piloté par les règles YAML; la voie historique reste explicitement testable."""
+    from facts_generic import construire_faits
+    return construire_faits("euromillions", store=store, seulement=wanted)
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--facts', type=int, default=12, help='nombre de derniers tirages avec facts')
     parser.add_argument('--draw', action='append', default=[], help='identifiant de tirage supplémentaire')
+    parser.add_argument('--skip-facts', action='store_true',
+                        help='ne construit que les données lois/historique/Atlas')
+    parser.add_argument('--legacy-facts', action='store_true',
+                        help='rollback explicite vers le constructeur historique EuroMillions')
     args = parser.parse_args()
     started = time.time()
     laws_path = DATA / 'exact_laws.json'
@@ -342,12 +333,19 @@ def main():
     rng = np.random.default_rng(SEED)
     write_json(DATA / 'atlas.json', {'schema': 'aleaquant-atlas-v1', 'engine': ENGINE_VERSION,
                                       'cooccurrence': cooccurrences(draws, rng), 'portfolios': portfolios()})
-    wanted = {d['id'] for d in draws[-args.facts:]} | set(args.draw)
-    facts = facts_for(draws, rows, laws, patterns, wanted)
+    wanted = set() if args.skip_facts else (
+        {d['id'] for d in draws[-args.facts:]} | set(args.draw))
+    if args.skip_facts:
+        facts = {}
+    elif args.legacy_facts:
+        facts = facts_for(draws, rows, laws, patterns, wanted)
+    else:
+        facts = facts_for_generic(wanted)
     for draw_id, f in facts.items():
         write_json(DATA / 'facts' / (draw_id + '.json'), f, compact=False)
     latest = draws[-1]['id']
-    write_json(DATA / 'facts' / 'latest.json', facts[latest], compact=False)
+    if latest in facts:
+        write_json(DATA / 'facts' / 'latest.json', facts[latest], compact=False)
     manifest = {'schema': 'aleaquant-data-manifest-v1', 'engine': ENGINE_VERSION,
                 'built_at': time.strftime('%Y-%m-%dT%H:%M:%S%z'),
                 'history_db': str(HISTORY_DB.name), 'history_db_sha256': db_sha,

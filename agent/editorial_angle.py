@@ -1,7 +1,8 @@
 """Choix d'angle A/B/C avant rédaction d'un rapport de tirage AleaQuant.
 
-Nom : agent/editorial_angle.py · Version : 0.1 · Date : 2026-09-30
-Auteur : AleaQuant · Historique : première compétence éditoriale structurée.
+Nom : agent/editorial_angle.py · Version : 0.2 · Date : 2026-10-11
+Auteur : AleaQuant · Historique : v0.2 transmet les composants réels des trois jeux ;
+première compétence éditoriale structurée le 30 septembre.
 TODO : évaluer titres, coût et fluidité du corps sur un lot commun de tirages.
 
 Le modèle propose ; les contrôles déterministes filtrent ; l'humain choisit.
@@ -106,11 +107,15 @@ def build_prompt(facts):
     """Tous les faits sont visibles, même les faits ordinaires intéressants à raconter."""
     selected = [{k: f.get(k) for k in ("fact_id", "statement", "metric", "value", "rarity")
                 if k in f} for f in facts["facts"]]
+    payload = {"draw_id": facts["draw_id"], "date": facts["date"],
+               "game_id": facts["game_id"], "main": facts["main"], "facts": selected}
+    if 'stars' in facts:
+        payload['stars'] = facts['stars']
+    if facts.get('components', {}).get('chance'):
+        payload['chance'] = facts['components']['chance']
     return (SKILL_PATH.read_text(encoding="utf-8")
             + "\n\nTIRAGE ET FAITS VÉRIFIÉS :\n"
-            + json.dumps({"draw_id": facts["draw_id"], "date": facts["date"],
-                          "main": facts["main"], "stars": facts["stars"],
-                          "facts": selected}, ensure_ascii=False))
+            + json.dumps(payload, ensure_ascii=False))
 
 
 def parse_response(text, facts):

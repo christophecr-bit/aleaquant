@@ -2,8 +2,8 @@
 
 Auteur : AleaQuant · 2026-10-02 · Révision traçabilité : note publique, preuves et SHA de la version relue.
 
-Version : 0.2 · Date : 2026-10-02 · Auteur : AleaQuant
-Historique : impose jeu et date complète dans les titres d'analyse de tirage.
+Version : 0.3 · Date : 2026-10-10 · Auteur : AleaQuant
+Historique : bloque l’intégration au site sans prérequis documentaires publiés.
 TODO : ajouter Keno lorsque ses exports de publication sont intégrés.
 """
 import argparse
@@ -81,6 +81,10 @@ def validate(article):
 def import_article(source, destination):
     article = validate(json.loads(source.read_text()))
     production = destination.resolve() == (ROOT / 'dist/articles.json').resolve()
+    if production:
+        _sys.path.insert(0, str(ROOT / 'engine'))
+        from content_dependencies import require_article
+        require_article(article, ROOT / 'configs/content-dependencies.json', ROOT)
     if production and article.get('kind') == 'draw_report':
         draw_id = article['research_pack']['draw_id']
         facts_path = ROOT / 'dist/data/facts' / f'{draw_id}.json'

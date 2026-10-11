@@ -1,6 +1,6 @@
 # TODO opérationnelle AleaQuant
 
-Auteur : AleaQuant · v0.4 · 3 octobre 2026
+Auteur : AleaQuant · v0.8 · 11 octobre 2026
 
 ## Recette / production — 3 octobre 2026
 
@@ -18,6 +18,10 @@ d'exploitation plutôt que supprimées du processus.
 
 | ID | Fréquence / statut | Action | Résultat à consigner | Lié à |
 |---|---|---|---|---|
+| OPS-010 | Quotidien 09 h 05 — installé ; prochain calendrier à observer | Consulter le statut de veille RSS/arXiv, contrôler les cinq flux, les erreurs et les fenêtres potentiellement manquées ; qualifier la reprise après arrêt du Mac sans lancement de rédaction implicite. | Dernière collecte, nouveaux éléments/versions, HTTP/cache, limites, erreurs et éventuelles interruptions. Deux runs réels qualifiés le 10 octobre ; code 0. Guide canonique `../../aleaquant-editorial-agents/docs/RESEARCH-WATCH.md` ; TD-WATCH-001/002 restent ouverts. | PB-010, PB-011 |
+| OPS-008 | V0 manuelle — contenu à valider | Faire relire l'accueil court par IDs de blocs, choisir les destinations définitives, préparer les prérequis et un lot complet préservant la production, faire valider la recette puis livrer le lot autorisé avec Codex. | Manifeste exact de l'accueil, IDs et SHA des articles retenus, validation humaine, contrôle documentaire, empreintes du lot, version Worker et contrôles publics. Guide : `V0-MANUAL-RELEASE.md`. | PB-001, PB-003, PB-016 |
+| OPS-009 | À chaque correction rédactionnelle | Résoudre l'article par son `article_id`, préserver l'édition relue, préparer une nouvelle version via le circuit éditorial canonique, recontrôler les claims et présenter le nouveau SHA à l'humain avant remplacement. | Référence stable, anciennes/nouvelles versions, demande de correction, contrôles et décision humaine. L'archivage des éditions est à qualifier : TD-EDIT-002. | PB-003 |
+| OPS-007 | À chaque contenu ou publication | Déclarer les notions et leurs prérequis versionnés ; incrémenter le glossaire directement, envoyer les articles au pipeline éditorial ; vérifier la fermeture transitive des dépendances publiées. | Inventaire, versions, preuves publiques et refus éventuel de publication ; distinguer local, recette et public. | PB-016 |
 | OPS-001 | À chaque rafraîchissement | Vérifier le résultat du pipeline local de récupération et de calcul pour les trois jeux ; contrôler les logs, les lois utilisées, les nouvelles fiches et les erreurs de source. | Date, jeux/régimes traités, nombres de résultats/faits, erreurs ou rattrapage requis. | PB-002 |
 | OPS-002 | À chaque lot éditorial | Examiner les brouillons dans la console privée ; approuver le SHA exact, ou refuser/retourner avec une remarque exploitable. | Décision, reviewer, empreinte et commentaire associés au dossier. | PB-003, PB-004 |
 | OPS-003 | À chaque publication | Vérifier les contrôles locaux, intégrer seulement les articles approuvés, déployer le Worker, vérifier les URL publiques puis pousser le commit Git. | URL vérifiée, version Worker, commit et éventuels écarts. | PB-001, PB-002, PB-003 |
@@ -27,6 +31,10 @@ d'exploitation plutôt que supprimées du processus.
 
 ## Historique
 
+- v0.7 (2026-10-10) — ajoute OPS-010 pour la veille quotidienne gratuite et sa
+  qualification opérationnelle ; la publication et les appels LLM restent séparés.
+- v0.6 (2026-10-10) — ajoute OPS-008 pour le lancement manuel de la v0 et OPS-009
+  pour les corrections rédactionnelles par référence stable, sans approbation automatique.
 - v0.4 (2026-10-03) — clarification : recette validée → production directe ;
   retrait de la tâche de création d'un staging distinct.
 
@@ -86,3 +94,18 @@ Rapport : RECALCUL-FAITS-TROIS-JEUX-20261002.md. Aucun nouvel article ni déploi
 - [ ] Clarifier le rôle de l’ancien cloudflared système avant nettoyage.
 
 Rapport : SERVICES-POST-RESTART-20261002.md. Aucun déploiement ou calcul massif.
+
+## Lot de lancement — 11 octobre 2026
+
+- [x] Préparer les trois articles des derniers tirages affichés (EM-26081,
+  LO-20261007, KE-26372), contrôles et intake READY_FOR_HUMAN, sans approbation.
+- [ ] Relire et valider les SHA du lot : dépôt canonique
+  `runs/v0-latest-draws/2026-10-11-v1/manifest.json`.
+- [ ] Qualifier les dépendances publiées et actualiser la fraîcheur des tirages
+  avant intégration, recette et lancement.
+- [ ] Relire le rattrapage depuis le 1 octobre : 12 articles natifs Codex, Luna
+  medium EM/Loto, high Keno, prompts de production communs, sans API externe.
+
+Lot natif préparé le 11 octobre : les douze articles de rattrapage et les trois
+derniers tirages locaux sont en attente dans la console 8787. Leur préparation
+ne vaut pas validation humaine ni publication ; freshness et prérequis restent requis.

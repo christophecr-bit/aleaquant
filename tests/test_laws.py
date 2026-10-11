@@ -42,6 +42,31 @@ class TotauxTests(unittest.TestCase):
             for champ, loi in d['laws'].items():
                 self.assertEqual(sum(loi.values()), attendu, f'{f.name}/{champ}')
 
+    def test_regimes_keno_publies(self):
+        for k, n in ((16, 56), (20, 70)):
+            with self.subTest(k=k, n=n):
+                path = LOIS / f'regime-{k}-{n}.json'
+                data = json.loads(path.read_text(encoding='utf-8'))
+                self.assertEqual(data['total'], comb(n, k))
+                self.assertEqual(set(data['fields']), set(data['laws']))
+                if (k, n) == (16, 56):
+                    # Les lois Metal exactes complètent les deux métriques absentes;
+                    # sorted_gaps et clusteredness sont désormais calculés par récurrence.
+                    self.assertEqual(len(data['fields']), 20)
+                    self.assertEqual(data['missing_fields'], [])
+                    for metric in ('arithmetic_triples', 'longest_arithmetic_progression'):
+                        self.assertEqual(sum(data['laws'][metric].values()), data['total'])
+                else:
+                    # La loi historique 20/70 garde son contrat tant qu'elle n'est pas
+                    # reconstruite avec la même évolution du registre.
+                    missing = {'arithmetic_triples', 'longest_arithmetic_progression',
+                               'sorted_gaps'}
+                    self.assertEqual(len(data['fields']), 17)
+                    self.assertEqual(set(data['missing_fields']), missing)
+                self.assertIn('clusteredness_close_pairs_5', data['laws'])
+                self.assertEqual(sum(data['laws']['clusteredness_close_pairs_5'].values()),
+                                 data['total'])
+
 
 class ReprenableTests(unittest.TestCase):
     def test_tranches_egales_a_l_enumeration_directe(self):

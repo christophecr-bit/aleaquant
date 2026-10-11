@@ -1,5 +1,9 @@
 """Métriques génériques : équivalence avec le laboratoire, et conventions de domaine.
 
+Version : 0.2 | Date : 2026-10-02 | Auteur : AleaQuant
+Historique : 0.2 teste les sous-totaux par dizaine sur les trois jeux.
+TODO : ajouter un contrôle de budget sérialisé lors de chaque ajout de métrique.
+
 Le test qui compte est le premier : pour EuroMillions, le module générique doit renvoyer
 EXACTEMENT ce que renvoie le laboratoire. S'il diverge, les faits déjà publiés changent et
 1 985 pages en ligne deviennent fausses sans qu'on l'ait voulu.
@@ -89,6 +93,21 @@ class ConventionsTests(unittest.TestCase):
         self.assertEqual(m['span'], 19)
         self.assertEqual(m['longest_consecutive_run'], 20)
         self.assertEqual(len(m['decade_counts']), 7)
+        self.assertEqual(m['decade_sums'], (55, 155, 0, 0, 0, 0, 0))
+
+    def test_sommes_par_dizaine_tous_regimes(self):
+        """Les sous-totaux suivent les tranches exactes, y compris les dernières tronquées."""
+        from metrics import profil_dizaines
+
+        em = profil_dizaines([4, 7, 12, 31, 44], 50)
+        self.assertEqual([(b['count'], b['sum']) for b in em],
+                         [(2, 11), (1, 12), (0, 0), (1, 31), (1, 44)])
+        loto = profil_dizaines([2, 30, 36, 44, 48], 49)
+        self.assertEqual((loto[-1]['start'], loto[-1]['end'],
+                          loto[-1]['count'], loto[-1]['sum']), (41, 49, 2, 92))
+        keno = profil_dizaines([3, 4, 6, 8, 18, 23, 31, 35, 36, 39, 40, 42, 47, 48, 50, 53], 56)
+        self.assertEqual((keno[-1]['start'], keno[-1]['end'],
+                          keno[-1]['count'], keno[-1]['sum']), (51, 56, 1, 53))
 
     def test_signature_independante_du_jeu(self):
         self.assertEqual(signature(metriques([1, 2, 5, 11, 40], 50)),

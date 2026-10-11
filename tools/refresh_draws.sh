@@ -1,7 +1,8 @@
 #!/bin/bash
-# AleaQuant · lanceur du pipeline local · version 0.2 · 2026-09-30
-# Auteur : AleaQuant. Historique : trois jeux via aleaquant-data ; 0.1 : EuroMillions seul.
-# TODO : brancher la publication Keno après validation de son rendu à la demande.
+# AleaQuant · lanceur du pipeline local · version 0.4 · 2026-10-01
+# Auteur : AleaQuant. Historique : v0.2 collecte les trois jeux ; v0.3 valide les lois
+# et profils par régime ; v0.4 ajoute le rattrapage explicite des faits Keno historiques.
+# TODO : construire les pages Keno à la demande et raccorder le workflow éditorial léger.
 set -euo pipefail
 CONF="$(cd "$(dirname "$0")" && pwd)/refresh.conf"
 if [ ! -f "$CONF" ]; then

@@ -1,0 +1,471 @@
+{
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "id",
+    "version",
+    "family",
+    "game",
+    "pool",
+    "constraints",
+    "objectives",
+    "search",
+    "evaluation"
+  ],
+  "properties": {
+    "schema_version": {
+      "type": "string",
+      "const": "1.0"
+    },
+    "id": {
+      "type": "string",
+      "pattern": "[A-Za-z][A-Za-z0-9_-]{0,79}"
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 100000
+    },
+    "family": {
+      "type": "string",
+      "enum": [
+        "RANDOM",
+        "BALANCED",
+        "LOW_OVERLAP",
+        "COVERAGE",
+        "CONCENTRATED"
+      ]
+    },
+    "game": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "rule_id",
+        "number_domain",
+        "star_domain",
+        "numbers_per_grid",
+        "stars_per_grid",
+        "unit_price_eur",
+        "options"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "enum": [
+            "euromillions"
+          ]
+        },
+        "rule_id": {
+          "type": "string",
+          "enum": [
+            "euromillions-50-12-v1"
+          ]
+        },
+        "number_domain": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 50
+          },
+          "minItems": 2,
+          "maxItems": 2,
+          "const": [
+            1,
+            50
+          ]
+        },
+        "star_domain": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 12
+          },
+          "minItems": 2,
+          "maxItems": 2,
+          "const": [
+            1,
+            12
+          ]
+        },
+        "numbers_per_grid": {
+          "type": "integer",
+          "minimum": 5,
+          "maximum": 5,
+          "const": 5
+        },
+        "stars_per_grid": {
+          "type": "integer",
+          "minimum": 2,
+          "maximum": 2,
+          "const": 2
+        },
+        "unit_price_eur": {
+          "type": "number",
+          "minimum": 2.5,
+          "maximum": 2.5,
+          "const": 2.5
+        },
+        "options": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 0,
+          "maxItems": 0
+        }
+      }
+    },
+    "pool": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "method",
+        "numbers",
+        "stars",
+        "number_count",
+        "star_count",
+        "seed"
+      ],
+      "properties": {
+        "method": {
+          "type": "string",
+          "enum": [
+            "explicit",
+            "seeded_sample"
+          ]
+        },
+        "numbers": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 50
+          },
+          "minItems": 0,
+          "maxItems": 50
+        },
+        "stars": {
+          "type": "array",
+          "items": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 12
+          },
+          "minItems": 0,
+          "maxItems": 12
+        },
+        "number_count": {
+          "type": "integer",
+          "minimum": 5,
+          "maximum": 50
+        },
+        "star_count": {
+          "type": "integer",
+          "minimum": 2,
+          "maximum": 12
+        },
+        "seed": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295
+        }
+      }
+    },
+    "constraints": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "grid_count",
+        "budget_max_eur",
+        "unique_grids",
+        "max_pairwise_overlap",
+        "conditional_guarantee"
+      ],
+      "properties": {
+        "grid_count": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 200
+        },
+        "budget_max_eur": {
+          "type": "number",
+          "minimum": 2.5,
+          "maximum": 100000
+        },
+        "unique_grids": {
+          "type": "boolean",
+          "const": true
+        },
+        "max_pairwise_overlap": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "numbers",
+            "stars"
+          ],
+          "properties": {
+            "numbers": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 5
+            },
+            "stars": {
+              "type": "integer",
+              "minimum": 0,
+              "maximum": 2
+            }
+          }
+        },
+        "conditional_guarantee": {
+          "oneOf": [
+            {
+              "type": "null"
+            },
+            {
+              "type": "object",
+              "additionalProperties": false,
+              "required": [
+                "pool_good_numbers",
+                "pool_good_stars",
+                "condition_mode",
+                "required_numbers",
+                "required_stars",
+                "threshold_mode"
+              ],
+              "properties": {
+                "pool_good_numbers": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 5
+                },
+                "pool_good_stars": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 2
+                },
+                "condition_mode": {
+                  "type": "string",
+                  "enum": [
+                    "exactly"
+                  ]
+                },
+                "required_numbers": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 5
+                },
+                "required_stars": {
+                  "type": "integer",
+                  "minimum": 0,
+                  "maximum": 2
+                },
+                "threshold_mode": {
+                  "type": "string",
+                  "enum": [
+                    "at_least"
+                  ]
+                }
+              }
+            }
+          ]
+        }
+      }
+    },
+    "objectives": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "distinct_pairs",
+        "distinct_triples",
+        "balance_numbers",
+        "balance_stars",
+        "concentration",
+        "minimize_overlap"
+      ],
+      "properties": {
+        "distinct_pairs": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "distinct_triples": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "balance_numbers": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "balance_stars": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "concentration": {
+          "type": "number",
+          "minimum": 0,
+          "maximum": 100
+        },
+        "minimize_overlap": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "aggregation",
+            "numbers",
+            "stars"
+          ],
+          "properties": {
+            "aggregation": {
+              "type": "string",
+              "enum": [
+                "sum_squares"
+              ]
+            },
+            "numbers": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100
+            },
+            "stars": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 100
+            }
+          }
+        }
+      }
+    },
+    "search": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "method",
+        "seed",
+        "candidate_count",
+        "candidates_per_step",
+        "max_attempts",
+        "max_seconds",
+        "population_size",
+        "operators"
+      ],
+      "properties": {
+        "method": {
+          "type": "string",
+          "enum": [
+            "random",
+            "greedy",
+            "enumerate",
+            "prototype_greedy"
+          ]
+        },
+        "seed": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295
+        },
+        "candidate_count": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 20
+        },
+        "candidates_per_step": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 2000
+        },
+        "max_attempts": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        },
+        "max_seconds": {
+          "type": "number",
+          "minimum": 0.001,
+          "maximum": 60
+        },
+        "population_size": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1,
+          "const": 1
+        },
+        "operators": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 0,
+          "maxItems": 0
+        }
+      }
+    },
+    "evaluation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "method",
+        "draws",
+        "seed",
+        "batch_size",
+        "max_seconds",
+        "max_certificate_cases",
+        "metrics"
+      ],
+      "properties": {
+        "method": {
+          "type": "string",
+          "enum": [
+            "monte_carlo"
+          ]
+        },
+        "draws": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 1000000
+        },
+        "seed": {
+          "type": "integer",
+          "minimum": 0,
+          "maximum": 4294967295
+        },
+        "batch_size": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 10000
+        },
+        "max_seconds": {
+          "type": "number",
+          "minimum": 0.001,
+          "maximum": 60
+        },
+        "max_certificate_cases": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 100000
+        },
+        "metrics": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "minItems": 4,
+          "maxItems": 4,
+          "const": [
+            "any_prize",
+            "multiple_prizes",
+            "at_least_3_numbers",
+            "at_least_4_numbers"
+          ]
+        }
+      }
+    }
+  },
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "aleaquant-portfolio-profile-1.0"
+}

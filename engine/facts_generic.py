@@ -19,6 +19,10 @@ les mettait jamais à l'épreuve :
 
 Anti look-ahead : chaque tirage n'est comparé qu'aux tirages strictement antérieurs, dans
 l'ordre (date, session) — le premier tirage d'une journée avant le second.
+
+Version : 0.4 | Date : 2026-10-02 | Auteur : AleaQuant
+Historique : 0.4 aligne la production EuroMillions sur le pipeline YAML commun.
+TODO : préserver les empreintes des facts liés aux articles approuvés.
 """
 from __future__ import annotations
 
@@ -30,8 +34,9 @@ from itertools import combinations
 from math import comb, prod
 from pathlib import Path
 
-from common import ENGINE_VERSION, key, num
-from facts import LABELS, LawIndex, fmt, metric_fact, nb
+from common import (DATA, ENGINE_VERSION, MAIN_CAT, MAIN_FIELDS, PATTERNS, STAR_FIELDS,
+                    key, load_patterns, num, sha256_file)
+from facts import LABELS, STAR_LABELS, LawIndex, decade_sums_fact, fmt, metric_fact, nb
 from metrics import metriques, signature
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -79,6 +84,21 @@ def charger_tirages(game_id, store=STORE):
 
 
 _cache_index = {}
+_cache_em_star_index = None
+
+
+def index_composante(game_id, comp, k, n, rule):
+    """Retourne la loi de la composante, y compris le profil historique des étoiles EM."""
+    global _cache_em_star_index
+    if game_id == "euromillions" and comp == "stars" and rule.jusqua is None:
+        if _cache_em_star_index is None:
+            laws = json.loads((DATA / "exact_laws.json").read_text(encoding="utf-8"))
+            _cache_em_star_index = {
+                champ: LawIndex(loi, laws["stars_total"], True)
+                for champ, loi in laws["stars"].items()
+            }
+        return _cache_em_star_index, "", "loi exacte par énumération complète"
+    return (*index_regime(k, n),)
 
 
 def index_regime(k, n):
@@ -108,6 +128,7 @@ def construire_faits(game_id, store=STORE, *, seulement=None):
     config = charger_config(game_id)
     regles = {r.id: r for r in config.rules}
     tirages = charger_tirages(game_id, store)
+    em_patterns = load_patterns() if game_id == "euromillions" else None
 
     # historique antérieur, par (composante, k, n) : comparabilité par régime
     vus_valeurs = {}      # (comp, k, n) -> {champ: Counter}
@@ -115,6 +136,7 @@ def construire_faits(game_id, store=STORE, *, seulement=None):
     vus_signature = {}    # (k, n) -> Counter des signatures de la composante principale
     vus_exact = {}        # (k, n) -> Counter des sélections exactes
     vus_sous = {}         # (k, n) -> Counter des sous-ensembles de taille k-1
+    pascal = {t: Counter() for t in (2, 3, 4, 5)}
 
     resultats = {}
     for t in tirages:
@@ -129,15 +151,50 @@ def construire_faits(game_id, store=STORE, *, seulement=None):
             f"{regle.picks[c]} {_libelle_composante(c, regle.picks[c])} sur {regle.domains[c]}"
             for c in grille)
         tirees = " + ".join("-".join(map(str, valeurs[c])) for c in grille)
-        faits.append({
-            "fact_id": "F.grid.probability", "category": "exact_grid",
-            "method": "combinatoire exacte",
-            "value": {"full_combinations": total_grille, "rule_id": regle.id,
-                      "grid": {c: {"picks": regle.picks[c], "domain": regle.domains[c]} for c in grille}},
-            "statement": ("Sous la règle en vigueur à la date du tirage — %s —, chaque "
-                          "combinaison gagnante a la même probabilité, 1 sur %s : %s n’était ni "
-                          "plus ni moins probable qu’une autre.") % (description, nb(total_grille), tirees),
-        })
+        if game_id == "keno":
+            # Au Keno, le joueur choisit une grille de 4 à 10 numéros alors que le
+            # tirage contient 16 ou 20 boules. C(n, k) décrit un tirage exact, pas la
+            # probabilité de gain d'une grille jouée (qui dépend de sa taille et du rang).
+            faits.append({
+                "fact_id": "F.draw.probability", "category": "exact_draw",
+                "method": "combinatoire exacte",
+                "value": {"full_draws": total_grille, "rule_id": regle.id,
+                          "draw": {c: {"picks": regle.picks[c], "domain": regle.domains[c]}
+                                   for c in grille}},
+                "statement": ("Sous la règle en vigueur à la date du tirage — %s —, ce "
+                              "tirage exact de %s avait une probabilité de 1 sur %s, "
+                              "comme tout autre tirage exact de la même formule. "
+                              "Cela ne donne pas la probabilité de gain d’une grille Keno.")
+                              % (description, tirees, nb(total_grille)),
+            })
+        elif game_id == "euromillions":
+            main_total = comb(regle.domains["main"], regle.picks["main"])
+            stars_total = comb(regle.domains["stars"], regle.picks["stars"])
+            faits.append({
+                "fact_id": "F.grid.probability", "category": "exact_grid",
+                "method": "combinatoire exacte",
+                "value": {"full_combinations": total_grille, "rule_id": regle.id,
+                          "main_domain": regle.domains["main"],
+                          "stars_domain": regle.domains["stars"]},
+                "statement": ("Sous la règle en vigueur à la date du tirage — 5 numéros sur %d et "
+                              "2 étoiles sur %d —, chaque combinaison complète a la même "
+                              "probabilité, 1 sur %s : %s + étoiles %s n’était ni plus ni moins "
+                              "probable qu’une autre.") % (
+                                  regle.domains["main"], regle.domains["stars"], nb(main_total * stars_total),
+                                  "-".join(map(str, valeurs["main"])),
+                                  "-".join(map(str, valeurs["stars"]))),
+            })
+        else:
+            faits.append({
+                "fact_id": "F.grid.probability", "category": "exact_grid",
+                "method": "combinatoire exacte",
+                "value": {"full_combinations": total_grille, "rule_id": regle.id,
+                          "grid": {c: {"picks": regle.picks[c], "domain": regle.domains[c]}
+                                   for c in grille}},
+                "statement": ("Sous la règle en vigueur à la date du tirage — %s —, chaque "
+                              "combinaison gagnante a la même probabilité, 1 sur %s : %s n’était ni "
+                              "plus ni moins probable qu’une autre.") % (description, nb(total_grille), tirees),
+            })
         faits.append({
             "fact_id": "F.editorial.expectation", "category": "interpretation",
             "method": "principe éditorial AleaQuant",
@@ -150,23 +207,49 @@ def construire_faits(game_id, store=STORE, *, seulement=None):
             k, n = regle.picks[comp], regle.domains[comp]
             if k == 1:
                 continue   # un numéro seul est uniforme : aucune information de forme
-            idx, _, method = index_regime(k, n)
-            m = metriques(nums, n)
+            if game_id == "euromillions" and comp == "stars" and regle.jusqua is not None:
+                # EuroMillions historique ne publiait pas de lois marginales pour les
+                # anciennes règles d'étoiles. Une règle non courante ne les ajoute pas
+                # implicitement pendant l'unification.
+                continue
+            idx, _, method = index_composante(game_id, comp, k, n, regle)
+            m = (em_patterns.stars_pattern(nums)
+                 if game_id == "euromillions" and comp == "stars"
+                 else metriques(nums, n))
             cle_regime = (comp, k, n)
             anterieurs = vus_valeurs.setdefault(cle_regime, {})
             n_prior = vus_nombre[cle_regime]
-            for champ, index in sorted(idx.items()):
+            champs = ((MAIN_FIELDS + MAIN_CAT) if comp == "main" and game_id == "euromillions"
+                      else (STAR_FIELDS if comp == "stars" and game_id == "euromillions"
+                            else sorted(idx)))
+            for champ in champs:
+                if champ not in idx:
+                    continue
+                index = idx[champ]
                 if champ not in m:
                     continue
                 v = _valeur(champ, m[champ])
-                label = LABELS.get(champ, champ)
-                if comp != "main":
+                label = (STAR_LABELS.get(champ, champ) if comp == "stars"
+                         else LABELS.get(champ, champ))
+                if comp != "main" and not (game_id == "euromillions" and comp == "stars"):
                     label = f"{label} ({_libelle_composante(comp, k)})"
                 fact = metric_fact(f"{comp}.{champ}", label, v, index,
                                    anterieurs.get(champ, Counter()), n_prior)
                 if method.startswith("récurrences"):
                     fact["method"] = method
                 faits.append(fact)
+            if comp == "main":
+                # Profil descriptif complémentaire ; aucune loi marginale ni rareté
+                # n'est attribuée au vecteur des sous-totaux.
+                faits.append(decade_sums_fact(nums, n))
+
+        if (game_id == "euromillions" and "stars" in valeurs
+                and regle.jusqua is not None):
+            faits.append({
+                "fact_id": "F.stars.rule", "category": "interpretation", "method": "règlement",
+                "statement": "Ce tirage relève d’une ancienne règle des étoiles (%s) : "
+                             "ses étoiles ne sont pas comparées à la loi à 12 étoiles." % regle.id,
+            })
 
         # 3. historique de la composante principale, au sein du régime
         principal = valeurs["main"]
@@ -178,52 +261,116 @@ def construire_faits(game_id, store=STORE, *, seulement=None):
         signature_fr = ("suite consécutive maximale de %s, maximum de %s numéros dans une même "
                         "dizaine, %s dizaines occupées") % (
             mm.get("longest_consecutive_run", 1), mm["max_same_decade"], mm["occupied_decades"])
-        faits.append({
-            "fact_id": "F.signature", "category": "historical", "method": "signature de forme",
+        signature_fact = {
+            "fact_id": "F.signature", "category": "historical",
+            "method": ("signature patterns.py" if game_id == "euromillions"
+                       else "signature de forme"),
             "value": {"signature": sig, "signature_fr": signature_fr, "prior": sig_prior,
                       "draws": n_regime},
-            "statement": ("Forme du tirage (%s) déjà observée %d fois sur %d tirages antérieurs "
-                          "de la même formule.") % (signature_fr, sig_prior, n_regime),
-        })
+            "statement": (("Forme du tirage (%s) déjà observée %d fois sur %d tirages antérieurs."
+                           if game_id == "euromillions" else
+                           "Forme du tirage (%s) déjà observée %d fois sur %d tirages antérieurs "
+                           "de la même formule.") % (signature_fr, sig_prior, n_regime)),
+        }
+        if game_id != "euromillions":
+            faits.append(signature_fact)
+
+        if game_id == "euromillions" and km == 5:
+            sub = {}
+            for subset_size in (2, 3, 4):
+                subsets = list(combinations(principal, subset_size))
+                seen = [s for s in subsets if pascal[subset_size].get(s, 0) > 0]
+                top = max(subsets, key=lambda s: pascal[subset_size].get(s, 0))
+                sub[subset_size] = {
+                    "in_draw": len(subsets), "domain": comb(nm, subset_size),
+                    "already_seen": len(seen),
+                    "most_seen": ["-".join(map(str, top)), pascal[subset_size].get(top, 0)],
+                    "expected_seen_per_subset": round(
+                        n_regime * comb(nm - subset_size, km - subset_size) / comb(nm, km), 3),
+                }
+            pascal_fact = {
+                "fact_id": "F.pascal.subsets", "category": "exhaustive",
+                "method": "combinatoire + historique antérieur", "value": sub,
+                "statement": (
+                    "Cinq numéros contiennent %d paires et %d triplets : C(5,2) = C(5,3), "
+                    "symétrie du triangle de Pascal. Mais le domaine compte %s paires contre "
+                    "%s triplets. Avant ce tirage, %d de ses %d paires étaient déjà sorties "
+                    "ensemble (la plus fréquente, %s, %d fois), contre %d de ses %d triplets."
+                ) % (sub[2]["in_draw"], sub[3]["in_draw"], nb(sub[2]["domain"]),
+                     nb(sub[3]["domain"]), sub[2]["already_seen"], sub[2]["in_draw"],
+                     sub[2]["most_seen"][0].replace("-", "–"), sub[2]["most_seen"][1],
+                     sub[3]["already_seen"], sub[3]["in_draw"]),
+            }
+            faits.append(pascal_fact)
         repetition = vus_exact.setdefault((km, nm), Counter())[principal]
         sous = vus_sous.setdefault((km, nm), Counter())
         deja = sum(1 for s in combinations(principal, km - 1) if sous[s])
-        faits.append({
-            "fact_id": "F.history.exact_main", "category": "historical",
-            "method": "historique antérieur, même formule",
-            "value": {"count": repetition, "subsets_size": km - 1, "subsets_seen": deja,
-                      "subsets_total": km},
-            "statement": (("Ces %d numéros n’étaient jamais sortis ensemble auparavant" % km
+        number_word = "cinq" if game_id == "euromillions" and km == 5 else str(km)
+        history_opening = ("Ces %s numéros n’étaient jamais sortis ensemble auparavant" % number_word
                            if repetition == 0 else
-                           "Ces %d numéros étaient déjà sortis ensemble %d fois" % (km, repetition))
-                          + (". Aucun de ses %d sous-ensembles de %d numéros n’avait été tiré."
-                             % (km, km - 1) if deja == 0 else
-                             ". %d de ses %d sous-ensembles de %d numéros avaient déjà été tirés."
-                             % (deja, km, km - 1))),
-        })
+                           "Ces %s numéros étaient déjà sortis ensemble %d fois" %
+                           (number_word, repetition))
+        if game_id == "euromillions" and km == 5:
+            history_detail = (". Aucun de ses 5 quadruplets n’avait été tiré." if deja == 0
+                              else ". Un de ses 5 quadruplets avait déjà été tiré." if deja == 1
+                              else ". %d de ses 5 quadruplets avaient déjà été tirés." % deja)
+        else:
+            history_detail = ((". Aucun de ses %d sous-ensembles de %d numéros n’avait été tiré."
+                               % (km, km - 1)) if deja == 0 else
+                              ". %d de ses %d sous-ensembles de %d numéros avaient déjà été tirés."
+                              % (deja, km, km - 1))
+        history_fact = {
+            "fact_id": "F.history.exact_main", "category": "historical",
+            "method": ("historique antérieur" if game_id == "euromillions"
+                       else "historique antérieur, même formule"),
+            "value": ({"count": repetition, "quadruplets_seen": deja}
+                      if game_id == "euromillions" and km == 5 else
+                      {"count": repetition, "subsets_size": km - 1, "subsets_seen": deja,
+                       "subsets_total": km}),
+            "statement": history_opening + history_detail,
+        }
+        faits.append(history_fact)
+        if game_id == "euromillions":
+            faits.append(signature_fact)
 
         if seulement is None or t["draw_id"] in seulement:
-            resultats[t["draw_id"]] = {
-                "schema": "aleaquant-draw-facts-v1", "engine": ENGINE_VERSION + "-generic",
-                "game_id": game_id, "draw_id": t["draw_id"], "date": t["occurred_on"],
-                "session": t.get("session"), "rule_id": regle.id,
-                "components": {c: list(v) for c, v in valeurs.items()},
-                "main": list(principal),
-                "source": {"publisher": t["source"]["publisher"],
-                           "source_id": t["source"]["source_id"],
-                           "revision": t["revision"], "revision_sha256": t["sha256"]},
-                "prior_draws": n_regime, "prior_scope": "même formule",
-                "no_look_ahead": True, "facts": faits,
-            }
+            if game_id == "euromillions":
+                resultats[t["draw_id"]] = {
+                    "schema": "aleaquant-draw-facts-v1", "engine": ENGINE_VERSION,
+                    "game_id": game_id, "draw_id": t["draw_id"], "date": t["occurred_on"],
+                    "rule_id": regle.id, "main": list(principal),
+                    "stars": list(valeurs["stars"]),
+                    "source": {"publisher": t["source"]["publisher"],
+                               "source_id": t["source"]["source_id"],
+                               "revision": t["revision"],
+                               "revision_sha256": t["sha256"]},
+                    "laws_patterns_sha256": sha256_file(PATTERNS),
+                    "prior_draws": n_regime, "no_look_ahead": True, "facts": faits,
+                }
+            else:
+                resultats[t["draw_id"]] = {
+                    "schema": "aleaquant-draw-facts-v1", "engine": ENGINE_VERSION + "-generic",
+                    "game_id": game_id, "draw_id": t["draw_id"], "date": t["occurred_on"],
+                    "session": t.get("session"), "rule_id": regle.id,
+                    "components": {c: list(v) for c, v in valeurs.items()},
+                    "main": list(principal),
+                    "source": {"publisher": t["source"]["publisher"],
+                               "source_id": t["source"]["source_id"],
+                               "revision": t["revision"], "revision_sha256": t["sha256"]},
+                    "prior_draws": n_regime, "prior_scope": "même formule",
+                    "no_look_ahead": True, "facts": faits,
+                }
 
         # mise à jour de l'historique APRÈS le calcul : pas de look-ahead
         for comp, nums in valeurs.items():
             k, n = regle.picks[comp], regle.domains[comp]
             if k == 1:
                 continue
-            m = metriques(nums, n)
+            m = (em_patterns.stars_pattern(nums)
+                 if game_id == "euromillions" and comp == "stars"
+                 else metriques(nums, n))
             anterieurs = vus_valeurs.setdefault((comp, k, n), {})
-            idx, _, _ = index_regime(k, n)
+            idx, _, _ = index_composante(game_id, comp, k, n, regle)
             for champ in idx:
                 if champ in m:
                     anterieurs.setdefault(champ, Counter())[key(_valeur(champ, m[champ]))] += 1
@@ -232,26 +379,67 @@ def construire_faits(game_id, store=STORE, *, seulement=None):
         vus_exact[(km, nm)][principal] += 1
         for s in combinations(principal, km - 1):
             sous[s] += 1
+        if game_id == "euromillions" and km == 5:
+            for subset_size in pascal:
+                pascal[subset_size].update(combinations(principal, subset_size))
 
     return resultats
 
 
-def ecrire(game_id, dossier=ROOT / "dist" / "data" / "facts"):
-    """Écrit les faits d'un jeu. Refuse EuroMillions : ses faits publiés passent encore
-    par facts.py, et ce pilote n'a été validé contre eux que pour la composante
-    principale (39 700 faits identiques), pas pour les étoiles."""
-    if game_id == "euromillions":
-        raise SystemExit("EuroMillions reste sur engine/facts.py : bascule non décidée")
-    faits = construire_faits(game_id)
+def ecrire(game_id, dossier=ROOT / "dist" / "data" / "facts", *, store=STORE, seulement=None,
+           force=False):
+    """Écrit des faits reproductibles, éventuellement limités à des draw_id explicites.
+
+    Même en mode sélectif, tout l'historique est parcouru avant chaque tirage retenu.
+    Un identifiant inconnu fait échouer le build avant la moindre écriture.
+    """
+    demandes = set(seulement) if seulement is not None else None
+    faits = construire_faits(game_id, store=store, seulement=demandes)
+    if demandes is not None:
+        absents = demandes - faits.keys()
+        if absents:
+            raise ValueError("draw_id inconnus pour %s : %s" %
+                             (game_id, ", ".join(sorted(absents))))
+    dossier = Path(dossier)
     dossier.mkdir(parents=True, exist_ok=True)
+    ecrits = 0
     for did, corps in faits.items():
-        (dossier / f"{did}.json").write_text(
-            json.dumps(corps, ensure_ascii=False, indent=1) + "\n", encoding="utf-8")
-    return len(faits)
+        cible = dossier / f"{did}.json"
+        source_sha = corps.get("source", {}).get("revision_sha256")
+        if cible.is_file() and not force and source_sha:
+            try:
+                precedent = json.loads(cible.read_text(encoding="utf-8"))
+            except (OSError, json.JSONDecodeError):
+                precedent = {}
+            if precedent.get("source", {}).get("revision_sha256") == source_sha:
+                continue  # préserver les hashes déjà cités par les articles approuvés
+        cible.write_text(json.dumps(corps, ensure_ascii=False, indent=1) + "\n",
+                         encoding="utf-8")
+        ecrits += 1
+    if game_id == "euromillions":
+        latest_id = charger_tirages(game_id, store)[-1]["draw_id"]
+        if latest_id in faits:
+            (dossier / "latest.json").write_text(
+                json.dumps(faits[latest_id], ensure_ascii=False, indent=1) + "\n",
+                encoding="utf-8")
+    return ecrits
 
 
 if __name__ == "__main__":
+    import argparse
     import time
-    for jeu in sys.argv[1:]:
+    parser = argparse.ArgumentParser(description="Faits génériques, par tirage ou par jeu")
+    parser.add_argument("games", nargs="+", help="identifiants des jeux")
+    parser.add_argument("--draw", action="append", dest="draws", metavar="DRAW_ID",
+                        help="tirage à écrire ; répétable, avec un seul jeu")
+    parser.add_argument("--output", type=Path, default=ROOT / "dist" / "data" / "facts",
+                        help="dossier de sortie des JSON de faits")
+    parser.add_argument("--force", action="store_true",
+                        help="réécrit aussi les fiches dont la révision source n'a pas changé")
+    args = parser.parse_args()
+    if args.draws and len(args.games) != 1:
+        parser.error("--draw demande un seul jeu")
+    for jeu in args.games:
         t = time.time()
-        print(f"{jeu} : {ecrire(jeu)} fichiers de faits en {time.time() - t:.0f}s")
+        print(f"{jeu} : {ecrire(jeu, args.output, seulement=args.draws, force=args.force)} "
+              f"fichiers de faits en {time.time() - t:.0f}s")

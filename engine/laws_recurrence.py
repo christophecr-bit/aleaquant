@@ -5,9 +5,14 @@ grands. Les champs non couverts ne sont pas émis : une loi manquante vaut mieux
 rareté inventée. `tests/test_laws_recurrence.py` confronte toutes ces lois à une
 énumération exhaustive sur de petits domaines avant la construction 16/56 et 20/70.
 """
+# Version: 0.2.0 · Updated: 2026-10-01 · Author: AleaQuant
+# History: 0.2.0 adds the validated Metal 16/56 laws to the exact recurrence output.
+# TODO (AleaQuant): independently cross-check the full-domain Metal histograms.
+import json
 from collections import Counter, defaultdict
 from fractions import Fraction
-from math import comb
+from math import comb, factorial
+from pathlib import Path
 
 from common import key
 
@@ -143,6 +148,61 @@ def _progression_complete(k, n):
     return Counter({0: comb(n, k) - count, 1: count})
 
 
+def _ecarts_tries(k, n):
+    """Loi exacte du multiensemble des k-1 écarts, rangé par ordre croissant.
+
+    Pour un vecteur d'écarts de span s, chaque permutation distincte donne une
+    suite croissante différente, et celle-ci admet n-s positions de départ.
+    On énumère les partitions de s en k-1 parts positives, pas les C(n,k)
+    sélections. Le nombre de partitions reste modeste pour 16/56 et 20/70.
+    """
+    out = Counter()
+    # Construire les vecteurs triés sans matérialiser les compositions. Les
+    # fréquences servent au coefficient multinomial, puis le vecteur lui-même
+    # est conservé pour la clé de la loi.
+    vector = []
+
+    def partitions(minimum, remaining, slots):
+        if slots == 0:
+            if remaining == 0:
+                counts = Counter(vector)
+                permutations = factorial(k - 1)
+                for count in counts.values():
+                    permutations //= factorial(count)
+                out[tuple(vector)] += (n - sum(vector)) * permutations
+            return
+        maximum = remaining // slots
+        for gap in range(minimum, maximum + 1):
+            vector.append(gap)
+            partitions(gap, remaining - gap, slots - 1)
+            vector.pop()
+
+    for span in range(k - 1, n):
+        partitions(1, span, k - 1)
+    return out
+
+
+def _paires_proches(k, n, distance=5):
+    # À l'ajout de x, seules les valeurs retenues dans [x-distance, x-1]
+    # créent de nouvelles paires. Le masque garde exactement cette fenêtre.
+    window = (1 << distance) - 1
+    states = {(0, 0, 0): 1}  # (taille, masque des derniers numéros, paires)
+    for x in range(1, n + 1):
+        following = defaultdict(int)
+        for (used, mask, pairs), ways in states.items():
+            shifted = (mask << 1) & window
+            following[(used, shifted, pairs)] += ways
+            if used < k:
+                following[(used + 1, shifted | 1,
+                           pairs + mask.bit_count())] += ways
+        states = following
+    law = Counter()
+    for (used, _mask, pairs), ways in states.items():
+        if used == k:
+            law[pairs] += ways
+    return law
+
+
 def lois_par_recurrence(k, n):
     """Retourne les lois exactes couvertes, leur total et les champs encore ouverts."""
     if not 2 <= k <= n:
@@ -169,6 +229,8 @@ def lois_par_recurrence(k, n):
         'repeated_terminal_digits': repeated,
         'terminal_pair_collisions': terminal_pairs,
         'is_arithmetic_progression': _progression_complete(k, n),
+        'sorted_gaps': _ecarts_tries(k, n),
+        'clusteredness_close_pairs_5': _paires_proches(k, n),
     }
     # mean_gap = span/(k-1) : mêmes effectifs, autre valeur de classe.
     for s, count in span.items():
@@ -178,6 +240,18 @@ def lois_par_recurrence(k, n):
     for name, law in converted.items():
         if sum(law.values()) != total:
             raise AssertionError(f'loi {name} de {k}/{n} : {sum(law.values())} != {total}')
-    missing = ('arithmetic_triples', 'longest_arithmetic_progression',
-               'clusteredness_close_pairs_5', 'sorted_gaps')
+    missing = ('arithmetic_triples', 'longest_arithmetic_progression')
+    if (k, n) == (16, 56):
+        artifact = Path(__file__).with_name('keno-laws-metal-exact-16-56.json')
+        source = json.loads(artifact.read_text(encoding='utf-8'))
+        expected = {'schema': 'aleaquant-keno-exact-feature-laws-v1',
+                    'domain': 56, 'picks': 16, 'total': total}
+        if any(source.get(field) != value for field, value in expected.items()):
+            raise ValueError(f'artefact Metal Keno 16/56 invalide : {artifact}')
+        for field in missing:
+            histogram = source.get(field)
+            if not isinstance(histogram, dict) or sum(histogram.values()) != total:
+                raise ValueError(f'histogramme exact absent/incomplet : {field}')
+            converted[field] = {str(int(value)): count for value, count in histogram.items()}
+        missing = ()
     return converted, total, missing

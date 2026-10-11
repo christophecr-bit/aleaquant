@@ -1,6 +1,8 @@
 """Préparation des faits, gardes déterministes et construction du brouillon.
 
-Version : 0.9 · Date : 2026-10-02 · Auteur : AleaQuant
+Version : 0.10 · Date : 2026-10-11 · Auteur : AleaQuant
+Historique : 0.10 accepte les faits Loto/Keno sans champ étoiles ; les nombres
+restent contrôlés contre leurs preuves.
 Historique : 0.9 reconnaît aussi « sous-total » au singulier dans les sommes par dizaine.
 Historique : 0.8 ajoute la traçabilité partagée et supprime les appariements numériques seuls.
 Historique : expose le profil de sommes par dizaine sans le classer en rareté.
@@ -231,7 +233,7 @@ def decade_range_numbers(text):
 
 
 def guard_full_text(text, facts):
-    allowed = normalize_numbers(', '.join(map(str, facts['main'] + facts['stars'])) + ', ' + facts['date'])
+    allowed = normalize_numbers(', '.join(map(str, facts['main'] + facts.get('stars', []))) + ', ' + facts['date'])
     allowed |= {'2', '3', '5', '10'}
     for f in facts['facts']:
         allowed |= normalize_numbers(json.dumps(f, ensure_ascii=False))
@@ -495,6 +497,7 @@ TEXTE À CORRIGER :
 # expression caractéristique de leur énoncé.
 NON_METRIC_KEYWORDS = {
     "F.grid.probability": ("probabilite",),
+    "F.draw.probability": ("probabilite du tirage", "tirage exact"),
     "F.signature": ("forme du tirage", "signature"),
     "F.history.exact_main": ("jamais sorti", "quadruplet"),
     "F.pascal.subsets": ("paires", "triplets"),

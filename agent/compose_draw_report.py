@@ -1,6 +1,7 @@
 """Rapport de tirage — chaîne de production (mode « compose »).
 
-Auteur : AleaQuant · 2026-10-02 · Révision traçabilité : note publique, preuves et SHA de la version relue.
+Auteur : AleaQuant · 2026-10-11 · Prompt compose v0.2 : cadrage multijeux.
+Historique : 2026-10-02 · Révision traçabilité : note publique, preuves et SHA de la version relue.
 
 Donne TOUS les faits calculés au modèle, annotés de leur niveau de rareté ET de leur
 position par rapport à la référence de leur propre mesure, puis lui demande de choisir,
@@ -71,7 +72,14 @@ def compose_prompt(facts, angle=None):
     traceability_rules = (SEO_WRITER_RULES_PATH.parent / "traceability.md").read_text(encoding="utf-8")
     seo_writer_rules += "\n\n" + traceability_rules
     main_nums = ' · '.join('%02d' % n for n in facts['main'])
-    stars = ' · '.join('%02d' % n for n in facts['stars'])
+    game = {'euromillions': 'EuroMillions', 'loto': 'Loto', 'keno': 'Keno'}[facts['game_id']]
+    stars = ' · '.join('%02d' % n for n in facts.get('stars', []))
+    chance = ' · '.join('%02d' % n for n in facts.get('components', {}).get('chance', []))
+    result = main_nums + (f' ★ {stars}' if stars else '') + (f' · numéro Chance {chance}' if chance else '')
+    probability = next(f for f in facts['facts'] if f['fact_id'] in ('F.grid.probability', 'F.draw.probability'))['value']
+    domain = probability.get('main_domain') or probability.get('grid', probability.get('draw', {})).get('main', {}).get('domain')
+    if not isinstance(domain, int):
+        raise ValueError('Domaine des numéros absent des faits de règle')
     redundancy = redundancy_note(facts)
     redundancy_section = f"\nMétriques redondantes à ne pas double-compter :\n{redundancy}\n" if redundancy else ""
     families = family_note(facts)
@@ -119,12 +127,12 @@ def compose_prompt(facts, angle=None):
         if angle else ""
     )
 
-    prompt = f"""Tu es rédacteur scientifique pour AleaQuant, un site français de vulgarisation sur les probabilités et la combinatoire appliquées à EuroMillions. Ta ligne éditoriale : rigueur, jamais de prédiction, jamais de promesse de gain, chaque nombre cité doit venir des faits fournis ci-dessous.
+    prompt = f"""Tu es rédacteur scientifique pour AleaQuant, un site français de vulgarisation sur les probabilités et la combinatoire appliquées à {game}. Ta ligne éditoriale : rigueur, jamais de prédiction, jamais de promesse de gain, chaque nombre cité doit venir des faits fournis ci-dessous.
 
 Consignes SEO versionnées communes au Writer LangGraph :
 {seo_writer_rules}
 
-Tirage du {date_fr(facts['date'])} : {main_nums} ★ {stars}
+Tirage {game} du {date_fr(facts['date'])} : {result}
 
 Faits calculés disponibles (utilise ceux qui sont pertinents, pas besoin de tous les citer) :
 {evidence_block(facts)}
@@ -154,6 +162,10 @@ n. N'emploie un mot de rareté QUE lorsque la consigne interne du fait autorise 
 o. Pour expliquer ce que mesure une grandeur, reprends la définition officielle fournie plutôt qu'une paraphrase de ton cru (l'étendue est « l'écart entre le plus petit et le plus grand numéro », pas « le sommet de 35 à 50 »).
 p. Écris en TEXTE BRUT. Aucun markdown : pas d'astérisques pour le gras, pas de titres, pas de puces, pas d'accents graves. La page affiche ton texte tel quel, donc un « ** » s'y verrait littéralement. Pour mettre en valeur un terme, emploie les mots, pas la typographie.
 q. Varie ta structure et tes formulations d'un article à l'autre, n'utilise pas un patron figé. Style vivant mais rigoureux, pas de sensationnalisme.{style_rule}"""
+    prompt = prompt.replace('1-50', f'1-{domain}').replace('proche de 49', f'proche de {domain - 1}')
+    if facts['game_id'] == 'keno':
+        prompt = prompt.replace('probabilité de la combinaison exacte', 'probabilité du tirage exact')
+        prompt += "\nSpécificité Keno : les numéros tirés ne sont pas une grille jouée. La probabilité du tirage exact ne donne pas la probabilité de gain d'une grille. Ne jamais les confondre."
     return prompt
 
 
