@@ -1,0 +1,470 @@
+{
+  "schema": "aleaquant-article-v1",
+  "article_id": "tirage-EM-26078",
+  "kind": "draw_report",
+  "status": "PENDING_HUMAN",
+  "guard": {
+    "mode": "compose",
+    "checks": {
+      "traceability": []
+    },
+    "problems": []
+  },
+  "draft_sha256": "58aa5e348f1ad925e17a3cae92cde0545f51d2f0fb59456afb64c107c6585f04",
+  "draft": {
+    "title": "EuroMillions — tirage du 29 septembre 2026",
+    "body": "Le tirage du 29 septembre 2026, 04 · 07 · 12 · 31 · 44 avec étoiles 08 · 11, a une combinaison exacte de probabilité 1 sur 139 838 160 sous la règle 5 numéros sur 50 et 2 étoiles sur 12. Autrement dit, cette grille précise n’était ni plus ni moins probable qu’une autre.\n\nSur la géométrie des cinq numéros principaux, l’étendue vaut 40, c’est l’écart entre le plus petit et le plus grand numéro. Cela place les valeurs sur une portion assez large de 1 à 50 : la décade 1 en contient 2, la décade 2 en contient 1, la décade 3 n’en contient aucun, la décade 4 en contient 1 et la décade 5 en contient 1. Les numéros sont donc répartis sur 4 dizaines occupées.\n\nLa mesure la plus saillante ici est la Somme : 98, qui est classe rare, avec une classe de 17 597 sur 2 118 760. Les autres descripteurs de la forme restent ordinaires : l’Écart minimal vaut 3, l’Écart maximal 19, et le Nombre d’impairs est 2. La répartition par dizaines elle-même n’est pas présentée ici comme rare ; c’est la Somme, prise seule, qui porte le signal statistique.\n\nL’historique exact apporte un point net : ces cinq numéros n’étaient jamais sortis ensemble auparavant, et aucun de ses 5 quadruplets n’avait été tiré. Autrement dit, la combinaison complète est nouvelle dans l’historique fourni, même si les sous-ensembles existent dans la mémoire des tirages.\n\nLa forme du tirage correspond aussi à une signature déjà vue : suite consécutive maximale de 1, maximum de 2 numéros dans une même dizaine, et 4 dizaines occupées. Cette signature a déjà été observée 660 fois sur 1984 tirages antérieurs. Côté étoiles, l’Écart entre étoiles vaut 3 et les étoiles sont 08 et 11.",
+    "claims": [
+      {
+        "claim_id": "C1",
+        "text": "Le tirage du 29 septembre 2026, 04 · 07 · 12 · 31 · 44 avec étoiles 08 · 11, a une combinaison exacte de probabilité 1 sur 139 838 160 sous la règle 5 numéros sur 50 et 2 étoiles sur 12. Autrement dit, cette grille précise n’était ni plus ni moins probable qu’une autre.",
+        "evidence_ids": [
+          "F.grid.probability"
+        ]
+      },
+      {
+        "claim_id": "C2",
+        "text": "Sur la géométrie des cinq numéros principaux, l’étendue vaut 40, c’est l’écart entre le plus petit et le plus grand numéro. Cela place les valeurs sur une portion assez large de 1 à 50 : la décade 1 en contient 2, la décade 2 en contient 1, la décade 3 n’en contient aucun, la décade 4 en contient 1 et la décade 5 en contient 1. Les numéros sont donc répartis sur 4 dizaines occupées.",
+        "evidence_ids": [
+          "F.grid.probability",
+          "F.main.span",
+          "F.main.occupied_decades",
+          "F.main.decade_counts"
+        ]
+      },
+      {
+        "claim_id": "C3",
+        "text": "La mesure la plus saillante ici est la Somme : 98, qui est classe rare, avec une classe de 17 597 sur 2 118 760. Les autres descripteurs de la forme restent ordinaires : l’Écart minimal vaut 3, l’Écart maximal 19, et le Nombre d’impairs est 2. La répartition par dizaines elle-même n’est pas présentée ici comme rare ; c’est la Somme, prise seule, qui porte le signal statistique.",
+        "evidence_ids": [
+          "F.main.sum",
+          "F.main.min_gap",
+          "F.main.max_gap",
+          "F.main.odd_count",
+          "F.main.decade_counts"
+        ]
+      },
+      {
+        "claim_id": "C4",
+        "text": "L’historique exact apporte un point net : ces cinq numéros n’étaient jamais sortis ensemble auparavant, et aucun de ses 5 quadruplets n’avait été tiré. Autrement dit, la combinaison complète est nouvelle dans l’historique fourni, même si les sous-ensembles existent dans la mémoire des tirages.",
+        "evidence_ids": [
+          "F.history.exact_main"
+        ]
+      },
+      {
+        "claim_id": "C5",
+        "text": "La forme du tirage correspond aussi à une signature déjà vue : suite consécutive maximale de 1, maximum de 2 numéros dans une même dizaine, et 4 dizaines occupées. Cette signature a déjà été observée 660 fois sur 1984 tirages antérieurs. Côté étoiles, l’Écart entre étoiles vaut 3 et les étoiles sont 08 et 11.",
+        "evidence_ids": [
+          "F.main.longest_consecutive_run",
+          "F.main.max_same_decade",
+          "F.main.occupied_decades",
+          "F.stars.gap",
+          "F.signature"
+        ]
+      }
+    ],
+    "badges": [
+      {
+        "fact_id": "F.main.sum",
+        "metric": "main.sum",
+        "nom": "Somme",
+        "valeur": 98,
+        "niveau": "RARE",
+        "libelle": "classe rare",
+        "reference": "UNCOMMON",
+        "part_au_dessus": 0.469
+      }
+    ],
+    "writer": "aleaquant-draw-report-compose-v1-gpt-5.4-mini",
+    "methodology": {
+      "version": "traceability-v1",
+      "note": "Cette analyse porte sur le tirage EM-26078 du 2026-09-29. Elle distingue les propriétés de la grille, leur fréquence théorique et les observations historiques.\n\nPour les numéros principaux, les fréquences de classe portent sur 2 118 760 combinaisons possibles.\n\nLes comparaisons historiques des numéros principaux portent sur 1 984 tirages antérieurs comparables.\n\nPour les étoiles, les fréquences de classe portent sur 66 combinaisons possibles.\n\nLes comparaisons historiques des étoiles portent sur 1 044 tirages antérieurs comparables.\n\nL'historique exclut le tirage étudié et les suivants. Une absence signifie uniquement « non observé dans cet historique ».\n\nUne fréquence de classe mesure la proportion de combinaisons donnant exactement la même valeur d'une mesure. Elle se distingue d'une probabilité de queue et de celle de la grille complète.\n\nLe modèle suppose des tirages équiprobables et indépendants. Ces mesures décrivent le hasard ; elles ne permettent pas de prévoir les prochains numéros.",
+      "source": {
+        "publisher": "FDJ",
+        "source_id": "fdj-zip-9228d3a201c6e3c8d00c00adea05d675223d75f7fb130ab63bb8143a8ceb6f54",
+        "revision": 1,
+        "revision_sha256": "6c15e3c229ed1e1be1a326789c6574140f01747791aaea1c3564f073f44290d1"
+      },
+      "rule_id": "euromillions-50-12-v1",
+      "engine": "aleaquant-engine-v0.1",
+      "facts_schema": "aleaquant-draw-facts-v1",
+      "components": [
+        {
+          "label": "numéros principaux",
+          "domains": [
+            2118760
+          ],
+          "prior_draws": [
+            1984
+          ]
+        },
+        {
+          "label": "étoiles",
+          "domains": [
+            66
+          ],
+          "prior_draws": [
+            1044
+          ]
+        }
+      ],
+      "limitations": [
+        "Lien vers l'archive source non renseigné dans ce dossier.",
+        "Dates de début et de fin de l'historique non renseignées dans ce dossier."
+      ],
+      "evidence": [
+        {
+          "id": "F.grid.probability",
+          "statement": "Sous la règle en vigueur à la date du tirage — 5 numéros sur 50 et 2 étoiles sur 12 —, chaque combinaison complète a la même probabilité, 1 sur 139 838 160 : 4-7-12-31-44 + étoiles 8-11 n’était ni plus ni moins probable qu’une autre.",
+          "method": "combinatoire exacte"
+        },
+        {
+          "id": "F.history.exact_main",
+          "statement": "Ces cinq numéros n’étaient jamais sortis ensemble auparavant. Aucun de ses 5 quadruplets n’avait été tiré.",
+          "method": "historique antérieur"
+        },
+        {
+          "id": "F.main.decade_counts",
+          "statement": "Répartition par dizaines = 2·1·0·1·1 ; classe de 45 000 combinaisons sur 2 118 760 (2,1 %) ; observée 43 fois sur 1984 tirages antérieurs (attendu 42,1).",
+          "method": "loi exacte par énumération complète"
+        },
+        {
+          "id": "F.main.longest_consecutive_run",
+          "statement": "Plus longue suite consécutive = 1 ; classe de 1 370 754 combinaisons sur 2 118 760 (64,7 %) ; observée 1294 fois sur 1984 tirages antérieurs (attendu 1283,6).",
+          "method": "loi exacte par énumération complète"
+        },
+        {
+          "id": "F.main.max_gap",
+          "statement": "Écart maximal = 19 ; classe de 118 600 combinaisons sur 2 118 760 (5,6 %) ; observée 118 fois sur 1984 tirages antérieurs (attendu 111,1).",
+          "method": "loi exacte par énumération complète"
+        },
+        {
+          "id": "F.main.max_same_decade",
+          "statement": "Maximum dans une même dizaine = 2 ; classe de 1 507 500 combinaisons sur 2 118 760 (71,2 %) ; observée 1438 fois sur 1984 tirages antérieurs (attendu 1411,6).",
+          "method": "loi exacte par énumération complète"
+        },
+        {
+          "id": "F.main.min_gap",
+          "statement": "Écart minimal = 3 ; classe de 348 726 combinaisons sur 2 118 760 (16,5 %) ; observée 345 fois sur 1984 tirages antérieurs (attendu 326,5).",
+          "method": "loi exacte par énumération complète"
+        },
+        {
+          "id": "F.main.occupied_decades",
+          "statement": "Dizaines occupées = 4 ; classe de 900 000 combinaisons sur 2 118 760 (42,5 %) ; observée 836 fois sur 1984 tirages antérieurs (attendu 842,8).",
+          "method": "loi exacte par énumération complète"
+        },
+        {
+          "id": "F.main.odd_count",
+          "statement": "Nombre d’impairs = 2 ; classe de 690 000 combinaisons sur 2 118 760 (32,6 %) ; observée 612 fois sur 1984 tirages antérieurs (attendu 646,1).",
+          "method": "loi exacte par énumération complète"
+        },
+        {
+          "id": "F.main.span",
+          "statement": "Étendue = 40 ; classe de 91 390 combinaisons sur 2 118 760 (4,3 %) ; observée 84 fois sur 1984 tirages antérieurs (attendu 85,6).",
+          "method": "loi exacte par énumération complète"
+        },
+        {
+          "id": "F.main.sum",
+          "statement": "Somme = 98 ; classe de 17 597 combinaisons sur 2 118 760 (0,83 %) ; observée 18 fois sur 1984 tirages antérieurs (attendu 16,5).",
+          "method": "loi exacte par énumération complète"
+        },
+        {
+          "id": "F.signature",
+          "statement": "Forme du tirage (suite consécutive maximale de 1, maximum de 2 numéros dans une même dizaine, 4 dizaines occupées) déjà observée 660 fois sur 1984 tirages antérieurs.",
+          "method": "signature patterns.py"
+        },
+        {
+          "id": "F.stars.gap",
+          "statement": "Écart des étoiles = 3 ; classe de 9 combinaisons sur 66 (13,6 %) ; observée 139 fois sur 1044 tirages antérieurs (attendu 142,4).",
+          "method": "loi exacte par énumération complète"
+        }
+      ],
+      "claims": [
+        {
+          "id": "C1",
+          "text": "Le tirage du 29 septembre 2026, 04 · 07 · 12 · 31 · 44 avec étoiles 08 · 11, a une combinaison exacte de probabilité 1 sur 139 838 160 sous la règle 5 numéros sur 50 et 2 étoiles sur 12. Autrement dit, cette grille précise n’était ni plus ni moins probable qu’une autre.",
+          "evidence_ids": [
+            "F.grid.probability"
+          ]
+        },
+        {
+          "id": "C2",
+          "text": "Sur la géométrie des cinq numéros principaux, l’étendue vaut 40, c’est l’écart entre le plus petit et le plus grand numéro. Cela place les valeurs sur une portion assez large de 1 à 50 : la décade 1 en contient 2, la décade 2 en contient 1, la décade 3 n’en contient aucun, la décade 4 en contient 1 et la décade 5 en contient 1. Les numéros sont donc répartis sur 4 dizaines occupées.",
+          "evidence_ids": [
+            "F.grid.probability",
+            "F.main.span",
+            "F.main.occupied_decades",
+            "F.main.decade_counts"
+          ]
+        },
+        {
+          "id": "C3",
+          "text": "La mesure la plus saillante ici est la Somme : 98, qui est classe rare, avec une classe de 17 597 sur 2 118 760. Les autres descripteurs de la forme restent ordinaires : l’Écart minimal vaut 3, l’Écart maximal 19, et le Nombre d’impairs est 2. La répartition par dizaines elle-même n’est pas présentée ici comme rare ; c’est la Somme, prise seule, qui porte le signal statistique.",
+          "evidence_ids": [
+            "F.main.sum",
+            "F.main.min_gap",
+            "F.main.max_gap",
+            "F.main.odd_count",
+            "F.main.decade_counts"
+          ]
+        },
+        {
+          "id": "C4",
+          "text": "L’historique exact apporte un point net : ces cinq numéros n’étaient jamais sortis ensemble auparavant, et aucun de ses 5 quadruplets n’avait été tiré. Autrement dit, la combinaison complète est nouvelle dans l’historique fourni, même si les sous-ensembles existent dans la mémoire des tirages.",
+          "evidence_ids": [
+            "F.history.exact_main"
+          ]
+        },
+        {
+          "id": "C5",
+          "text": "La forme du tirage correspond aussi à une signature déjà vue : suite consécutive maximale de 1, maximum de 2 numéros dans une même dizaine, et 4 dizaines occupées. Cette signature a déjà été observée 660 fois sur 1984 tirages antérieurs. Côté étoiles, l’Écart entre étoiles vaut 3 et les étoiles sont 08 et 11.",
+          "evidence_ids": [
+            "F.main.longest_consecutive_run",
+            "F.main.max_same_decade",
+            "F.main.occupied_decades",
+            "F.stars.gap",
+            "F.signature"
+          ]
+        }
+      ]
+    },
+    "research_pack_sha256": "167fec088244fcb684c03295df2edadcb10885c3ae19914668161c9a440d66f0",
+    "draft_version": "traceability-v1"
+  },
+  "research_pack": {
+    "question": "Que dit la forme du tirage EM-26078, sans prétendre prédire le suivant ?",
+    "draw_id": "EM-26078",
+    "facts_schema": "aleaquant-draw-facts-v1",
+    "facts_sha256": "e9bb51ce841b4eee0aa6c36665df4acb51454edbdee0141d2431a9ae67def757",
+    "engine": "aleaquant-engine-v0.1",
+    "evidence": [
+      {
+        "evidence_id": "F.grid.probability",
+        "claim": "Sous la règle en vigueur à la date du tirage — 5 numéros sur 50 et 2 étoiles sur 12 —, chaque combinaison complète a la même probabilité, 1 sur 139 838 160 : 4-7-12-31-44 + étoiles 8-11 n’était ni plus ni moins probable qu’une autre.",
+        "method": "combinatoire exacte",
+        "category": "exact_grid",
+        "cited": true
+      },
+      {
+        "evidence_id": "F.editorial.expectation",
+        "claim": "L’espérance de gain d’une mise est négative. Ces mesures décrivent la forme du tirage ; elles ne permettent pas de prédire le suivant.",
+        "method": "principe éditorial AleaQuant",
+        "category": "interpretation",
+        "cited": false
+      },
+      {
+        "evidence_id": "F.main.sum",
+        "claim": "Somme = 98 ; classe de 17 597 combinaisons sur 2 118 760 (0,83 %) ; observée 18 fois sur 1984 tirages antérieurs (attendu 16,5).",
+        "method": "loi exacte par énumération complète",
+        "category": "class_metric",
+        "cited": true
+      },
+      {
+        "evidence_id": "F.main.span",
+        "claim": "Étendue = 40 ; classe de 91 390 combinaisons sur 2 118 760 (4,3 %) ; observée 84 fois sur 1984 tirages antérieurs (attendu 85,6).",
+        "method": "loi exacte par énumération complète",
+        "category": "class_metric",
+        "cited": true
+      },
+      {
+        "evidence_id": "F.main.min_gap",
+        "claim": "Écart minimal = 3 ; classe de 348 726 combinaisons sur 2 118 760 (16,5 %) ; observée 345 fois sur 1984 tirages antérieurs (attendu 326,5).",
+        "method": "loi exacte par énumération complète",
+        "category": "class_metric",
+        "cited": true
+      },
+      {
+        "evidence_id": "F.main.max_gap",
+        "claim": "Écart maximal = 19 ; classe de 118 600 combinaisons sur 2 118 760 (5,6 %) ; observée 118 fois sur 1984 tirages antérieurs (attendu 111,1).",
+        "method": "loi exacte par énumération complète",
+        "category": "class_metric",
+        "cited": true
+      },
+      {
+        "evidence_id": "F.main.mean_gap",
+        "claim": "Écart moyen = 10 ; classe de 91 390 combinaisons sur 2 118 760 (4,3 %) ; observée 84 fois sur 1984 tirages antérieurs (attendu 85,6).",
+        "method": "loi exacte par énumération complète",
+        "category": "class_metric",
+        "cited": false
+      },
+      {
+        "evidence_id": "F.main.longest_consecutive_run",
+        "claim": "Plus longue suite consécutive = 1 ; classe de 1 370 754 combinaisons sur 2 118 760 (64,7 %) ; observée 1294 fois sur 1984 tirages antérieurs (attendu 1283,6).",
+        "method": "loi exacte par énumération complète",
+        "category": "class_metric",
+        "cited": true
+      },
+      {
+        "evidence_id": "F.main.consecutive_pairs",
+        "claim": "Paires consécutives = 0 ; classe de 1 370 754 combinaisons sur 2 118 760 (64,7 %) ; observée 1294 fois sur 1984 tirages antérieurs (attendu 1283,6).",
+        "method": "loi exacte par énumération complète",
+        "category": "class_metric",
+        "cited": false
+      },
+      {
+        "evidence_id": "F.main.runs_ge2",
+        "claim": "Suites d’au moins deux = 0 ; classe de 1 370 754 combinaisons sur 2 118 760 (64,7 %) ; observée 1294 fois sur 1984 tirages antérieurs (attendu 1283,6).",
+        "method": "loi exacte par énumération complète",
+        "category": "class_metric",
+        "cited": false
+      },
+      {
+        "evidence_id": "F.main.max_same_decade",
+        "claim": "Maximum dans une même dizaine = 2 ; classe de 1 507 500 combinaisons sur 2 118 760 (71,2 %) ; observée 1438 fois sur 1984 tirages antérieurs (attendu 1411,6).",
+        "method": "loi exacte par énumération complète",
+        "category": "class_metric",
+        "cited": true
+      },
+      {
+        "evidence_id": "F.main.occupied_decades",
+        "claim": "Dizaines occupées = 4 ; classe de 900 000 combinaisons sur 2 118 760 (42,5 %) ; observée 836 fois sur 1984 tirages antérieurs (attendu 842,8).",
+        "method": "loi exacte par énumération complète",
+        "category": "class_metric",
+        "cited": true
+      },
+      {
+        "evidence_id": "F.main.odd_count",
+        "claim": "Nombre d’impairs = 2 ; classe de 690 000 combinaisons sur 2 118 760 (32,6 %) ; observée 612 fois sur 1984 tirages antérieurs (attendu 646,1).",
+        "method": "loi exacte par énumération complète",
+        "category": "class_metric",
+        "cited": true
+      },
+      {
+        "evidence_id": "F.main.low_count",
+        "claim": "Nombre de numéros bas (1–25) = 3 ; classe de 690 000 combinaisons sur 2 118 760 (32,6 %) ; observée 670 fois sur 1984 tirages antérieurs (attendu 646,1).",
+        "method": "loi exacte par énumération complète",
+        "category": "class_metric",
+        "cited": false
+      },
+      {
+        "evidence_id": "F.main.repeated_terminal_digits",
+        "claim": "Finales répétées = 1 ; classe de 1 050 000 combinaisons sur 2 118 760 (49,6 %) ; observée 1013 fois sur 1984 tirages antérieurs (attendu 983,2).",
+        "method": "loi exacte par énumération complète",
+        "category": "class_metric",
+        "cited": false
+      },
+      {
+        "evidence_id": "F.main.terminal_pair_collisions",
+        "claim": "Paires de même finale = 1 ; classe de 1 050 000 combinaisons sur 2 118 760 (49,6 %) ; observée 1013 fois sur 1984 tirages antérieurs (attendu 983,2).",
+        "method": "loi exacte par énumération complète",
+        "category": "class_metric",
+        "cited": false
+      },
+      {
+        "evidence_id": "F.main.is_arithmetic_progression",
+        "claim": "Progression arithmétique complète = 0 ; classe de 2 118 472 combinaisons sur 2 118 760 (100,0 %) ; observée 1984 fois sur 1984 tirages antérieurs (attendu 1983,7).",
+        "method": "loi exacte par énumération complète",
+        "category": "class_metric",
+        "cited": false
+      },
+      {
+        "evidence_id": "F.main.longest_arithmetic_progression",
+        "claim": "Plus longue progression arithmétique = 2 ; classe de 1 541 850 combinaisons sur 2 118 760 (72,8 %) ; observée 1459 fois sur 1984 tirages antérieurs (attendu 1443,8).",
+        "method": "loi exacte par énumération complète",
+        "category": "class_metric",
+        "cited": false
+      },
+      {
+        "evidence_id": "F.main.arithmetic_triples",
+        "claim": "Triplets arithmétiques = 0 ; classe de 1 541 850 combinaisons sur 2 118 760 (72,8 %) ; observée 1459 fois sur 1984 tirages antérieurs (attendu 1443,8).",
+        "method": "loi exacte par énumération complète",
+        "category": "class_metric",
+        "cited": false
+      },
+      {
+        "evidence_id": "F.main.clusteredness_close_pairs_5",
+        "claim": "Paires distantes d’au plus 5 = 2 ; classe de 692 772 combinaisons sur 2 118 760 (32,7 %) ; observée 669 fois sur 1984 tirages antérieurs (attendu 648,7).",
+        "method": "loi exacte par énumération complète",
+        "category": "class_metric",
+        "cited": false
+      },
+      {
+        "evidence_id": "F.main.sorted_gaps",
+        "claim": "Écarts ordonnés = 3·5·13·19 ; classe de 240 combinaisons sur 2 118 760 (0,01 %) ; observée 0 fois sur 1984 tirages antérieurs (attendu 0,2).",
+        "method": "loi exacte par énumération complète",
+        "category": "class_metric",
+        "cited": false
+      },
+      {
+        "evidence_id": "F.main.decade_counts",
+        "claim": "Répartition par dizaines = 2·1·0·1·1 ; classe de 45 000 combinaisons sur 2 118 760 (2,1 %) ; observée 43 fois sur 1984 tirages antérieurs (attendu 42,1).",
+        "method": "loi exacte par énumération complète",
+        "category": "class_metric",
+        "cited": true
+      },
+      {
+        "evidence_id": "F.stars.gap",
+        "claim": "Écart des étoiles = 3 ; classe de 9 combinaisons sur 66 (13,6 %) ; observée 139 fois sur 1044 tirages antérieurs (attendu 142,4).",
+        "method": "loi exacte par énumération complète",
+        "category": "class_metric",
+        "cited": true
+      },
+      {
+        "evidence_id": "F.stars.consecutive",
+        "claim": "Étoiles consécutives = 0 ; classe de 55 combinaisons sur 66 (83,3 %) ; observée 880 fois sur 1044 tirages antérieurs (attendu 870).",
+        "method": "loi exacte par énumération complète",
+        "category": "class_metric",
+        "cited": false
+      },
+      {
+        "evidence_id": "F.stars.odd_count",
+        "claim": "Étoiles impaires = 1 ; classe de 36 combinaisons sur 66 (54,5 %) ; observée 548 fois sur 1044 tirages antérieurs (attendu 569,5).",
+        "method": "loi exacte par énumération complète",
+        "category": "class_metric",
+        "cited": false
+      },
+      {
+        "evidence_id": "F.stars.low_count",
+        "claim": "Étoiles basses (1–6) = 0 ; classe de 15 combinaisons sur 66 (22,7 %) ; observée 214 fois sur 1044 tirages antérieurs (attendu 237,3).",
+        "method": "loi exacte par énumération complète",
+        "category": "class_metric",
+        "cited": false
+      },
+      {
+        "evidence_id": "F.stars.sum",
+        "claim": "Somme des étoiles = 19 ; classe de 3 combinaisons sur 66 (4,5 %) ; observée 41 fois sur 1044 tirages antérieurs (attendu 47,5).",
+        "method": "loi exacte par énumération complète",
+        "category": "class_metric",
+        "cited": false
+      },
+      {
+        "evidence_id": "F.stars.terminal_coincidence",
+        "claim": "Étoiles de même finale = 0 ; classe de 64 combinaisons sur 66 (97,0 %) ; observée 1005 fois sur 1044 tirages antérieurs (attendu 1012,4).",
+        "method": "loi exacte par énumération complète",
+        "category": "class_metric",
+        "cited": false
+      },
+      {
+        "evidence_id": "F.pascal.subsets",
+        "claim": "Cinq numéros contiennent 10 paires et 10 triplets : C(5,2) = C(5,3), symétrie du triangle de Pascal. Mais le domaine compte 1 225 paires contre 19 600 triplets. Avant ce tirage, 10 de ses 10 paires étaient déjà sorties ensemble (la plus fréquente, 12–44, 26 fois), contre 8 de ses 10 triplets.",
+        "method": "combinatoire + historique antérieur",
+        "category": "exhaustive",
+        "cited": false
+      },
+      {
+        "evidence_id": "F.history.exact_main",
+        "claim": "Ces cinq numéros n’étaient jamais sortis ensemble auparavant. Aucun de ses 5 quadruplets n’avait été tiré.",
+        "method": "historique antérieur",
+        "category": "historical",
+        "cited": true
+      },
+      {
+        "evidence_id": "F.signature",
+        "claim": "Forme du tirage (suite consécutive maximale de 1, maximum de 2 numéros dans une même dizaine, 4 dizaines occupées) déjà observée 660 fois sur 1984 tirages antérieurs.",
+        "method": "signature patterns.py",
+        "category": "historical",
+        "cited": true
+      }
+    ]
+  },
+  "human_decision": null,
+  "provenance": {
+    "writer": "aleaquant-draw-report-compose-v1-gpt-5.4-mini",
+    "model": "gpt-5.4-mini",
+    "mode": "direct",
+    "traceability_version": "traceability-v1",
+    "prompt_sha256": "2afcb7ab593eb97c2a9fbaebf6963307d742c5b9649e0c5bec044532ffa13a83",
+    "reasoning_effort": "low",
+    "created_at": "2026-10-02T19:40:08+02:00",
+    "facts_path": "/Users/chris/aleaquant/aleaquant-web/dist/data/facts/EM-26078.json"
+  }
+}

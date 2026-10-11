@@ -1,6 +1,35 @@
-# Sources et méthode des articles — contrat v1.0
+# Sources et méthode des articles — contrat v1.1
 
-Auteur : AleaQuant · 2 octobre 2026.
+Auteur : AleaQuant · 10 octobre 2026.
+
+Historique : v1.1 précise l'identité stable et les corrections rédactionnelles ;
+le contrat scientifique et les décisions humaines précédentes restent conservés.
+
+## Identité de l'article et corrections rédactionnelles
+
+Chaque article possède un `article_id` dès son dossier éditorial. Cet identifiant
+est repris dans le brouillon, l'export et le journal ; il ne change pas quand le
+titre, le texte ou l'URL évoluent. Conserver les IDs déjà attribués. Exemple réel :
+`tirage-EM-2011053`, « EuroMillions — tirage du 6 septembre 2011 ».
+
+La référence est affichée dans le Journal, son lecteur et la page de l'article.
+La revue de homepage conserve en plus un ID par bloc, tel que `HOME-FEATURED`,
+avec un lien explicite vers l'`article_id` ; ce bloc n'est pas un second article.
+Une fiche de tirage, un outil, une définition et un sujet prévu ne sont pas
+présentés comme des articles approuvés.
+
+Une demande « modifier l'article tirage-EM-2011053 » vise cette identité stable.
+La correction suit le circuit du dépôt canonique `../aleaquant-editorial-agents` :
+conserver l'ancienne édition, créer une nouvelle version de travail, contrôler
+les claims et leurs preuves, puis soumettre le nouveau SHA à l'humain. Toute
+modification de prose invalide l'approbation précédente ; une identité stable
+ne permet pas de réutiliser une décision portant sur un autre contenu.
+
+`Draft.revision` et le SHA distinguent les révisions de travail. Le parcours
+complet de réédition après approbation et l'archivage à l'import restent à
+qualifier : TD-EDIT-002. Ne pas promettre un opérateur de correction déjà livré
+ni remplacer silencieusement l'export actif. Pour le lancement manuel, voir
+[`V0-MANUAL-RELEASE.md`](V0-MANUAL-RELEASE.md).
 
 ## Décision et périmètre
 

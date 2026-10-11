@@ -1,6 +1,8 @@
-# Roadmap produit AleaQuant — 2 octobre 2026
+# Roadmap produit AleaQuant — 11 octobre 2026
 
-Auteur : AleaQuant · v0.4 · 2 octobre 2026
+Auteur : AleaQuant · v0.6 · 11 octobre 2026
+Historique : v0.6 ajoute l'atelier personnalisé et la souscription (PB-019/020) ;
+v0.5 ajoute les représentations des contenus pour outils et IA (PB-015).
 
 Cette feuille décrit les capacités que les lecteurs et l'équipe doivent pouvoir
 utiliser. Les choix durables de structure sont consignés dans les documents
@@ -14,6 +16,11 @@ instruire et la dette d'ingénierie restent des registres séparés.
 
 ## Site et données
 
+- **Publications lisibles par les outils et les IA (PB-015)** : proposer une version
+  Markdown et, selon les besoins, des faits structurés issus de la même révision
+  approuvée que la page HTML. Conserver provenance, définitions et descriptions des
+  figures ; cadrage dans le [backlog produit](PRODUCT-BACKLOG.md). Le budget de fichiers
+  impose d'étudier la génération à la demande avant généralisation aux archives.
 - **Accueil éditorial structuré** : présenter les dernières analyses de tirages,
   puis des contenus rangés dans Tirages, Comprendre, Atlas & géométries et
   Recherche & méthode. Les cartes conduisent à des contenus réels et approuvés.
@@ -80,6 +87,16 @@ Workflow agentique et critères de qualité : feuille de route du dépôt
 [`aleaquant-editorial-agents`](../../aleaquant-editorial-agents/docs/roadmap-editorial-agentique.md).
 
 ## Atlas et recherche
+
+- **Atlas gratuit et atelier personnalisé (PB-019)** : exposer des portefeuilles
+  de référence complets et leurs vraies grilles gratuitement. Proposer après la v0
+  un service de construction à partir d'un pool fixé par l'utilisateur, avec
+  objectifs, limites, diagnostics, comparaisons et visualisations réutilisant
+  le pipeline qualifié et le prompteur. Le service ne promet aucun gain prédictif.
+- **Souscription et paiement (PB-020)** : permettre de souscrire à cet atelier,
+  consulter son offre et ses quotas, payer et gérer son abonnement. Prestations,
+  tarifs et fournisseur restent à définir ; réalisation et qualification dans
+  TD-SUB-001, avec préservation de l'accès gratuit à l'Atlas de référence.
 
 - **Atlas des géométries** : présenter des portefeuilles de référence qualifiés,
   leurs recouvrements et leurs limites, avec comparaisons sous budget commun et

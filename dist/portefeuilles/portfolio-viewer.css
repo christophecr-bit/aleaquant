@@ -1,0 +1,39 @@
+/* Consultation inspirée des tableaux du prompteur lottery_ui/prompter.py. */
+.portfolio-viewer{margin-top:30px;padding-top:28px;border-top:1px solid var(--line,#d4ddd4);color:var(--ink,#123633)}
+.portfolio-viewer-heading{display:flex;justify-content:space-between;gap:26px;align-items:end;margin-bottom:18px}
+.portfolio-viewer-eyebrow{font-size:11px;font-weight:600;letter-spacing:1.3px;color:var(--muted,#526962)}
+.portfolio-viewer-heading h3{font:400 29px/1.25 Georgia,serif;letter-spacing:-.6px;margin:13px 0 9px}
+.portfolio-viewer-status{font-size:13px;line-height:1.5;color:var(--muted,#526962);margin:0;font-variant-numeric:tabular-nums}
+.portfolio-viewer-navigation{display:flex;align-items:end;gap:10px;flex-wrap:wrap}
+.portfolio-viewer-navigation button{appearance:none;border:1px solid #a7bbab;border-radius:4px;background:white;color:var(--ink,#123633);padding:10px 13px;min-height:44px;font-size:13px;line-height:1.6;white-space:nowrap;cursor:pointer}
+.portfolio-viewer-navigation button:hover:enabled{border-color:var(--ink,#123633);background:#eff4e5}
+.portfolio-viewer-navigation button:disabled{color:#758377;border-color:#d4ddd4;background:#f1f4ee;cursor:default}
+.portfolio-viewer-group-label{display:flex;flex-direction:column;gap:5px;font-size:11px;font-weight:600;color:var(--muted,#526962);min-width:190px}
+.portfolio-viewer-group-select{margin:0;padding:10px 12px;min-width:190px;min-height:44px;max-width:100%;background:white;color:var(--ink,#123633);border:1px solid #a7bbab;border-radius:4px;font-size:13px;line-height:1.6}
+.portfolio-viewer button:focus-visible,.portfolio-viewer select:focus-visible{outline:3px solid #568322;outline-offset:4px}
+.portfolio-viewer-legend{display:flex;align-items:center;flex-wrap:wrap;gap:10px 18px;padding:13px 17px;background:#edf2e8;border:1px solid var(--line,#d4ddd4);border-radius:4px;font-size:12px;line-height:1.5}
+.portfolio-viewer-legend-number,.portfolio-viewer-legend-star{display:inline-block;border:1px solid;border-radius:4px;padding:4px 8px;font-weight:600}
+.portfolio-viewer-legend-number{background:#17546f;color:white;border-color:#17546f}
+.portfolio-viewer-legend-star{background:#e0b548;color:#243831;border-color:#a68019}
+.portfolio-viewer-legend-empty{color:#526962}
+.portfolio-viewer-explanation{font-size:12px;color:var(--muted,#526962);margin:12px 0 20px;max-width:860px}
+.portfolio-viewer-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px;align-items:start}
+.portfolio-viewer-grid{min-width:0;border:1px solid #c7d4c5;border-radius:5px;background:white;padding:20px}
+.portfolio-viewer-grid-heading{display:flex;gap:12px;justify-content:space-between;align-items:baseline;flex-wrap:wrap;margin-bottom:12px}
+.portfolio-viewer-grid-heading h4{font:400 24px/1.2 Georgia,serif;margin:0;color:var(--ink,#123633)}
+.portfolio-viewer-grid-format{font-size:11px;color:var(--muted,#526962)}
+.portfolio-viewer-selection{display:flex;flex-wrap:wrap;gap:5px 17px;font-size:12px;font-variant-numeric:tabular-nums;line-height:1.8;border-top:1px solid #e0e7dc;border-bottom:1px solid #e0e7dc;padding:10px 0;margin:0 0 13px;color:var(--muted,#526962)}
+.portfolio-viewer-selection strong{font-weight:600;color:var(--ink,#123633);white-space:nowrap}
+.portfolio-viewer-board{width:100%;max-width:100%;table-layout:fixed;border-collapse:separate;border-spacing:4px;margin:0}
+.portfolio-viewer-board caption{text-align:left;text-transform:uppercase;letter-spacing:1.1px;font-size:10px;font-weight:700;line-height:1.5;color:var(--muted,#526962);padding:7px 4px 5px}
+.portfolio-viewer-board td{padding:0;vertical-align:middle}
+.portfolio-viewer-cell{display:flex;position:relative;align-items:center;justify-content:center;width:100%;aspect-ratio:1;min-width:0;border:1px solid #d3dcd1;border-radius:50%;background:#f2f5ee;color:#5e6c64;font-size:clamp(11px,1.35vw,15px);font-weight:500;font-variant-numeric:tabular-nums;line-height:1;user-select:text}
+.portfolio-viewer-numbers .is-selected{background:#17546f;border:2px solid #0c3c56;color:#fff;font-weight:800}
+.portfolio-viewer-stars{max-width:62%;margin-top:6px}
+.portfolio-viewer-stars .portfolio-viewer-cell{border-radius:7px}
+.portfolio-viewer-stars .is-selected{background:#e0b548;border:2px solid #957112;color:#243831;font-weight:800}
+.portfolio-viewer-mark{position:absolute;right:1px;top:1px;border-radius:50%;font:700 8px/1 Arial,Helvetica,sans-serif;pointer-events:none}
+@media(max-width:1120px){.portfolio-viewer-heading{align-items:start;flex-direction:column;gap:18px}.portfolio-viewer-navigation{width:100%}.portfolio-viewer-grid{padding:16px}.portfolio-viewer-cards{gap:17px}}
+@media(max-width:760px){.portfolio-viewer-cards{grid-template-columns:1fr}.portfolio-viewer-grid{padding:18px}.portfolio-viewer-cell{font-size:14px}.portfolio-viewer-mark{font-size:9px;right:2px;top:2px}.portfolio-viewer-stars{max-width:62%}}
+@media(max-width:430px){.portfolio-viewer-navigation{display:grid;grid-template-columns:1fr 1fr;gap:10px}.portfolio-viewer-group-label{grid-column:1/-1;grid-row:1;min-width:0}.portfolio-viewer-group-select{width:100%;min-width:0}.portfolio-viewer-navigation button{width:100%;padding:10px}.portfolio-viewer-legend{padding:12px;gap:8px 12px}.portfolio-viewer-grid{padding:14px}.portfolio-viewer-board{border-spacing:3px}.portfolio-viewer-cell{font-size:11px}.portfolio-viewer-mark{font-size:7px;right:0;top:0}.portfolio-viewer-stars{max-width:65%}.portfolio-viewer-selection{font-size:11px;gap:4px 10px}.portfolio-viewer-grid-heading{gap:7px}.portfolio-viewer-grid-heading h4{font-size:23px}}
+@media(forced-colors:active){.portfolio-viewer-cell.is-selected{border:3px solid Highlight;font-weight:800}.portfolio-viewer-mark{color:CanvasText}.portfolio-viewer-legend-number,.portfolio-viewer-legend-star{border:2px solid Highlight}}

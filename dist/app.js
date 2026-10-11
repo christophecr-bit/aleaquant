@@ -1,3 +1,4 @@
+// AleaQuant · références d'article v1 · 2026-10-10 : identité distincte du SHA approuvé.
 const $ = (s) => document.querySelector(s);
 const pairs = [];
 for(let a=1;a<=6;a++) for(let b=a+1;b<=6;b++) pairs.push([a,b]);
@@ -24,7 +25,7 @@ function renderMetrics(){
  $("#metric-count").textContent=visible.length+" / "+features.length+" définitions";
  $("#metrics").replaceChildren(...visible.map(f=>{
   const item=document.createElement("details");item.className="metric";
-  const title=document.createElement("summary");const tag=document.createElement("small");tag.textContent=f.group==="main"?"NUMÉROS":"ÉTOILES";title.append(tag,document.createTextNode(f.name));
+  const title=document.createElement("summary");const tag=document.createElement("small");tag.textContent=({main:"NUMÉROS",stars:"ÉTOILES",portfolio:"PORTEFEUILLE"})[f.group]||f.group;title.append(tag,document.createTextNode(f.name));
   const body=document.createElement("p");body.textContent=f.definition;const code=document.createElement("code");code.textContent=f.id;item.append(title,body,code);return item;
  }));
  if(!visible.length) {const p=document.createElement("p");p.className="notice";p.textContent="Aucune métrique ne correspond à cette recherche.";$("#metrics").append(p);}
@@ -32,6 +33,11 @@ function renderMetrics(){
 $("#metric-search").addEventListener("input",renderMetrics);
 document.querySelectorAll("[data-filter]").forEach(b=>b.addEventListener("click",()=>{filter=b.dataset.filter;document.querySelectorAll("[data-filter]").forEach(x=>x.setAttribute("aria-pressed",String(x===b)));renderMetrics();}));
 fetch("metrics.json").then(r=>{if(!r.ok)throw Error();return r.json();}).then(data=>{features=data;renderMetrics();}).catch(()=>{$("#metrics").textContent="Le dictionnaire n’a pas pu être chargé. Réessaie en actualisant la page.";});
+function articleReference(article,tag="p"){
+ const reference=document.createElement(tag);reference.className="small article-reference";
+ const id=document.createElement("code");id.textContent=String(article.article_id);
+ reference.append(document.createTextNode("Référence de l’article : "),id);return reference;
+}
 function readArticle(article){
  const reader=$("#article-reader");reader.replaceChildren();reader.hidden=false;reader.className="article-reader";
  const title=document.createElement("h2");title.textContent=article.draft.title;title.tabIndex=-1;
@@ -56,7 +62,7 @@ function readArticle(article){
  const proof=document.createElement("details");const summary=document.createElement("summary");summary.textContent="Voir les preuves et la traçabilité";proof.append(summary);
  const list=document.createElement("ol");article.research_pack.evidence.forEach(e=>{const li=document.createElement("li");li.textContent="["+e.evidence_id+"] "+e.claim+" — "+e.method;list.append(li);});proof.append(list);
  const hash=document.createElement("code");hash.textContent="Version approuvée : "+article.draft_sha256;proof.append(hash);
- reader.append(status,title);if(chips)reader.append(chips);reader.append(prose);
+ reader.append(status,title,articleReference(article));if(chips)reader.append(chips);reader.append(prose);
  // AleaQuant · 2026-10-02 · v1 : projection publique liée au SHA approuvé.
  const method=article.draft.methodology;
  if(method){
@@ -75,7 +81,7 @@ function readArticle(article){
 fetch("articles.json").then(r=>{if(!r.ok)throw Error();return r.json();}).then(data=>{
  const articles=data.articles.filter(a=>a.status==="HUMAN_APPROVED"&&a.human_decision?.approved&&a.human_decision.draft_sha256===a.draft_sha256);
  if(!articles.length)return;
- $("#articles").replaceChildren(...articles.map(a=>{const b=document.createElement("button");b.className="article-card";const meta=document.createElement("span");meta.className="eyebrow";meta.textContent="ARTICLE · VERSION APPROUVÉE";const title=document.createElement("h3");title.textContent=a.draft.title;b.append(meta,title);b.addEventListener("click",()=>readArticle(a));return b;}));
+ $("#articles").replaceChildren(...articles.map(a=>{const b=document.createElement("button");b.className="article-card";const meta=document.createElement("span");meta.className="eyebrow";meta.textContent="ARTICLE · VERSION APPROUVÉE";const title=document.createElement("h3");title.textContent=a.draft.title;b.append(meta,title,articleReference(a,"span"));b.addEventListener("click",()=>readArticle(a));return b;}));
 }).catch(()=>{$("#articles").textContent="Le journal est temporairement indisponible. Merci de réessayer.";});
 const context=document.modelContext;
 if(context?.registerTool){

@@ -2,6 +2,13 @@
 
 Date : 1er octobre 2026 · Auteur : AleaQuant · Statut : Atlas éditorial v0.1 ; outils personnalisés différés
 
+Extension locale du 9 octobre : le pipeline 1.0 de génération, RANDOM,
+preuves conditionnelles et MC indépendant est implémenté dans ce dépôt.
+Il ajoute des archives de runs et une projection `/portefeuilles/`, sans
+modifier l'Atlas historique. Voir [le contrat opérationnel](PORTFOLIO-PIPELINE.md).
+Les sections ci-dessous conservent les conventions et le périmètre éditorial
+de l'aperçu existant ; elles ne décrivent pas une offre de calcul public.
+
 ## Objet et état réel
 
 L'Atlas explique comment un ensemble de grilles occupe le domaine d'un jeu et
@@ -154,26 +161,18 @@ séparer un index léger des fiches détaillées plutôt que grossir sans limite
 l'outil : union, recouvrement, couverture et distinction entre la probabilité
 d'une grille et celle d'un événement concernant **plusieurs** grilles.
 
-## Travaux de la première itération
+## Invariants de qualification
 
-1. Versionner le schéma de cohorte et l'adaptateur d'affichage des familles ;
-   montrer jeu, règle, format, taille, budget connu et niveau de preuve partout.
-2. Qualifier quelques portefeuilles Loto représentatifs : les cinq
-   démonstrations actuelles sont le point de départ, pas des résultats classés.
-   Montrer `RANDOM` et des familles de géométrie sous un protocole et un budget
-   communs ; retenir les tailles qui rendent la comparaison pédagogique.
-   Conserver `CHANCE_SPREAD` comme variante de la composante Chance, avec
-   grilles, graines, empreintes et limites archivées.
-3. Ajouter les cohortes pédagogiques à 6 grilles EuroMillions et Keno 10-numéros,
-   en gardant leurs 30-grilles archivées. Comparer géométries uniquement à
-   l'intérieur d'une cohorte tant que les protocoles d'évaluation divergent.
-4. Choisir un événement et une évaluation Loto pertinents, à budget identique
-   et contre `RANDOM`, avant de publier un classement de résultats. Les cinq
-   démonstrations actuelles ne constituent pas ce classement.
-5. Produire une fiche et un article d'introduction, tester la compréhension des
-   libellés et mesurer le poids de l'index avant d'envisager d'autres tailles.
+- Toute cohorte affiche jeu, règle, format, taille, budget, graine/protocole et
+  niveau de preuve ; chaque nombre renvoie à sa définition et à sa provenance.
+- Comparer `RANDOM` sous le même budget. Tant que les protocoles diffèrent,
+  comparer uniquement au sein d'une même cohorte ; ne pas classer les cinq
+  démonstrations Loto actuelles comme des performances.
+- Garder `CHANCE_SPREAD` comme variante de composante Chance avec grilles,
+  graines, empreintes et limites archivées.
+- Une taille non précalculée ne fait pas échouer l'Atlas et n'est pas annoncée
+  comme évaluée. Aucune comparaison de gains ne traverse deux cohortes.
 
-Critère de sortie : chaque nombre affiché renvoie à sa définition, à sa cohorte
-et à sa provenance ; aucune comparaison de gains ne traverse deux cohortes ;
-une taille non précalculée ne fait pas échouer l'Atlas et n'est pas annoncée
-comme évaluée. Comprendre le hasard n'est pas prédire le prochain tirage.
+Les fonctions et priorités de livraison sont dans [`ROADMAP.md`](ROADMAP.md) ; les
+composants techniques dans [`TECHNICAL-DEBT.md`](TECHNICAL-DEBT.md). Comprendre le
+hasard n'est pas prédire le prochain tirage.

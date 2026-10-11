@@ -5,13 +5,27 @@ Conserver les pages EuroMillions et Loto déjà publiées pendant la transition.
 
 ## Pourquoi
 
-- Le Worker actuellement publié contient 9 686 assets. Le plafond Workers Free est
+- Le Worker actuellement publié contient environ 9 700 assets. Le plafond Workers Free est
   de 20 000 fichiers statiques par version.
-- Les 19 452 tirages Keno créeraient au moins autant de pages nouvelles, avant même
-  les fiches de faits et les futures fonctionnalités : cette architecture ne passe pas.
+- Les 19 465 tirages Keno créeraient au moins autant de pages nouvelles : avec les
+  assets existants, le déploiement dépasserait 29 000 fichiers, avant même les futures
+  fonctionnalités. Cette architecture est refusée par le budget Wrangler.
 - Les 9 658 JSON de faits EuroMillions/Loto, environ 165 Mo sur disque, sont déjà
   exclus du déploiement et conservés dans Git. Cette optimisation ne suffit pas pour
   les pages Keno elles-mêmes.
+
+## Exception de lancement — Keno actif 16/56
+
+Le 02/10/2026, le générateur a été étendu pour produire localement les 333 fiches
+du régime Keno actif 16/56, avec une URL stable par `draw_id`. Ce lot limité est une
+exception de lancement : il ne crée aucune fiche HTML pour les 19 133 tirages de
+l'ancien régime 20/70. Les JSON sources de faits restent exclus du déploiement via
+`dist/.assetsignore` ; les fiches HTML portent le rendu nécessaire au lecteur.
+
+Le contrôle local du budget compte environ 10 000 assets publiables, sous le plafond
+de 20 000 du plan Workers Free. Cette vérification ne vaut pas déploiement. La voie
+mensuelle à la demande décrite ci-dessous reste nécessaire pour rendre l'archive 20/70
+consultable sans dépasser le budget.
 
 ## Direction retenue pour le pilote
 
@@ -39,6 +53,13 @@ La liaison `ASSETS` et le routage sélectif `run_worker_first` sont prévus par
 Cloudflare. Cette direction évite une nouvelle base en ligne pour le pilote. Si un
 groupe mensuel se révèle trop gros ou si le rendu dépasse le budget CPU du plan,
 évaluer D1 (requêtes indexées par `draw_id`) ou KV ; ne pas migrer sans mesure.
+
+Un prototype **non publié** sous `prototypes/keno-on-demand/` a regroupé les 19 452
+tirages bruts disponibles lors de sa mesure en 397 mois + un index. Le plus gros mois
+fait 9 186 octets et le parse local médian environ 0,03 ms. Il rend déjà une URL
+individuelle avec HTML initial, canonical et vrai 404. Depuis, la source compte 19 465
+tirages et les faits sont calculés pour tous ; il faut regénérer les groupes avec les
+faits, mesurer taille/latence, puis vérifier le rendu des deux régimes avant déploiement.
 
 ## SEO et qualité éditoriale
 

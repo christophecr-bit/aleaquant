@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="Explorer le pipeline local de portefeuilles EuroMillions AleaQuant : géométrie exacte, évaluations Monte-Carlo, références RANDOM, garanties conditionnelles et provenance.">
+  <title>Portefeuilles du pipeline — AleaQuant</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Crect width='40' height='40' rx='9' fill='%23123633'/%3E%3Cpath d='M10 29 20 10 30 29M15 22h10' stroke='%23d8f36a' stroke-width='3' fill='none'/%3E%3C/svg%3E">
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/portefeuilles/catalogue.css">
+  <link rel="stylesheet" href="/portefeuilles/portfolio-viewer.css">
+  <script src="/portefeuilles/portfolio-viewer.js" defer></script>
+  <script src="/portefeuilles/catalogue.js" defer></script>
+</head>
+<body>
+  <a class="skip" href="#main">Aller au contenu</a>
+  <header class="catalogue-header">
+    <a class="brand" href="/">Alea<span>Quant</span><i>∴</i></a>
+    <nav aria-label="Navigation principale">
+      <a href="/comprendre/glossaire/#portefeuille">Comprendre les mots de l’Atlas</a>
+      <a href="/#geometries">Géométries</a>
+      <a href="/#dictionnaire">Métriques</a>
+      <a href="/#methode">Méthode</a>
+    </nav>
+    <span class="edition">CATALOGUE EXPÉRIMENTAL</span>
+  </header>
+  <main id="main">
+    <section class="catalogue-hero" aria-labelledby="page-title">
+      <div>
+        <span class="eyebrow"><span class="dot"></span>EUROMILLIONS / CATALOGUE</span>
+        <h1 id="page-title">Un portefeuille,<br><em>plusieurs grilles.</em></h1>
+        <p class="lead">Un portefeuille regroupe les grilles d’une même construction. On peut observer ce qu’elles ont en commun et comparer différentes façons de les construire, à coût déclaré.</p>
+      </div>
+      <aside class="reading-key" aria-label="Clés de lecture">
+        <span class="eyebrow">CE QUE L’ON PEUT LIRE</span>
+        <p><strong>La structure des grilles</strong><span>Quels numéros partagent-elles ? Quelles paires et quels triplets apparaissent ?</span></p>
+        <p><strong>Un résultat sous condition</strong><span>Ce qui est vérifié sur une même grille lorsque les numéros tirés restent dans les ensembles déclarés.</span></p>
+        <p><strong>Des tirages simulés</strong><span>Des estimations avec une incertitude, distinctes d’une preuve exacte.</span></p>
+      </aside>
+    </section>
+    <section class="catalogue-start" aria-labelledby="start-title">
+      <div><span class="eyebrow">PREMIÈRE VISITE</span><h2 id="start-title">Comprendre avant les tableaux.</h2><p>Partir d’un portefeuille, compter les numéros communs, puis comprendre comment un score guide la construction grille après grille. Ensuite, étudier l’effet d’un poids et voir comment on modifie ou croise des portefeuilles complets.</p><p>Les constructions étudiées et les références aléatoires RANDOM sont distinguées. Les modifications et croisements explorent d’autres structures ; ils ne prouvent pas une amélioration.</p></div>
+      <a class="button" href="/comprendre/glossaire/#portefeuille">Comprendre les mots de l’Atlas →</a>
+    </section>
+    <div class="scope-note"><p>Comprendre le hasard n’est pas prédire le prochain tirage. Les tableaux décrivent des compromis entre plusieurs mesures de structure, sur les portefeuilles présents. Ils ne constituent pas un classement par gain ni une preuve du meilleur portefeuille possible.</p></div>
+    <section class="catalogue-source" aria-labelledby="source-title">
+      <div><span class="eyebrow">DES SOURCES DISTINCTES</span><h2 id="source-title">Choisir les résultats à consulter.</h2><p id="source-note">Les études, l’évolution, le pipeline initial et les résultats historiques du ZIP se consultent séparément.</p></div>
+      <div class="source-controls"><label class="source-select-label" for="catalogue-source">Source des portefeuilles<select id="catalogue-source" aria-describedby="source-note"><option value="study" selected>Études locales · répétitions et confirmation</option><option value="evolution">Évolution locale · générations et filiation</option><option value="local">Pipeline local initial · génération et évaluation</option><option value="archive">Exemples du ZIP · résultats historiques</option></select></label><label id="study-filter" class="source-select-label study-select-label" for="study-select" hidden><span id="study-select-label">Étude à consulter</span><select id="study-select" aria-describedby="study-index-note"></select><span id="study-index-note" class="table-note"></span></label></div>
+      <p id="source-status" class="source-status" role="status" aria-live="polite">Chargement des sources disponibles…</p>
+    </section>
+    <section id="study-section" class="catalogue-section study-section" aria-labelledby="study-title" hidden>
+      <div class="section-heading"><div><span class="eyebrow">ÉTUDE / RÉPÉTITIONS</span><h2 id="study-title"></h2></div><p id="study-question"></p></div>
+      <div id="study-detail"></div>
+    </section>
+    <section id="evolution-section" class="catalogue-section evolution-section" aria-labelledby="evolution-title" hidden>
+      <div class="section-heading"><div><span class="eyebrow">ÉVOLUTION / FILIATION</span><h2 id="evolution-title"></h2></div><p id="evolution-question"></p></div>
+      <div id="evolution-detail"></div>
+    </section>
+    <section id="reference-section" class="catalogue-section reference-section" aria-labelledby="reference-title" hidden>
+      <div class="section-heading"><div><span class="eyebrow">RÉFÉRENCES / RANDOM</span><h2 id="reference-title">Deux rôles aléatoires distincts.</h2></div><p>Comparer à une construction aléatoire requiert un rôle, des contraintes et un protocole d’évaluation déclarés.</p></div>
+      <div id="reference-detail"></div>
+    </section>
+    <section class="catalogue-section selection-section" aria-labelledby="selection-title">
+      <div class="section-heading">
+        <div><span class="eyebrow">01 / CHOISIR UNE COHORTE</span><h2 id="selection-title">Le budget donne<br><em>le cadre de comparaison.</em></h2></div>
+        <p id="selection-intro">Les fiches sont regroupées à coût égal et par pool. Chaque cohorte indique si elle contient une référence RANDOM.</p>
+      </div>
+      <div id="budget-filters" class="budget-filters" role="group" aria-label="Filtrer par budget">
+        <button type="button" data-budget="all" aria-pressed="true">Tous les budgets</button>
+      </div>
+      <div class="pool-filter" id="pool-filter" hidden><label for="pool-select">Pool à consulter<select id="pool-select"><option value="all">Tous les pools</option></select></label></div>
+      <p id="catalogue-status" class="catalogue-status" role="status" aria-live="polite">Chargement du catalogue…</p>
+      <div id="profile-cohorts" class="profile-cohorts"></div>
+      <noscript><p class="catalogue-error">Activez JavaScript pour explorer les fiches, ou consultez l’<a href="/data/portfolio_studies.json">index des études</a>, les données de l’<a href="/data/portfolio_evolution.json">évolution locale</a>, du <a href="/data/portfolio_search.json">pipeline local</a> et les <a href="/data/portfolio_pipeline.json">exemples historiques du ZIP</a>.</p></noscript>
+    </section>
+    <section id="profile-section" class="catalogue-section profile-section" aria-labelledby="profile-title" hidden>
+      <div class="section-heading profile-heading">
+        <div><span class="eyebrow">02 / LIRE LE PROFIL</span><h2 id="profile-title"></h2><p id="profile-subtitle" class="profile-subtitle"></p></div>
+        <div id="profile-meta" class="profile-meta"></div>
+      </div>
+      <div id="profile-detail"></div>
+    </section>
+    <section id="comparison-section" class="catalogue-section comparison-section" aria-labelledby="comparison-title" hidden>
+      <div class="section-heading"><div><span class="eyebrow">03 / COMPARER À COÛT ÉGAL</span><h2 id="comparison-title">Deux protocoles.<br><em>Des compromis déclarés.</em></h2></div><p>Comparer des familles sur un même pool répond à une autre question que comparer sans contrainte de pool. Les tableaux conservent ces deux protocoles séparés et l’ordre des profils.</p></div>
+      <p id="comparison-filter-note" class="table-note"></p>
+      <div id="comparison-content"></div>
+    </section>
+    <section id="registry-section" class="catalogue-section registry-section" aria-labelledby="registry-title" hidden>
+      <div class="section-heading"><div><span class="eyebrow">04 / PARTAGER LES DÉFINITIONS</span><h2 id="registry-title">Les métriques,<br><em>avec leur version.</em></h2></div><p>Le registre de cette exécution précise la portée, l’unité, le sens de comparaison et la méthode de chaque métrique. Le dictionnaire de l’Atlas conserve ses définitions.</p></div>
+      <div id="metric-registry"></div>
+    </section>
+    <section id="dataset-section" class="catalogue-section dataset-section" aria-labelledby="dataset-title" hidden>
+      <div class="section-heading"><div><span class="eyebrow">05 / RETROUVER LA SOURCE</span><h2 id="dataset-title">Des données,<br><em>une provenance.</em></h2></div><p id="dataset-summary"></p></div>
+      <details class="configuration-detail protocol-details"><summary>Protocole et reproductibilité</summary><dl id="dataset-provenance" class="provenance"></dl></details>
+      <div id="dataset-limitations"></div>
+      <div class="dataset-links"><a id="dataset-download" class="button" href="/data/portfolio_search.json" download>Télécharger la source consultée</a><a class="underlined-link" href="/#dictionnaire">Lire le dictionnaire des métriques →</a><a class="underlined-link" href="/#geometries">Explorer l’Atlas des géométries →</a></div>
+    </section>
+  </main>
+  <footer><a class="brand" href="/">Alea<span>Quant</span></a><p>Comprendre. Mesurer. Questionner.</p><span>Une exploration scientifique, sans promesse de gain.</span></footer>
+</body>
+</html>

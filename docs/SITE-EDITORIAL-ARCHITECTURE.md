@@ -1,7 +1,11 @@
-# Architecture éditoriale du site — maquette locale v0.7
+# Architecture éditoriale du site — maquette locale v0.10
 
-Date : 2 octobre 2026 · Auteur : AleaQuant · Statut : **proposition MVP à valider ; maquette sous /maquette/, accueil non remplacé**
-Historique : v0.7 distingue le pilotage privé quotidien, le RSS public et la
+Date : 11 octobre 2026 · Auteur : AleaQuant · Statut : **structure courte retenue ; contenus de v0 à valider ; accueil non remplacé**
+Historique : v0.10 sépare Recherche (publications expliquées) et Méthode
+(construction et évaluation des portefeuilles), suivant la précision de Chris.
+v0.9 restaure Recherche & méthode dans l'aperçu et distingue les
+publications scientifiques décryptées de la méthode interne ; v0.8 retient la v0 manuelle avec Codex, une revue de l'accueil court
+par IDs et des références stables d'articles ; v0.7 distingue le pilotage privé quotidien, le RSS public et la
 newsletter hebdomadaire ; v0.6 évalue chaque exemple de la maquette selon synopsis, notions,
 complexité et intérêt éditorial ; v0.5 propose une homepage plus courte et trie les
 contenus existants par utilité et maturité ; v0.4 précise l'application éditoriale responsive et le
@@ -11,6 +15,20 @@ TODO : faire valider l'évaluation éditoriale et la proposition MVP, puis cadre
 l'archive tabulaire après le rendu Keno à la demande.
 
 ## Décision : le prochain chantier
+
+Le 10 octobre, Chris retient un **accueil éditorial court** : derniers tirages,
+un article à la une et portes vers Comprendre, Atlas et Méthode. Il validera les
+textes et la sélection avant la première livraison manuelle avec Codex.
+L'aperçu de cette revue est dans `prototypes/v0-homepage-review/`, séparé de
+`dist` ; la maquette historique reste conservée. Les IDs de blocs permettent
+de demander une modification de l'accueil, et l'`article_id` stable permet
+de viser le texte de l'article. État et blocages : [`V0-MANUAL-RELEASE.md`](V0-MANUAL-RELEASE.md).
+
+Le 11 octobre, Chris rappelle la place des publications de recherche expliquées
+et reliées à AleaQuant. L'aperçu v0.2 restaure le nom **Recherche & méthode** dans
+la navigation et HOME-METHODE. L'introduction de rubrique distingue « Publications
+décryptées » et « La méthode AleaQuant » ; les articles de recherche restent à
+préparer et ne sont pas présentés comme publiés. Les nouveaux textes sont à relire.
 
 Le prochain sujet à développer est **le gabarit éditorial de l’accueil et des rubriques,
 alimenté par des contenus approuvés**. La maquette locale est dans
@@ -26,10 +44,11 @@ et le choix d’un éventuel portage Astro viennent après validation visuelle e
 | Tirages | Que montre ce résultat ? | Fiche par tirage, analyse, article approuvé | `/tirages/` puis jeu et identifiant/date |
 | Comprendre | Que signifie cette mesure ? | Explication, expérience, brève pédagogique | Mini-expérience et dictionnaire de l’accueil actuel |
 | Atlas & géométries | Quelle forme ont les tirages et les portefeuilles ? | Atlas, visualisation, article de fond | Aperçu hétérogène ; contrat et cohortes dans `ATLAS-GEOMETRIES-ARCHITECTURE.md` |
-| Recherche & méthode | Comment le sait-on ? | Note de recherche, veille, méthode, limites | Méthode actuelle ; notes à qualifier |
+| Recherche | Qu'apporte une publication scientifique aux questions d'AleaQuant ? | Lectures expliquées, sources originales, limites et lien AleaQuant | Introduction locale ; articles à instruire dans le comité |
+| Méthode | Comment construire et évaluer les portefeuilles ? | Construction, propriétés, simulations et validation | Pipeline et portefeuilles existants |
 
 Le **Journal** est un fil transversal de publications approuvées, pas une cinquième
-rubrique concurrençant les quatre parcours. Le sélecteur de jeu, le calendrier et
+rubrique concurrençant les cinq parcours. Le sélecteur de jeu, le calendrier et
 les archives restent dans « Tirages ». Une page de tirage garde son URL stable et
 peut accueillir un article approuvé sans que l’article remplace les faits calculés.
 
@@ -56,13 +75,13 @@ du hero, des deux derniers tirages et du rappel méthodologique. Elle est cohér
 comme inventaire du projet, mais longue pour une première visite : elle montre des
 contenus préparés comme s'ils étaient déjà une partie du magazine, et répète le même
 parcours sur toute la page. Pour le MVP, l'accueil doit faire comprendre en quelques
-écrans ce que fait AleaQuant, montrer que le site est vivant, puis donner trois portes
+écrans ce que fait AleaQuant, montrer que le site est vivant, puis donner quatre portes
 d'entrée. Les sujets non publiés restent dans la feuille de route éditoriale, pas dans
 des cartes de homepage.
 
 Ordre proposé :
 
-1. **En-tête compact** : logo et liens Tirages, Comprendre, Atlas, Méthode. Le Journal
+1. **En-tête compact** : logo et liens Tirages, Comprendre, Atlas, Recherche, Méthode. Le Journal
    reste un fil transversal des publications approuvées, pas une cinquième rubrique.
 2. **Hero court** : garder « Le hasard a des structures. Explorons-les. », une phrase
    de promesse et l'illustration originale. Un seul appel à l'action, vers les derniers
@@ -78,12 +97,24 @@ Ordre proposé :
    EuroMillions du 6 septembre 2011 peut remplir ce rôle : c'est une preuve concrète
    qu'AleaQuant sait transformer des faits en récit. Il faut annoncer clairement sa
    date plutôt que le faire passer pour une actualité.
-5. **Trois portes éditoriales** : une carte simple pour Comprendre, une pour Atlas,
-   une pour Méthode. Une carte ne montre qu'un contenu publié et une promesse précise ;
+5. **Quatre portes éditoriales** : une carte simple pour Comprendre, une pour Atlas,
+   une pour Recherche et une pour Méthode. Une carte ne montre qu'un contenu publié et une promesse précise ;
    si la rubrique n'a pas encore de destination fonctionnelle, ne pas afficher de
    carte factice « à préparer ».
 6. **Pied de page méthodologique bref** : une phrase sur les limites et un lien vers
    la page Méthode complète. Éviter de redire le manifeste entier.
+
+### Publications scientifiques décryptées
+
+Cette partie est éditoriale : sélectionner une publication, rendre sa question,
+ses notions, sa méthode et ses conclusions accessibles, puis expliquer un lien
+précis avec AleaQuant. Le lien peut être une illustration, une comparaison ou une
+piste d'application à vérifier ; il ne transforme pas une analogie en résultat.
+Référencer l'original et son statut, distinguer les résultats des auteurs de notre
+commentaire, déclarer les dépendances pédagogiques et les preuves manquantes.
+La veille alimente les pistes ; seuls les articles passés par le comité, relus et
+approuvés sont intégrés au site. Les sujets non rédigés ne deviennent pas des cartes
+de publications. L'aperçu d'introduction ne vaut pas article ni autorisation de publier.
 
 ### Grille d'évaluation des exemples existants
 
@@ -270,3 +301,7 @@ constitue pas un second site ni un CMS public. Onglets cibles : Suivi, Tirages &
 calculs, Lots & agents, Review, Publication, Système ; journal commun des exécutions.
 Le [contrat canonique](../../aleaquant-editorial-agents/docs/ADMIN-CONSOLE-ARCHITECTURE.md)
 définit les tâches, frontières, validations et lots. Cette navigation est à réaliser.
+
+Décision courante du 11 octobre, aperçu v0.3 : cinq liens de navigation distincts.
+Recherche accueille les publications externes expliquées ; Méthode est centrée
+sur les portefeuilles. Cette décision remplace le regroupement proposé en v0.2.

@@ -2,25 +2,51 @@
 
 Site statique autonome, sans clé API côté navigateur. Sources livrées dans `dist/`.
 Aucun historique en direct, aucune production LLM simulée. Le petit modèle des paires
-est calculé exhaustivement dans le navigateur ; le dictionnaire contient 33 définitions
-importées en lecture seule de loto-keno-lab-generic (feature_definitions.py, 29/09/2026).
+est calculé exhaustivement dans le navigateur ; le dictionnaire conserve 34 définitions
+de grilles et comprend désormais 19 métriques de portefeuilles versionnées.
+La provenance des définitions de grilles reste le dictionnaire de loto-keno-lab-generic.
 
-## État des pages de tirage — 30 septembre 2026
+Registres de pilotage : [backlog produit](docs/PRODUCT-BACKLOG.md),
+[TODO opérationnelle](docs/OPERATIONAL-TODO.md), [cadrage](docs/TASKS.md),
+[dette technique](docs/TECHNICAL-DEBT.md) et
+[inventaire des composants](docs/COMPONENT-INVENTORY.md).
+Les changements du modèle scientifique seront consignés dans le
+[registre de versions canonique](../aleaquant-data/docs/MODEL-CHANGELOG.md).
 
-`engine/build_pages.py` produit localement 1 985 pages EuroMillions et 7 673 pages Loto, plus un
-sélecteur commun `/tirages/`, un index par jeu et un sitemap commun. Les faits Loto viennent du dépôt frère
+Règle éditoriale du site : [progressivité et dépendances](docs/SITE-DOCUMENTATION-RULES.md).
+Les notions ont des prérequis versionnés, publiés avant les pages et articles qui
+en dépendent. Le [plan des portefeuilles](docs/DOCUMENTATION-PORTFOLIOS.md) distingue
+le glossaire directement incrémenté et les articles soumis au pipeline éditorial.
+Pour reconstruire uniquement le glossaire local : `python3 engine/build_glossary.py`.
+Cette commande ne publie rien à distance. Les compétences d'agents adaptées aux
+niveaux d'articles sont à reprendre sous PB-017 / TD-EDIT-001.
+
+Les nouvelles [études avec RANDOM](docs/PORTFOLIO-CONTROLLED-STUDIES.md) se lancent
+par `python engine/study.py run --study-config CONFIG --run-dir NOUVEAU_DOSSIER`.
+Le guide décrit configuration, progression, arrêts et reprises. Les deux exemples
+ont été exécutés et sont consultables dans `/portefeuilles/`, avec leurs archives.
+
+## État des pages de tirage — 2 octobre 2026
+
+`engine/build_pages.py` produit localement 1 985 pages EuroMillions, 7 673 pages Loto
+et 333 fiches Keno du régime actif 16/56, plus un sélecteur commun `/tirages/`, un index
+par jeu et un sitemap commun. Les faits Loto viennent du dépôt frère
 `../aleaquant-data` et de `engine/facts_generic.py` ; les faits EuroMillions restent
 issus du pilote publié, sans bascule de ses étoiles vers le moteur générique. L'outil
 interactif de la page d'accueil est encore consacré à EuroMillions ; deux cartes
-explicites donnent accès aux archives EuroMillions et Loto. Le plan de migration vers
-un rendu par tirage à la demande, nécessaire avant Keno, est dans `docs/SCALING.md`.
+explicites donnent accès aux archives des trois jeux dans le build local. Le Worker
+public n'a pas encore reçu les pages Keno ; le régime historique 20/70 attend toujours
+un rendu à la demande. Le plan est dans `docs/SCALING.md`.
 Le calendrier de l'accueil reste EuroMillions ; l'archive Loto dispose de son propre
 filtre par date, qui affiche les deux séances si elles ont eu lieu le même jour.
-Les pages de tirage dessinent maintenant toutes les lois **numériques** disponibles :
-18 mini-histogrammes sur la fiche Loto du 28/09/2026. Les signatures sans axe naturel
-(écarts ordonnés et répartition par dizaines) restent textuelles. Loto 5/49 et
-EuroMillions 5/50 ont des lois distinctes ; leurs silhouettes proches ne sont pas
-identiques. La hauteur minimale d'un pixel évite de faire disparaître les queues.
+Les pages de tirage dessinent toutes les lois **numériques** disponibles :
+18 mini-histogrammes sur la fiche Loto du 28/09/2026. Chaque classe apparaît comme
+sur la sparkline de l'accueil, sans regroupement graphique ; le trait orange situe la
+valeur observée. Les signatures sans axe naturel (écarts ordonnés et répartition par
+dizaines) restent textuelles, avec les bornes de chaque dizaine explicitées sur les
+cartes des trois jeux. Loto 5/49 et EuroMillions 5/50 ont des lois distinctes ;
+leurs silhouettes proches ne sont pas identiques. Une hauteur minimale d'un pixel
+garde les queues visibles sans modifier la distribution.
 Chaque page de tirage est aussi l'adresse canonique de son récit : lorsqu'un article
 est approuvé, l'import le relie par `research_pack.draw_id`, vérifie le SHA des faits
 et actualise cette seule page. L'exemple publié est `EM-2011053`, tirage du
@@ -47,10 +73,13 @@ Ce build ne déploie rien sur Cloudflare. Le Journal et les pages sont à valide
 `npx wrangler deploy`. Les détails de chaque fichier modifié et les dettes ouvertes sont
 dans `docs/CHANGELOG.md` et `docs/TECHNICAL-DEBT.md`.
 
-Le dépôt contient aussi les lois Keno 16/56 et 20/70 calculées par récurrence :
-17 mesures sur 20 sont disponibles, et les trois absentes sont indiquées dans
-`missing_fields`. Des fiches Keno récentes existent localement, mais aucun fait ou
-page Keno n'est encore publié. Les JSON de faits
+Le régime Keno 16/56 contient 20 lois exactes locales, dont deux issues du scan Metal
+complet. Le rattrapage du 01/10 a calculé les **19 465 fiches Keno** et peuplé les
+profils des deux régimes : 333 tirages en 16/56 et 19 133 en 20/70. Pour 20/70,
+17 lois sur 20 sont disponibles et trois champs restent explicitement absents. La
+comparaison indépendante intégrale avec Rayon reste à faire. Les 333 pages 16/56 sont
+en recette locale ; aucune n'a été déployée.
+Les JSON de faits
 utilisés pour construire les pages restent versionnés, mais `dist/.assetsignore` les
 exclut des assets envoyés à Cloudflare. Avant le nouveau cycle local : 19 346 fichiers
 dans `dist/`, dont 9 658 faits intermédiaires. Wrangler a effectivement publié 9 686
@@ -71,10 +100,14 @@ Recherche & méthode) et utilise des cartes communes pour les contenus en ligne
 et les sujets explicitement à préparer. Son fil des derniers tirages est encore
 un snapshot. Le gabarit, les sources de données futures et les critères
 d'intégration sont détaillés dans `docs/SITE-EDITORIAL-ARCHITECTURE.md`.
-Les pages statiques de tirage régénérées affichent à nouveau des
-mini-histogrammes issus des lois du régime concerné ; le trait orange situe la
-valeur observée. Ce correctif et la maquette sont déployés depuis le 01/10/2026 ;
-version, contrôles distants et statut du push Git dans `docs/DEPLOYMENTS.md`.
+Les fonctions attendues sont listées dans `docs/ROADMAP.md` ; les composants
+techniques restant à réaliser sont suivis dans `docs/TECHNICAL-DEBT.md` ; les
+explorations ponctuelles sont dans `docs/TASKS.md`.
+Les pages statiques de tirage affichent des mini-histogrammes issus des lois du régime
+concerné ; leur dessin reprend désormais la sparkline de l'accueil, classe par classe.
+Cette dernière harmonisation est locale et reste à déployer ; le précédent correctif
+et la maquette sont déjà en ligne. Version, contrôles distants et statut du push Git
+dans `docs/DEPLOYMENTS.md`.
 
 Un **prototype local isolé** permet de tester un choix d'angle A/B/C et une relecture
 de fluidité sur un rapport EuroMillions. Il sert à préparer la future chaîne
@@ -223,16 +256,27 @@ python3 -m venv ~/.local/share/aleaquant-pipeline-venv
 ```sh
 bash tools/refresh_draws.sh --check      # dit seulement où on en est
 bash tools/refresh_draws.sh              # ingère, recalcule faits, profils et pages
+bash tools/refresh_draws.sh --backfill-keno-facts # rattrape explicitement les 19k faits Keno
+# uniquement si une loi d'un grand régime manque : opération explicite à évaluer
+bash tools/refresh_draws.sh --build-missing-laws
 ```
 
 Chaîne : ingestion des trois archives officielles dans le SQLite de `aleaquant-data`
 (révisions conservées) → détection des tirages nouveaux ou corrigés → calcul des faits
-et profils nécessaires → pages EuroMillions/Loto → vérification des SHA de provenance
-et des mini-histogrammes. Keno produit pour l'instant des **faits ciblés locaux** :
-ses pages et profils attendent la qualification du rendu à la demande. Au premier
-passage, 30 fiches Keno récentes sont amorcées ; ensuite chaque tirage modifié est
-recalculé. Une correction ancienne recalcule aussi les fiches Keno déjà présentes
-qui lui succèdent. Le journal d'avancement local reprend un calcul interrompu.
+et profils par régime des trois jeux → pages EuroMillions/Loto et Keno 16/56 → vérification des SHA
+de provenance et des mini-histogrammes. Les lois existantes sont contrôlées par leur
+schéma, leur taille `C(n,k)` et la masse de chaque distribution. Une loi manquante est
+construite automatiquement si son espace est sous le plafond d'énumération ; un régime
+plus grand requiert `--build-missing-laws` et ne sera jamais lancé implicitement par
+launchd. Les champs manquants déjà connus de 20/70 restent explicités. Keno produit
+ses pages 16/56 sont générées en local ; les pages 20/70 restent à construire. Au premier
+Le premier passage normal n'amorce que 30 fiches Keno ; ensuite chaque tirage modifié
+est recalculé. Le fonds historique a été rattrapé avec `--backfill-keno-facts`, qui force
+le calcul complet et contrôle le SHA de chaque fiche avant de mettre à jour le profil.
+Cette option reste disponible pour répéter le contrôle. Elle ne génère pas 19 000 pages :
+elle génère seulement les 333 pages 16/56 actuellement actives. Les 19 133 anciens
+tirages 20/70 restent destinés au rendu à la demande ou par groupes mensuels. Le journal
+d'avancement local reprend un calcul interrompu.
 Sans nouvelle révision, aucun calcul ni fichier de sortie n'est réécrit.
 
 **Il ne publie rien** : ni commit, ni `wrangler deploy`, ni approbation d'article. La mise
@@ -302,3 +346,144 @@ python3 agent/draw_report.py approve runs/EM-26077/draft.json --reviewer "Christ
 Sections ajoutées au site : `#tirages`, `#atlas`, `#geometries`, `#lab` (fichiers `draws.js`, `atlas.css`).
 Un tirage précis s'ouvre avec `#EM-26077`.
 # aleaquant
+
+## Pipeline de portefeuilles — premier import du 9 octobre 2026
+
+Le catalogue exploratoire `/portefeuilles/`, relié depuis Géométries, importe les
+six profils du prototype indépendant. Le nouvel adaptateur
+`engine/portfolio_import.py` valide le contrat JSON strict, les 118 grilles et
+leurs coûts, recalcule la géométrie par l'évaluateur partagé avec l'Atlas, puis
+revérifie exhaustivement quatre garanties conditionnelles. Les 51 portefeuilles
+existants et `dist/data/atlas.json` restent conservés. Le dictionnaire actuel
+`dist/metrics.json` est référencé par empreinte (34 entrées au contrôle local) ;
+les mesures de portefeuille utilisent leur évaluateur existant.
+
+La consultation reprend la présentation du Prompteur du laboratoire : six
+grilles par groupe, tableaux complets des 50 numéros et 12 étoiles, sélection
+en bleu et or, boutons précédent/suivant et choix direct du groupe. La page
+retient le groupe consulté pour chaque portefeuille pendant la session, en
+liant cet état à son empreinte de contenu. La liste compacte reste accessible.
+Les helpers JavaScript sont vérifiés contre les helpers Python du Prompteur
+sur les 118 grilles ; les fichiers du laboratoire sont lus sans modification.
+
+```sh
+/Users/chris/.local/share/aleaquant-pipeline-venv/bin/python engine/portfolio_import.py \
+  --archive prototypes/portfolio-pipeline/aleaquant_pipeline_2026-10-09.zip --check
+# Retirer --check pour écrire dist/data/portfolio_pipeline.json uniquement.
+/Users/chris/.local/share/aleaquant-pipeline-venv/bin/python -m unittest discover \
+  -s tests -p 'test_portfolio_*.py' -v
+```
+
+L'import utilise l'environnement du pipeline existant, Python 3.14.8 / NumPy
+2.5.3 lors de cette vérification. Il n'exécute aucun script de l'archive,
+ne relance pas les 500 000 simulations et ne lit aucun historique.
+Les estimations Monte-Carlo sont importées avec leurs IC95, leur graine et
+`replayed=false` ; leur cohérence arithmétique est contrôlée, leur simulation
+n'est pas reproduite. Les garanties sont conditionnelles au pool, conjointes
+sur une même grille, et liées à l'empreinte du portefeuille. `certified` porte
+sur cette garantie seulement. `0+2` n'est pas un rang gagnant.
+
+Les budgets 45, 50 et 55 € définissent des cohortes séparées. La référence RANDOM
+manque dans ces six profils : aucun classement de performance ni résultat
+d'optimalité n'est présenté. Mutation/croisement/réparation, pools explicites,
+`max_pairwise_overlap`, garantie demandée, checkpoints et reprise de recherche
+restent à implémenter. Les paramètres non supportés sont refusés, jamais ignorés.
+Les sept noms d'états sont réservés dans le contrat ; ce premier import ne fait
+vivre que les états `evaluated` et `certified`, et rejette les entrées invalides.
+
+Les huit fichiers sources sont préservés sans transformation dans
+`prototypes/portfolio-pipeline/source-20261009/` avec l'empreinte de l'archive.
+Le sidecar conserve les SHA de configuration/contenu/protocole, les nœuds de
+profils et d'évaluation, et les liens `generated_from` et `evaluated_by`.
+Une nouvelle importation explicite remplace le sidecar ; il ne s'agit pas encore
+d'un catalogue de recherche append-only. Aucun déploiement ne résulte de l'import.
+
+## Pipeline opérationnel 1.0 — génération et évaluation locale
+
+La suite du premier import est implémentée dans ce même dépôt, avec le contrat
+strict `engine/portfolio_profile_v1.schema.json` et 13 profils enregistrés dans
+`configs/portfolios/milestone-v1.json`. Pools explicites ou tirés avec graine,
+contraintes obligatoires, objectifs pondérés, limites de recherche et protocole
+d'évaluation sont séparés. Le coût utilisé reste distinct du budget maximal.
+
+```sh
+/Users/chris/.local/share/aleaquant-pipeline-venv/bin/python engine/portfolio_pipeline.py validate
+/Users/chris/.local/share/aleaquant-pipeline-venv/bin/python engine/portfolio_pipeline.py run --include-references
+# Commandes séparées : generate, evaluate, compare, export.
+# evaluate --stop-after-batches 1 permet un arrêt court, puis evaluate reprend.
+```
+
+La nouvelle projection `dist/data/portfolio_search.json` est montrée par défaut
+dans `/portefeuilles/`, depuis Géométries. Les exemples et résultats historiques
+du ZIP restent une source distincte. Le nouveau MC utilise 20 000 tirages
+communs indépendants de la génération (graine 2701009), des IC95 Wilson, des
+empreintes de contenu/code/protocole et un checkpoint atomique reprenable.
+Il réévalue aussi les six références du ZIP, sans réutiliser leurs comptages.
+Les comparaisons à pool identique et entre pools différents à budget égal
+gardent des références RANDOM et des compromis géométriques non dominés.
+
+Le dictionnaire partagé conserve ses 34 entrées de grilles et reçoit 12 mesures
+de portefeuille avec unités, sens et méthode. L'ancien Atlas, les faits et
+portefeuilles du laboratoire restent préservés. Les archives de runs sont
+append-only ; seul l'index actif est remplacé explicitement lors de l'export.
+Une simulation interrompue ne publie aucun résultat final. Une recherche
+infructueuse reste `search_exhausted` ; les garanties sont revérifiées sur le
+contenu exact et leurs hypothèses, jamais établies par Monte-Carlo.
+
+Le contrat accepte d'autres budgets mais seulement les règles EuroMillions
+5/50+2/12 sans options pour ce jalon. Évolution, mutations et croisements sont
+encore refusés explicitement ; ils constituent l'étape suivante après ce
+jalon. Aucun modèle monétaire ni remboursement de mise n'est simulé.
+Contrat, métriques, preuves, persistance et commandes détaillées :
+[`docs/PORTFOLIO-PIPELINE.md`](docs/PORTFOLIO-PIPELINE.md).
+
+## Études exécutables de portefeuilles — 9 octobre 2026
+
+Le moteur 1.1 ajoute une entité Étude, des répétitions à graines appariées et
+un mode `prototype_greedy` fidèle au score incrémental du ZIP. Les résultats
+importés restent des références ; une nouvelle étude construit ses propres
+grilles, compare sur un échantillon commun, puis confirme les finalistes
+géométriques sur de nouveaux tirages indépendants.
+
+```sh
+/Users/chris/.local/share/aleaquant-pipeline-venv/bin/python engine/portfolio_study.py validate --study-config configs/studies/minimize-overlap-20x15x5-v1.json
+/Users/chris/.local/share/aleaquant-pipeline-venv/bin/python engine/portfolio_study.py run --study-config configs/studies/minimize-overlap-20x15x5-v1.json
+```
+
+Le run imprime son dossier unique et sa progression. Une autre configuration
+permet une nouvelle étude ; `--run-dir` reprend la même exécution. Les étapes
+incomplètes n'exportent pas de confirmation finale. L'Atlas `/portefeuilles/`
+garde un sélecteur des études et de leurs exécutions, en plus du pipeline
+initial et du ZIP historique. [Contrat, reprise et interprétation](docs/PORTFOLIO-STUDIES.md).
+
+La première configuration fait varier seulement le poids des intersections
+de numéros au carré : 0 / 0,35 / 0,7 / 1,4, sur dix graines communes, 20 grilles
+et pool explicite 15/5 (40 constructions avant déduplication). Comparaison
+20 000 tirages, graine 2810010 ; confirmation 20 000 tirages, graine 2910010.
+Les archives de runs sont immuables, sans écraser le premier jalon.
+
+Étude exécutée : `runs/studies/overlap-20261009-v1`, 40 constructions,
+38 nouveaux contenus distincts, cinq finalistes confirmés. Les anciennes
+grilles ne sont pas réutilisées. L'augmentation du poids diminue en moyenne
+la somme des intersections au carré, mais peut dégrader leur maximum et la
+couverture : les tableaux de l'Atlas conservent ces compromis sur les dix graines.
+
+## Mutations, sélection générationnelle et croisements
+
+L'extension `engine/evolution/` réutilise les validations, preuves et évaluations
+du pipeline. Elle conserve tous les enfants valides et leur filiation, sélectionne
+sur la géométrie exacte, puis compare et confirme sur des tirages nouveaux.
+Le contrat et la démo bornée sont décrits dans
+[Évolution de portefeuilles](docs/PORTFOLIO-EVOLUTION.md).
+
+```sh
+/Users/chris/.local/share/aleaquant-pipeline-venv/bin/python engine/evolve.py run --study-config configs/evolution/overlap-descendants-v1.json
+```
+
+Cette commande crée une nouvelle exécution. La source Evolution de l'Atlas et
+ses archives sont séparées de l'étude d'ablation figée.
+
+Démo exécutée : trois générations, 24 nouveaux enfants dont huit croisements,
+tous réévalués avec les cinq parents sur 5 000 tirages communs ; cinq enfants
+confirmés sur 5 000 nouveaux tirages. La population finale conserve les parents
+initiaux sur les critères déclarés ; aucune amélioration n'est revendiquée.

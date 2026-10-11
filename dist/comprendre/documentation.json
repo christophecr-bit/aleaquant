@@ -1,0 +1,727 @@
+{
+  "schema": "aleaquant-documentation-1.0",
+  "version": "1.0",
+  "built_at_date": "2026-10-10",
+  "publication_status": "built_local",
+  "source": "engine/build_glossary.py",
+  "source_sha256": "6c96a8aee731cd0209c5fd7db0b3d455fbb08a1118aad1276e21b5389c555c8f",
+  "page": {
+    "url": "/comprendre/glossaire/",
+    "version": "1.0",
+    "sha256": "775b4c6177800971daba0f313c740aee3321f6204d4462f580870a478da47ab3"
+  },
+  "concepts": [
+    {
+      "id": "numero",
+      "label": "Numéro",
+      "definition": "Une valeur du premier ensemble de la grille. Dans cette expérience EuroMillions, cinq numéros distincts sont choisis parmi 1 à 50.",
+      "requires": [],
+      "related": [],
+      "version": "1.0",
+      "url": "/comprendre/glossaire/#numero",
+      "definition_sha256": "94adad7a84c7d4cf165a46a85f70036c57c874dcdba24f3921403f73530329e8",
+      "publication_status": "built_local"
+    },
+    {
+      "id": "etoile",
+      "label": "Étoile",
+      "definition": "Une valeur du second ensemble de la grille. Dans cette expérience, deux étoiles distinctes sont choisies parmi 1 à 12 ; elles sont comptées séparément des numéros.",
+      "requires": [],
+      "related": [],
+      "version": "1.0",
+      "url": "/comprendre/glossaire/#etoile",
+      "definition_sha256": "4d959bfdf0573e0f2a7498efd5611641ccd20ed4056f27c572ea405f0ec3b221",
+      "publication_status": "built_local"
+    },
+    {
+      "id": "grille",
+      "label": "Grille",
+      "definition": "Un choix de cinq numéros et de deux étoiles dans cette expérience EuroMillions. L’ordre de présentation ne change pas la grille.",
+      "requires": [
+        "numero",
+        "etoile"
+      ],
+      "related": [],
+      "version": "1.0",
+      "url": "/comprendre/glossaire/#grille",
+      "definition_sha256": "b3fdd9c3366f86a8c6533bebabf902877e6cb204c4f88093fb15ee4c480b811b",
+      "publication_status": "built_local"
+    },
+    {
+      "id": "portefeuille",
+      "label": "Portefeuille",
+      "definition": "Un ensemble de grilles considéré et évalué ensemble. Le nombre de grilles et leur coût font partie de sa description.",
+      "requires": [
+        "grille"
+      ],
+      "related": [
+        "budget",
+        "couverture"
+      ],
+      "version": "1.0",
+      "url": "/comprendre/glossaire/#portefeuille",
+      "definition_sha256": "9ef772817952c7910e07f5c2e3a9cd01a7c11274c04ffe09abdbca6e1e31daf8",
+      "publication_status": "built_local"
+    },
+    {
+      "id": "pool",
+      "label": "Pool",
+      "definition": "L’ensemble autorisé pour choisir les numéros ou les étoiles lors de la construction. Un pool de 15 numéros et 5 étoiles restreint les grilles construites ; le tirage simulé reste sur le domaine complet 50/12.",
+      "requires": [
+        "numero",
+        "etoile"
+      ],
+      "related": [
+        "effet-pool"
+      ],
+      "version": "1.0",
+      "url": "/comprendre/glossaire/#pool",
+      "definition_sha256": "d3b503ce40a8431162a559be589942f95636081d6129d821664d1bc83a046b71",
+      "publication_status": "built_local"
+    },
+    {
+      "id": "paire-base",
+      "label": "Paire",
+      "definition": "Un ensemble de deux objets distincts, sans ordre. La paire A–B est la même que B–A.",
+      "requires": [],
+      "related": [
+        "paire",
+        "paire-grilles"
+      ],
+      "version": "1.0",
+      "url": "/comprendre/glossaire/#paire-base",
+      "definition_sha256": "b079b3c5c46a771e508f6a7055165d943b9150cdbfb41c0ab3cf6251bc728a94",
+      "publication_status": "built_local"
+    },
+    {
+      "id": "paire",
+      "label": "Paire de numéros",
+      "definition": "Deux numéros distincts, sans ordre : {7,14} est une paire. Cinq numéros contiennent dix paires. Une paire d’étoiles suit la même définition dans l’ensemble des étoiles.",
+      "requires": [
+        "paire-base",
+        "numero"
+      ],
+      "related": [
+        "couverture"
+      ],
+      "version": "1.0",
+      "url": "/comprendre/glossaire/#paire",
+      "definition_sha256": "a42b91a8f4bdbf8dcf86ad097b1435ff69600c04a08fc90fff7fae73c14678af",
+      "publication_status": "built_local"
+    },
+    {
+      "id": "triplet",
+      "label": "Triplet",
+      "definition": "Trois numéros distincts, sans ordre. Les cinq numéros d’une grille contiennent dix triplets différents.",
+      "requires": [
+        "numero",
+        "grille"
+      ],
+      "related": [
+        "couverture"
+      ],
+      "version": "1.0",
+      "url": "/comprendre/glossaire/#triplet",
+      "definition_sha256": "9d76441fb72b67bc507dd943ea2cda5c91e7ff1585f151557d12b857a1506f34",
+      "publication_status": "built_local"
+    },
+    {
+      "id": "paire-grilles",
+      "label": "Paire de grilles",
+      "definition": "Deux grilles distinctes prises ensemble pour les comparer. Un portefeuille de 20 grilles contient 20 × 19 / 2 = 190 paires de grilles.",
+      "requires": [
+        "paire-base",
+        "grille"
+      ],
+      "related": [
+        "recouvrement"
+      ],
+      "version": "1.0",
+      "url": "/comprendre/glossaire/#paire-grilles",
+      "definition_sha256": "3d32aad4585c6e1414028b35e5d37e057328feecce8444e28cd9f00fe7bcd84c",
+      "publication_status": "built_local"
+    },
+    {
+      "id": "recouvrement",
+      "label": "Recouvrement entre deux grilles",
+      "definition": "Les numéros communs aux deux grilles, ou leur nombre selon la mesure affichée. Si A et B partagent 7, 14 et 22, leur intersection de numéros vaut 3. Les étoiles communes sont mesurées séparément.",
+      "requires": [
+        "paire-grilles"
+      ],
+      "related": [
+        "recouvrement-paires",
+        "penalite-recouvrement"
+      ],
+      "version": "1.0",
+      "url": "/comprendre/glossaire/#recouvrement",
+      "definition_sha256": "5a014acd44618bc99447e630ec836bf66af6590a73549417e1a0f86ea404d68c",
+      "publication_status": "built_local"
+    },
+    {
+      "id": "recouvrement-paires",
+      "label": "Paires de numéros communes",
+      "definition": "Les paires présentes dans les deux grilles. Si elles partagent k numéros, elles partagent k × (k−1) / 2 paires : pour k = 3, {7,14}, {7,22} et {14,22}, soit 3 paires.",
+      "requires": [
+        "paire",
+        "recouvrement"
+      ],
+      "related": [
+        "penalite-recouvrement"
+      ],
+      "version": "1.0",
+      "url": "/comprendre/glossaire/#recouvrement-paires",
+      "definition_sha256": "cdd68adb77e8883c96b748491df9e9196bca59db9d84c37d6c521bd1a831b0cc",
+      "publication_status": "built_local"
+    },
+    {
+      "id": "couverture",
+      "label": "Couverture",
+      "definition": "Le nombre de groupes distincts présents dans au moins une grille : numéros, paires ou triplets selon la mesure. Une paire présente dans cinq grilles compte une seule fois dans sa couverture.",
+      "requires": [
+        "portefeuille",
+        "paire",
+        "triplet"
+      ],
+      "related": [
+        "collision",
+        "frequence"
+      ],
+      "version": "1.0",
+      "url": "/comprendre/glossaire/#couverture",
+      "definition_sha256": "9a4b374c2ab2da50a53f9ad3d2557c20b66fd6cded27838017fd500f271c1c51",
+      "publication_status": "built_local"
+    },
+    {
+      "id": "collision",
+      "label": "Collision de paires ou de triplets",
+      "definition": "La répétition d’un même groupe dans plusieurs grilles. La métrique précise son mode de comptage : les occurrences au-delà de la première et les coïncidences entre paires de grilles sont deux comptes différents.",
+      "requires": [
+        "couverture",
+        "paire-grilles"
+      ],
+      "related": [
+        "recouvrement-paires"
+      ],
+      "version": "1.0",
+      "url": "/comprendre/glossaire/#collision",
+      "definition_sha256": "5973530c717218ecea677c5fa13f5450730707dbe2170c28ca8e7fb53c34f888",
+      "publication_status": "built_local"
+    },
+    {
+      "id": "union",
+      "label": "Union",
+      "definition": "Tous les numéros distincts présents dans les grilles réunies ; chaque numéro n’y figure qu’une fois. On calcule séparément l’union des étoiles.",
+      "requires": [
+        "portefeuille"
+      ],
+      "related": [],
+      "version": "1.0",
+      "url": "/comprendre/glossaire/#union",
+      "definition_sha256": "20a01cc066412ef9640f460d2c60fb890db6643dbe9528098c265edd58993a88",
+      "publication_status": "built_local"
+    },
+    {
+      "id": "frequence",
+      "label": "Fréquence dans le portefeuille",
+      "definition": "Le nombre de grilles qui contiennent un numéro ou une étoile. Ici il décrit les grilles construites, pas les tirages passés. Le tableau complet comprend aussi les valeurs jamais choisies.",
+      "requires": [
+        "portefeuille"
+      ],
+      "related": [
+        "dispersion"
+      ],
+      "version": "1.0",
+      "url": "/comprendre/glossaire/#frequence",
+      "definition_sha256": "50c10fc1069fbdffce1d495c552fd45b4214160459d11be912d9bd719b45396c",
+      "publication_status": "built_local"
+    },
+    {
+      "id": "moyenne",
+      "label": "Moyenne, minimum et maximum",
+      "definition": "La moyenne est la somme des valeurs divisée par leur nombre. Le minimum et le maximum sont les valeurs extrêmes. Une moyenne sur dix constructions peut masquer des résultats différents selon la graine.",
+      "requires": [],
+      "related": [
+        "graine",
+        "distribution"
+      ],
+      "version": "1.0",
+      "url": "/comprendre/glossaire/#moyenne",
+      "definition_sha256": "797512163e1ea7b868293339e1b111646dd2d50a0126bddb8822126154873bae",
+      "publication_status": "built_local"
+    },
+    {
+      "id": "dispersion",
+      "label": "Dispersion des fréquences",
+      "definition": "Le degré d’inégalité des fréquences ; l’écart-type est l’une de ses mesures. Il faut préciser les valeurs incluses : la mesure de cette étude inclut les 50 numéros, donc les fréquences nulles hors du pool.",
+      "requires": [
+        "frequence",
+        "moyenne"
+      ],
+      "related": [
+        "compromis-geometriques"
+      ],
+      "version": "1.0",
+      "url": "/comprendre/glossaire/#dispersion",
+      "definition_sha256": "23aa4c057dc1a92accd813d2e5cfc22a6a738aa36440881e7114ee36120e49ef",
+      "publication_status": "built_local"
+    },
+    {
+      "id": "distribution",
+      "label": "Distribution",
+      "definition": "La répartition des cas entre des valeurs. Pour les intersections, on compte combien de paires de grilles partagent 0, 1, 2… numéros ; un histogramme représente ces nombres.",
+      "requires": [
+        "paire-grilles",
+        "recouvrement"
+      ],
+      "related": [
+        "moyenne"
+      ],
+      "version": "1.0",
+      "url": "/comprendre/glossaire/#distribution",
+      "definition_sha256": "10a05e1a641d99be5939a41c0bd3db9bd188934c865485ff76a0d116408df762",
+      "publication_status": "built_local"
+    },
+    {
+      "id": "poids",
+      "label": "Poids d’un objectif",
+      "definition": "Un coefficient qui règle l’importance d’un terme dans le score. Garder les autres poids fixes signifie ne changer que le coefficient étudié, et conserver les autres valeurs.",
+      "requires": [],
+      "related": [
+        "score",
+        "ablation"
+      ],
+      "version": "1.0",
+      "url": "/comprendre/glossaire/#poids",
+      "definition_sha256": "dbe4a54b2cf1cce690db86ca75d13f518925c093c84826421dead84cde297d59",
+      "publication_status": "built_local"
+    },
+    {
+      "id": "score",
+      "label": "Score de construction",
+      "definition": "Une valeur utilisée pour choisir une proposition de grille. Le prototype récompense les nouvelles paires et triplets et pénalise les fréquences déjà élevées ainsi que le recouvrement. Ce score de recherche n’est pas une probabilité de gain.",
+      "requires": [
+        "poids",
+        "couverture",
+        "frequence",
+        "recouvrement"
+      ],
+      "related": [
+        "construction"
+      ],
+      "version": "1.0",
+      "url": "/comprendre/glossaire/#score",
+      "definition_sha256": "05147164d5fd2281f387ab259fdbb773d90e638b0003c501a6d976cf8389b214",
+      "publication_status": "built_local"
+    },
+    {
+      "id": "penalite-recouvrement",
+      "label": "Pénalité des intersections au carré",
+      "definition": "Dans le prototype, une proposition reçoit une pénalité w × Σ k², où k est son nombre de numéros communs avec chaque grille déjà retenue. Trois numéros communs donnent 9w, et non 3w. C’est un coût dans le score ; ce n’est pas une interdiction de partager des numéros.",
+      "requires": [
+        "poids",
+        "recouvrement"
+      ],
+      "related": [
+        "recouvrement-paires",
+        "score"
+      ],
+      "version": "1.0",
+      "url": "/comprendre/glossaire/#penalite-recouvrement",
+      "definition_sha256": "97b10519be2a0bbb47a3a1967991fc7aad38b1e1d4f4d2374db041c8e77deb1f",
+      "publication_status": "built_local"
+    },
+    {
+      "id": "construction",
+      "label": "Construction grille après grille",
+      "definition": "Le prototype ajoute une grille à la fois. Pour chaque ajout, il teste 1 200 propositions aléatoires et retient la meilleure selon le score, en écartant les doublons. Il ne revient pas sur les grilles déjà retenues : c’est une construction gloutonne.",
+      "requires": [
+        "portefeuille",
+        "score"
+      ],
+      "related": [
+        "mutation",
+        "random"
+      ],
+      "version": "1.0",
+      "url": "/comprendre/glossaire/#construction",
+      "definition_sha256": "25d23f26a02dd96b936eb71db6020a570231d102e65264c42c3c47fa34a080c7",
+      "publication_status": "built_local"
+    },
+    {
+      "id": "ablation",
+      "label": "Ablation et étude d’un paramètre",
+      "definition": "Une ablation retire un composant pour mesurer son effet. Cette étude fait varier la pénalité, avec un réglage à zéro qui la retire du score. Les autres objectifs restent actifs : zéro ne transforme donc pas la méthode en RANDOM.",
+      "requires": [
+        "poids",
+        "penalite-recouvrement",
+        "construction"
+      ],
+      "related": [
+        "random",
+        "graines-appariees"
+      ],
+      "version": "1.0",
+      "url": "/comprendre/glossaire/#ablation",
+      "definition_sha256": "8b365b205c202121d35dbb7af191a30436e6a340442d05d3601cf191245b9fd3",
+      "publication_status": "built_local"
+    },
+    {
+      "id": "graine",
+      "label": "Graine",
+      "definition": "Une valeur qui initialise un générateur pseudo-aléatoire. Avec les mêmes programmes, paramètres et environnement, elle permet de reproduire une construction ou un ensemble de tirages. Ce n’est pas une prévision des numéros tirés.",
+      "requires": [],
+      "related": [
+        "reproductibilite"
+      ],
+      "version": "1.0",
+      "url": "/comprendre/glossaire/#graine",
+      "definition_sha256": "5d5cb4e0f81e4b3596c2b995130613b93aee49f020af1f7340b1f1d52b2c2b24",
+      "publication_status": "built_local"
+    },
+    {
+      "id": "graines-appariees",
+      "label": "Graines appariées",
+      "definition": "Les mêmes graines sont utilisées pour les réglages comparés : la graine n° 1 sert aux quatre poids, puis la n° 2, etc. Les différences sont calculées entre constructions correspondant à la même graine ; elles peuvent néanmoins diverger après un choix de grille.",
+      "requires": [
+        "graine",
+        "poids"
+      ],
+      "related": [
+        "tirages-communs"
+      ],
+      "version": "1.0",
+      "url": "/comprendre/glossaire/#graines-appariees",
+      "definition_sha256": "17cecf654cc5ad1110f83b89793d4e1ca8acb4f52f5fb2e5f79acc3980367e0f",
+      "publication_status": "built_local"
+    },
+    {
+      "id": "compromis-geometriques",
+      "label": "Compromis géométriques",
+      "definition": "Les avantages et dégradations entre propriétés du portefeuille. Par exemple, une somme d’intersections plus faible peut aller avec moins de triplets couverts ou une intersection maximale plus élevée.",
+      "requires": [
+        "couverture",
+        "recouvrement",
+        "dispersion"
+      ],
+      "related": [
+        "pareto"
+      ],
+      "version": "1.0",
+      "url": "/comprendre/glossaire/#compromis-geometriques",
+      "definition_sha256": "5bb91b8e6ede77a469449927840b106eb10d782cd050f9dfc1c217469dfd598a",
+      "publication_status": "built_local"
+    },
+    {
+      "id": "pareto",
+      "label": "Front Pareto",
+      "definition": "Les candidats qu’aucun autre ne surpasse sur tous les critères déclarés sans dégradation. Ici les quatre critères sont couverture des paires, couverture des triplets, dispersion des fréquences et intersection maximale. La somme des intersections au carré est suivie séparément.",
+      "requires": [
+        "compromis-geometriques"
+      ],
+      "related": [
+        "selection"
+      ],
+      "version": "1.0",
+      "url": "/comprendre/glossaire/#pareto",
+      "definition_sha256": "210b94b4c817790541f9bde6b87a4041aca3ca128803013ae7b33f7265298e86",
+      "publication_status": "built_local"
+    },
+    {
+      "id": "selection",
+      "label": "Sélection",
+      "definition": "Une règle déclarée qui retient certains candidats. Dans ces études, elle utilise les propriétés exactes et la diversité des réglages, sans choisir les graines ni les parents selon leurs résultats Monte-Carlo.",
+      "requires": [
+        "pareto"
+      ],
+      "related": [
+        "monte-carlo",
+        "filiation"
+      ],
+      "version": "1.0",
+      "url": "/comprendre/glossaire/#selection",
+      "definition_sha256": "ebfd7b07338d35fc005a8cab6053ec2ea591608565efaaabbde0bfcc0ad331ac",
+      "publication_status": "built_local"
+    },
+    {
+      "id": "mutation",
+      "label": "Mutation",
+      "definition": "La modification d’un portefeuille complet existant : remplacer un numéro, échanger des numéros entre grilles ou remplacer une grille. L’enfant obtenu repasse les validations, les calculs, les preuves éventuelles et les évaluations.",
+      "requires": [
+        "portefeuille"
+      ],
+      "related": [
+        "filiation",
+        "garantie"
+      ],
+      "version": "1.0",
+      "url": "/comprendre/glossaire/#mutation",
+      "definition_sha256": "1dadd14b8df75c0c06d4ed3e0bcf89e8011f3194346065d9d55b4ed46416129e",
+      "publication_status": "built_local"
+    },
+    {
+      "id": "croisement",
+      "label": "Croisement",
+      "definition": "La création d’un enfant à partir de grilles de deux portefeuilles parents. Le prototype impose une contribution propre à chacun. L’enfant doit être valide et évalué ; il n’hérite pas automatiquement d’une garantie.",
+      "requires": [
+        "portefeuille"
+      ],
+      "related": [
+        "filiation",
+        "garantie"
+      ],
+      "version": "1.0",
+      "url": "/comprendre/glossaire/#croisement",
+      "definition_sha256": "0b60fc2725a4a029d51d04a68d3bf9e7b1bedc6ef38cce50828f671a6bcabe6e",
+      "publication_status": "built_local"
+    },
+    {
+      "id": "filiation",
+      "label": "Filiation",
+      "definition": "Le lien enregistré entre un enfant, ses parents et l’opérateur qui l’a produit. Une génération rassemble un ensemble d’enfants ; le lien de parenté ne prouve pas une amélioration.",
+      "requires": [
+        "mutation",
+        "croisement"
+      ],
+      "related": [
+        "selection"
+      ],
+      "version": "1.0",
+      "url": "/comprendre/glossaire/#filiation",
+      "definition_sha256": "5c72918f0510c64fed2d295a826f23f2aca2419a3b20f9ef01d452edc046f861",
+      "publication_status": "built_local"
+    },
+    {
+      "id": "random",
+      "label": "Référence aléatoire RANDOM",
+      "definition": "Un portefeuille construit par choix aléatoires uniformes dans les pools déclarés, sans classement par le score. Un témoin comparable conserve le nombre de grilles, le coût et les règles. Un poids de pénalité nul ne suffit pas à être RANDOM.",
+      "requires": [
+        "portefeuille",
+        "pool"
+      ],
+      "related": [
+        "effet-pool",
+        "tirages-communs"
+      ],
+      "version": "1.0",
+      "url": "/comprendre/glossaire/#random",
+      "definition_sha256": "07ba779d2482e1d58f8d489854d704918175feda4289b4567a7bf0ecb55ca16f",
+      "publication_status": "built_local"
+    },
+    {
+      "id": "effet-pool",
+      "label": "Effet du pool",
+      "definition": "L’effet associé à la restriction de l’ensemble de choix. RANDOM sur les mêmes pools et RANDOM sur 50 numéros et 12 étoiles sont deux références distinctes ; leur comparaison change aussi le pool.",
+      "requires": [
+        "pool",
+        "random"
+      ],
+      "related": [
+        "probabilite"
+      ],
+      "version": "1.0",
+      "url": "/comprendre/glossaire/#effet-pool",
+      "definition_sha256": "8ddaaa1eb6d0722cff491d8930e583a6e8136655bdc2953b012861df2f54fafe",
+      "publication_status": "built_local"
+    },
+    {
+      "id": "probabilite",
+      "label": "Probabilité",
+      "definition": "Une proportion théorique d’issues d’un événement dans un modèle donné. Une fréquence mesurée sur des tirages simulés en est une estimation et garde une incertitude.",
+      "requires": [],
+      "related": [
+        "monte-carlo",
+        "intervalle-confiance"
+      ],
+      "version": "1.0",
+      "url": "/comprendre/glossaire/#probabilite",
+      "definition_sha256": "d0bcde604d72bd990aef77ff41452a599835fab70f1db1266aae2cf152c4de7c",
+      "publication_status": "built_local"
+    },
+    {
+      "id": "monte-carlo",
+      "label": "Simulation Monte-Carlo",
+      "definition": "L’évaluation sur de nombreux tirages aléatoires simulés après avoir figé les portefeuilles. Elle estime des événements comme « au moins une grille gagnante ». Elle ne prédit pas le prochain tirage.",
+      "requires": [
+        "portefeuille",
+        "probabilite",
+        "graine"
+      ],
+      "related": [
+        "tirages-communs",
+        "intervalle-confiance"
+      ],
+      "version": "1.0",
+      "url": "/comprendre/glossaire/#monte-carlo",
+      "definition_sha256": "b874b02d11bae65e1bbc5c56fcd838812ea2fd0c489d0c768edf0f9a330b5a07",
+      "publication_status": "built_local"
+    },
+    {
+      "id": "tirages-communs",
+      "label": "Tirages communs et confirmation indépendante",
+      "definition": "Pour comparer les candidats, chacun reçoit exactement les mêmes tirages simulés. La confirmation utilise un nouvel ensemble indépendant. Partager une graine de construction et partager des tirages d’évaluation sont deux protocoles différents.",
+      "requires": [
+        "monte-carlo"
+      ],
+      "related": [
+        "graines-appariees"
+      ],
+      "version": "1.0",
+      "url": "/comprendre/glossaire/#tirages-communs",
+      "definition_sha256": "d97a3d3c69afa8e56c4ecebddcdfb0e40825e6255b2a3ea73c5f49f18e2e82b0",
+      "publication_status": "built_local"
+    },
+    {
+      "id": "intervalle-confiance",
+      "label": "Intervalle de confiance",
+      "definition": "Un intervalle calculé pour décrire l’incertitude d’une estimation. Ici Wilson à 95 % concerne la probabilité d’un événement pour un portefeuille. Il ne décrit ni la variabilité entre graines ni directement l’incertitude de la différence entre deux portefeuilles.",
+      "requires": [
+        "probabilite",
+        "monte-carlo"
+      ],
+      "related": [
+        "significativite"
+      ],
+      "version": "1.0",
+      "url": "/comprendre/glossaire/#intervalle-confiance",
+      "definition_sha256": "9318b2912e7e07fe854b8b8e4629ecb24a68b8e9d5e6dfb35416a84e91f25d11",
+      "publication_status": "built_local"
+    },
+    {
+      "id": "significativite",
+      "label": "Significativité statistique",
+      "definition": "La conclusion d’un test déclaré sur la compatibilité de résultats avec une hypothèse. Une différence de moyennes ou deux intervalles individuels ne suffisent pas à la démontrer. Les écarts de cette étude restent descriptifs.",
+      "requires": [
+        "intervalle-confiance",
+        "moyenne"
+      ],
+      "related": [
+        "tirages-communs"
+      ],
+      "version": "1.0",
+      "url": "/comprendre/glossaire/#significativite",
+      "definition_sha256": "6808f75150d72ef2b8050e6bbfe9fae72d1c6a867352defe68fdda3e299df697",
+      "publication_status": "built_local"
+    },
+    {
+      "id": "esperance",
+      "label": "Espérance",
+      "definition": "La moyenne théorique d’une quantité aléatoire. Pour le nombre de grilles gagnantes, on additionne leurs probabilités individuelles ; le recouvrement influence les gains simultanés, pas cette somme à nombre de grilles et règles identiques.",
+      "requires": [
+        "probabilite",
+        "portefeuille"
+      ],
+      "related": [
+        "rang-gagnant"
+      ],
+      "version": "1.0",
+      "url": "/comprendre/glossaire/#esperance",
+      "definition_sha256": "4ab0a1a1292f61547ab9220bb6c2e51f442e9d14d8e93a64ac2331c1a061f455",
+      "publication_status": "built_local"
+    },
+    {
+      "id": "rang-gagnant",
+      "label": "Grille gagnante et rang",
+      "definition": "Une grille dont les nombres de numéros et d’étoiles corrects satisfont un rang des règles déclarées. « Au moins une grille gagnante » et « au moins deux » sont des événements différents du portefeuille.",
+      "requires": [
+        "grille",
+        "portefeuille"
+      ],
+      "related": [
+        "jackpot",
+        "meme-grille"
+      ],
+      "version": "1.0",
+      "url": "/comprendre/glossaire/#rang-gagnant",
+      "definition_sha256": "5ca016d5457bfa440b37ba1bbad0b4cd83fff9c6b9da10d15788054e6428766d",
+      "publication_status": "built_local"
+    },
+    {
+      "id": "jackpot",
+      "label": "Jackpot",
+      "definition": "Dans ce modèle EuroMillions, le rang où une même grille contient les cinq numéros et les deux étoiles du tirage. Sa probabilité exacte relève du calcul combinatoire ; une petite simulation observe rarement cet événement.",
+      "requires": [
+        "rang-gagnant"
+      ],
+      "related": [
+        "probabilite"
+      ],
+      "version": "1.0",
+      "url": "/comprendre/glossaire/#jackpot",
+      "definition_sha256": "ecb40971e06a13879f97999f9c90be34d4b4296bc5f9f046f12185384b3f8035",
+      "publication_status": "built_local"
+    },
+    {
+      "id": "enumeration",
+      "label": "Énumération exhaustive",
+      "definition": "Le parcours de tous les cas d’un ensemble précisément défini. Un résultat vérifié sur chaque cas est exact pour cet ensemble ; il faut conserver la définition de ce périmètre.",
+      "requires": [],
+      "related": [
+        "garantie"
+      ],
+      "version": "1.0",
+      "url": "/comprendre/glossaire/#enumeration",
+      "definition_sha256": "fc1a71b3c7935dff5b8ed67112e798beff92c40a37f6b4e162fba53bd41ea072",
+      "publication_status": "built_local"
+    },
+    {
+      "id": "meme-grille",
+      "label": "Résultat conjoint sur une même grille",
+      "definition": "La présence simultanée des numéros et étoiles requis dans une seule grille. Avoir les bons numéros dans A et les bonnes étoiles dans B ne remplit pas cette condition.",
+      "requires": [
+        "grille"
+      ],
+      "related": [
+        "garantie",
+        "rang-gagnant"
+      ],
+      "version": "1.0",
+      "url": "/comprendre/glossaire/#meme-grille",
+      "definition_sha256": "ba1e492102e8971838540bd6929edc4174fd1facdb74a53a1050020918ffe608",
+      "publication_status": "built_local"
+    },
+    {
+      "id": "garantie",
+      "label": "Garantie conditionnelle",
+      "definition": "Une propriété prouvée pour tous les tirages satisfaisant une condition explicite, par exemple appartenir aux pools. Elle concerne les grilles exactes vérifiées et un résultat conjoint sur une même grille ; elle ne garantit pas que la condition arrivera au prochain tirage.",
+      "requires": [
+        "pool",
+        "enumeration",
+        "meme-grille"
+      ],
+      "related": [
+        "mutation",
+        "croisement"
+      ],
+      "version": "1.0",
+      "url": "/comprendre/glossaire/#garantie",
+      "definition_sha256": "7027cfe56aed7a7f3e93f0a856d332df4814362d1710075def094f112c840860",
+      "publication_status": "built_local"
+    },
+    {
+      "id": "budget",
+      "label": "Budget et coût réel",
+      "definition": "Le plafond autorisé et le coût des grilles effectivement construites sont deux valeurs distinctes. Dans cette configuration, 20 grilles à 2,50 € donnent un coût modélisé de 50 €. Cette valeur appartient aux règles enregistrées de l’expérience.",
+      "requires": [
+        "portefeuille"
+      ],
+      "related": [],
+      "version": "1.0",
+      "url": "/comprendre/glossaire/#budget",
+      "definition_sha256": "79ae6fbb84324ed1e9e0ab9d6ef17f2410e493af892ea58cda052b9f33027373",
+      "publication_status": "built_local"
+    },
+    {
+      "id": "reproductibilite",
+      "label": "Reproductibilité",
+      "definition": "La possibilité de refaire une exécution à partir de sa configuration, de ses graines, de ses sources et de ses versions enregistrées. Une empreinte SHA-256 identifie un contenu ; elle ne remplace pas sa validation scientifique.",
+      "requires": [
+        "graine"
+      ],
+      "related": [],
+      "version": "1.0",
+      "url": "/comprendre/glossaire/#reproductibilite",
+      "definition_sha256": "f1b54843b1f19cb09798bc971e9c18ee7d02acc5316fd61f9b82230bcfefbf5a",
+      "publication_status": "built_local"
+    }
+  ]
+}

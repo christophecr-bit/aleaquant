@@ -1,6 +1,15 @@
-# Dette technique active — 2 octobre 2026
+# Dette technique active — 11 octobre 2026
 
-Auteur : AleaQuant · v2.4
+Auteur : AleaQuant · v2.9
+
+Mise à jour v2.9 : ajoute TD-ATELIER-001 et TD-SUB-001 pour le service personnalisé,
+la souscription et le paiement ; cadrage futur, aucun service marchand activé.
+
+Mise à jour v2.8 : socle RSS/arXiv gratuit livré dans le dépôt canonique ; la
+continuité, la curation et les budgets restent ouverts sous TD-WATCH-001/002.
+Mise à jour v2.7 : précise l'amorçage documentaire nécessaire à la v0 et ajoute
+TD-EDIT-002 pour la conservation durable des éditions corrigées. La clôture
+TD-PORT-001/002 et les entrées antérieures sont conservées.
 
 Ce registre ne contient que des composants d'ingénierie, des validations techniques
 et des tâches d'exploitation encore nécessaires. Les fonctions attendues sont dans
@@ -9,6 +18,38 @@ et des tâches d'exploitation encore nécessaires. Les fonctions attendues sont 
 entrée terminée quitte cette liste et rejoint `CHANGELOG.md`.
 
 ## Site et publication
+
+- [ ] **TD-DOC-001 · P1 · Compléter les dépendances documentaires du site**
+  (PB-016) : l'inventaire initial porte sur le catalogue des portefeuilles.
+  Inventorier l'Atlas général et les autres rubriques, relier leurs notions et
+  versions, traiter les sujets d'articles dans le pipeline éditorial et publier
+  les définitions validées avant les contenus qui en dépendent. Les sorties
+  locales ne sont pas des preuves de publication. Vérifier le parcours public
+  de prérequis depuis un contenu expert jusqu'aux notions de base.
+  **Avant la v0** : inventorier aussi le SHA approuvé de l'article historique
+  `tirage-EM-2011053`, puis qualifier un amorçage complet préservant les assets
+  publics existants. Le glossaire seul n'est pas un upload sûr sur le Worker
+  principal ; ne pas vider artificiellement les dépendances pour passer la garde.
+  État et ordre de livraison : `V0-MANUAL-RELEASE.md` / OPS-008.
+- [ ] **TD-EDIT-001 · P1 · Qualifier et router les compétences éditoriales**
+  (PB-017) : convertir le principe initiation/approfondissement/expert en profils
+  exécutables, avec paramètres modèle/prompt/effort et relecteurs spécialistes.
+  Qualifier l'adéquation sur des articles représentatifs, mesurer corrections
+  et ressources, enregistrer les décisions de routage et tester le refus d'un
+  profil insuffisant. Ne pas assimiler prix ou puissance annoncée à compétence.
+  Les gates de preuves, de prérequis publiés et de SHA humain restent communs.
+  Inscrit à la demande de Chris le 10 octobre ; aucun routage modifié. À reprendre
+  dès que possible, avec le plan canonique du dépôt éditorial.
+- [ ] **TD-EDIT-002 · P1 · Conserver les éditions d'un article corrigé**
+  (PB-003 / OPS-009) : l'import remplace actuellement l'entrée active portant
+  le même `article_id`, sans archiver lui-même l'édition précédente. Le parcours
+  long refuse de réutiliser un ID déjà présent dans le même store ; son compteur
+  de révisions de travail ne constitue pas un historique durable d'éditions.
+  Qualifier la sauvegarde avant remplacement, la préparation d'une nouvelle
+  édition sous la même identité, les anciennes décisions et le nouveau SHA
+  humain, puis la restauration. En attendant, une correction ne doit pas écraser
+  silencieusement un export approuvé. L'identité et la référence visible existent ;
+  ce qui manque est la qualification du cycle complet de réédition.
 
 - [ ] **Publier les notes de version du modèle** : générer depuis le registre
   versionné de `aleaquant-data/docs/MODEL-CHANGELOG.md` une page indexée et un
@@ -37,6 +78,34 @@ entrée terminée quitte cette liste et rejoint `CHANGELOG.md`.
   dictionnaire et provenance, tests de complétude SHA et mesure du budget d'assets.
   La fonction destinée aux utilisateurs est dans [`ROADMAP.md`](ROADMAP.md).
 
+## Atelier personnalisé, souscription et paiement — après la v0
+
+- [ ] **TD-ATELIER-001 · P2 · Raccorder et qualifier le service personnalisé**
+  (PB-019) : définir le contrat de configuration utilisateur, valider pools,
+  budgets et contraintes ; réutiliser le moteur existant et ses contrôles, sans
+  sélectionner les graines par performance Monte-Carlo. Prévoir une file durable,
+  des limites de calcul et quotas, verrous, interruption et reprise/relance selon
+  les capacités réelles. Conserver identités, versions, filiation éventuelle et
+  évaluations ; vérifier séparation des comptes, accès aux résultats privés et
+  intégration Atlas/prompteur. Qualifier un parcours complet avec référence RANDOM
+  comparable, erreurs et changements de pool, sans promesse de gain ni lancement
+  de mises. Le coût de service et la consommation des quotas doivent être mesurés
+  avant de fixer une offre. Les références gratuites de l'Atlas restent accessibles.
+- [ ] **TD-SUB-001 · P2 · Construire et qualifier souscription et paiement**
+  (PB-020) : choisir fournisseur et modèle d'offre, configurer les comptes et droits
+  côté serveur, avec paiement hébergé et secrets hors du client. Relier chaque
+  abonnement au compte ; vérifier les événements signés du fournisseur, conserver
+  leur journal et traiter de façon idempotente doublons, retards et événements
+  désordonnés. Une redirection de succès côté navigateur ne suffit pas à ouvrir
+  les droits. Définir et tester souscription, renouvellement, changement d'offre,
+  impayé, résiliation, remboursement et rapprochement des états fournisseur/local.
+  Prévoir reçus/factures, suivi privé et relance des erreurs ; cadrer les conditions
+  de service et la conservation des données/résultats avant ouverture commerciale.
+  Qualifier en environnement de test succès, refus, interruption et notification
+  répétée : pas de double facturation ni de quota accordé deux fois, droits conformes
+  à l'offre et Atlas gratuit préservé. Fournisseur, tarifs et périodicité restent
+  à décider ; aucune intégration ou transaction réelle n'est encore réalisée.
+
 ## Calculs et données
 
 - [ ] **Qualifier et clôturer la convergence du générateur de facts** : la voie
@@ -63,7 +132,22 @@ entrée terminée quitte cette liste et rejoint `CHANGELOG.md`.
   alerter sans écraser les révisions déjà importées. Configuration des jeux dans
   `../../aleaquant-data/games/*.yaml`.
 
+## Pipeline de recherche — résolution du 10 octobre 2026
+
+TD-PORT-001 et TD-PORT-002 ont quitté la dette active après les deux nouvelles
+exécutions contrôlées et leur qualification. Voir [CHANGELOG.md](CHANGELOG.md)
+et [PORTFOLIO-CONTROLLED-STUDIES.md](PORTFOLIO-CONTROLLED-STUDIES.md).
+Les anciens runs restent archivés avec leur absence de RANDOM ; les nouveaux
+lots possèdent chacun dix contrôles de mêmes pools et dix de domaine complet.
+
 ## Livraison et exploitation
+
+La veille éditoriale possède désormais son collecteur quotidien gratuit et sa
+base SQLite séparée. Sa dette reste dans le dépôt canonique :
+[`TECHNICAL-DEBT.md`](../../aleaquant-editorial-agents/docs/TECHNICAL-DEBT.md),
+TD-WATCH-001 (continuité, fenêtres manquées, alertes et console) et TD-WATCH-002
+(curation, recherche et budgets cumulés payants). La qualification locale de deux
+collectes ne clôture pas ces entrées. Suivi opérationnel : OPS-010 / PB-010.
 
 - [ ] **Outiller l’exploitation autonome des batchs (PB-014)** : raccorder un
   module d’administration privé dans le même outil que Review, en complément du
